@@ -5,7 +5,7 @@ import { Column, Entity, PrimaryColumn, TableInheritance } from "typeorm";
 @ObjectType()
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
-export  class User{
+export   abstract class User{
 
    @Field()
    @PrimaryColumn()
