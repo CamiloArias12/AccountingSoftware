@@ -1,74 +1,101 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, PrimaryColumn, TableInheritance } from "typeorm";
 
+export enum TypeIdentification {
+   CEDULA_DE_CIUDADANIA = 'cedula de ciudadania',
+   TARJETA_DE_IDENTIDAD = 'tarjeta de identidad',
+   TARJETA_DE_EXTRANJERIA = 'tarjeta de extranjeria',
+}
+
+export enum CivilStatus {
+   SOLTERO_A = 'soltero(a)',
+   CASADO_A = 'casado(a)',
+}
+
+export enum Gender {
+   MASCULINO = 'masculino',
+   FEMENINO = 'femenino',
+}
 
 @ObjectType()
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 export   abstract class User{
 
-   @Field()   
-   @Column()
-   tipoIdentificacion: string
+   @Field(() => TypeIdentification)
+   @Column({
+       type: 'enum',
+       enum: TypeIdentification,
+       nullable: false
+   })
+   typeidentification: TypeIdentification;
 
    @Field()
    @PrimaryColumn({unique: true})
-   numeroIdentificacion: number
+   numberidentification: number
 
    @Field()
    @Column()
-   nombre: string
+   name: string
 
    @Field()
    @Column()
-   sueldo: string
+   salary: string
 
    @Field()
    @Column()
-   otrosIngresos: string
+   otherIncome: string
 
    @Field()
    @Column()
-   direccionResidencia: string
+   addressResidence: string
 
    @Field()
    @Column()
-   telefono: string
+   phone: number
 
    @Field()
    @Column()
-   correo: string
+   email: string
 
    @Field()
    @Column()
-   fechaNacimiento: Date;
+   birthDate: Date;
 
    @Field()
    @Column()
-   pais: string;
+   country: string;
 
    @Field()
    @Column()
-   municipio: Date
+   municipality: String
+
+   @Field(() => CivilStatus)
+   @Column({
+       type: 'enum',
+       enum: CivilStatus,
+       nullable: false
+   })
+   statusCivil: CivilStatus;
 
    @Field()
    @Column()
-   estado: string
+   afiliationDate: Date
 
    @Field()
    @Column()
-   fechaAfiliacion: Date
+   withdrawalDate: Date
 
    @Field()
    @Column()
-   fechaRetiro: Date
+   scholarship: string
 
-   @Field()
-   @Column()
-   escolaridad: string
-
-   @Field()
-   @Column()
-   genero: string
+   @Field(() => Gender)
+   @Column({
+       type: 'enum',
+       enum: Gender,
+       nullable: false
+   })
+   gender: Gender;
 
 }
