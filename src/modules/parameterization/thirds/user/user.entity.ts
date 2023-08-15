@@ -1,11 +1,12 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, PrimaryColumn, TableInheritance } from "typeorm";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./dto/enumType"
+import { iUser } from "./dto/user.interface";
 
 @ObjectType()
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
-export   abstract class User{
+export   abstract class User implements iUser{
  
    @Field(() => TypeIdentification)
    @Column({
