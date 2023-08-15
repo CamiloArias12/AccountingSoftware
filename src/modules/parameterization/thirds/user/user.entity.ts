@@ -1,50 +1,63 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, PrimaryColumn, TableInheritance } from "typeorm";
-
-export enum TypeIdentification {
-   CEDULA_DE_CIUDADANIA = 'cedula de ciudadania',
-   TARJETA_DE_IDENTIDAD = 'tarjeta de identidad',
-   TARJETA_DE_EXTRANJERIA = 'tarjeta de extranjeria',
-}
-
-export enum CivilStatus {
-   SOLTERO_A = 'soltero(a)',
-   CASADO_A = 'casado(a)',
-}
-
-export enum Gender {
-   MASCULINO = 'masculino',
-   FEMENINO = 'femenino',
-}
+import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./dto/enumType"
 
 @ObjectType()
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 export   abstract class User{
-
+ 
    @Field(() => TypeIdentification)
    @Column({
-       type: 'enum',
-       enum: TypeIdentification,
-       nullable: false
+         type: 'enum',
+         enum: TypeIdentification,
+         nullable: false
    })
    typeidentification: TypeIdentification;
 
    @Field()
-   @PrimaryColumn({unique: true})
-   numberidentification: number
+   @Column()
+   expeditionDate:Date
 
    @Field()
    @Column()
-   name: string
+   expeditionCity:string
 
    @Field()
    @Column()
-   salary: string
+   countryCard: string;
 
    @Field()
    @Column()
-   otherIncome: string
+   municipalityCard: String
+
+   @Field()
+   @Column()
+   cityCard: String
+
+   @Field()
+   @Column()
+   name:string
+
+   @Field()
+   @Column()
+   lastName:string
+
+   @Field(() => Gender)
+   @Column({
+         type: 'enum',
+         enum: Gender,
+         nullable: false
+   })
+   gender: Gender;
+
+   @Field(() => CivilStatus)
+   @Column({
+         type: 'enum',
+         enum: CivilStatus,
+         nullable: false
+   })
+   statusCivil: CivilStatus;
 
    @Field()
    @Column()
@@ -52,50 +65,61 @@ export   abstract class User{
 
    @Field()
    @Column()
+   municipality: String
+
+   @Field()
+   @Column()
+   city: String
+
+   @Field()
+   @Column()
    phone: number
+
+   @Field()
+   @Column()
+   landLine: number
 
    @Field()
    @Column()
    email: string
 
-   @Field()
-   @Column()
-   birthDate: Date;
-
-   @Field()
-   @Column()
-   country: string;
-
-   @Field()
-   @Column()
-   municipality: String
-
-   @Field(() => CivilStatus)
+   @Field(() => HousingType)
    @Column({
-       type: 'enum',
-       enum: CivilStatus,
-       nullable: false
+   type: 'enum',
+   enum: HousingType,
+   nullable: false
    })
-   statusCivil: CivilStatus;
+   housingType: HousingType;
 
-   @Field()
-   @Column()
-   afiliationDate: Date
-
-   @Field()
-   @Column()
-   withdrawalDate: Date
-
-   @Field()
-   @Column()
-   scholarship: string
-
-   @Field(() => Gender)
+   @Field(() => Studies)
    @Column({
-       type: 'enum',
-       enum: Gender,
-       nullable: false
+   type: 'enum',
+   enum: Studies,
+   nullable: false
    })
-   gender: Gender;
+   studies: Studies;
+
+   @Field()
+   @Column()
+   profession: string
+
+   @Field()
+   @Column()
+   foreignOperations: boolean
+
+   @Field()
+   @Column()
+   publicResources: boolean
+
+   @Field()
+   @Column()
+   publicRecognition: boolean
+
+   @Field()
+   @Column()
+   publicPower: boolean
+
 
 }
+
+
