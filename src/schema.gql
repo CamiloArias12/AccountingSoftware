@@ -1,0 +1,13 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Country {
+  geonameId: Float!
+  countryName: String!
+  countryCode: String!
+}
+
+type Query {
+  getCountry: [Country!]!
+}
