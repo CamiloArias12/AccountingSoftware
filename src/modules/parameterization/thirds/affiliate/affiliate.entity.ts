@@ -1,11 +1,11 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, PrimaryColumn, TableInheritance } from "typeorm";
-import { iAfiliate } from "./dto/afiliate.interface";
+import { IAfiliate } from "./dto/afiliate.interface";
 
 
 @ObjectType()
 @Entity()
-export class Afiliate implements iAfiliate{ 
+export class Afiliate implements IAfiliate{ 
 
    @Field()
    @Column()

@@ -1,4 +1,4 @@
-export interface iAfiliate{
+export interface IAfiliate{
    company:string
 
    addreesCompany:string
