@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, PrimaryColumn, TableInheritance } from "typeorm";
-import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./dto/enumType"
 import { iUser } from "./dto/user.interface";
+import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./dto/enum-type";
 
 @ObjectType()
 @Entity()

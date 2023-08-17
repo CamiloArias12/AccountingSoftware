@@ -1,4 +1,4 @@
-import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./enumType";
+import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./enum-type";
 
 export interface iUser{
 
