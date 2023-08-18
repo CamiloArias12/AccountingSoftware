@@ -8,6 +8,12 @@ type Country {
   countryCode: String!
 }
 
+type StateOrTown {
+  geonameId: Float!
+  toponymName: String!
+}
+
 type Query {
   getCountry: [Country!]!
+  getStateOrTown(id: Float!): [StateOrTown!]!
 }

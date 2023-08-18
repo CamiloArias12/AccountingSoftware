@@ -15,6 +15,21 @@ export class Country {
 
 }
 
+@ObjectType()
+export class StateOrTown {
+
+    @Field()
+    geonameId: number
+
+    @Field()
+    toponymName:string
+
+}
+
+export class StatesOrTowns{
+   geonames:[StateOrTown]
+}
+
 
 export class Countries{
    geonames:[Country]
