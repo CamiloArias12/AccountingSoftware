@@ -1,7 +1,7 @@
 import { Args, Resolver } from '@nestjs/graphql';
 import { LocationService } from './location.service';
 import { Query } from '@nestjs/graphql';
-import { Location } from './dto/typeData';
+import { Location, Town } from './dto/typeData';
 
 
 @Resolver()
@@ -15,8 +15,13 @@ export class LocationResolver {
    
 
    @Query(() =>[Location])
-   async getStateOrTown(@Args('isoCode')isoCode:string){
+   async getState(@Args('isoCode')isoCode:string){
       return this.locatioService.getState(isoCode);
+   }
+
+   @Query(() =>[Town])
+   async getTown(@Args('isoCodeCountry')isoCodeCountry:string ,@Args('isoCodeState') isoCodeState:string){
+      return this.locatioService.getTown(isoCodeCountry,isoCodeState);
    }
 
 }
