@@ -8,7 +8,13 @@ type Location {
   iso2: String!
 }
 
+type Town {
+  id: Float!
+  name: String!
+}
+
 type Query {
   getCountry: [Location!]!
-  getStateOrTown(isoCode: String!): [Location!]!
+  getState(isoCode: String!): [Location!]!
+  getTown(isoCodeCountry: String!, isoCodeState: String!): [Town!]!
 }
