@@ -2,18 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Country {
-  geonameId: Float!
-  countryName: String!
-  countryCode: String!
-}
-
-type StateOrTown {
-  geonameId: Float!
-  toponymName: String!
+type Location {
+  id: Float!
+  name: String!
+  iso2: String!
 }
 
 type Query {
-  getCountry: [Country!]!
-  getStateOrTown(id: Float!): [StateOrTown!]!
+  getCountry: [Location!]!
+  getStateOrTown(isoCode: String!): [Location!]!
 }

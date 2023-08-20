@@ -1,39 +1,34 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { catchError, firstValueFrom } from 'rxjs';
-import { Countries, Country, StateOrTown, StatesOrTowns } from './dto/typeData';
-import { error } from 'console';
+import { Location} from './dto/typeData';
 import { AxiosError } from 'axios';
-
+import {countries} from './country'
 
 @Injectable()
  export class LocationService {
-      private readonly url= 'http://api.geonames.org/'
+      private readonly url= 'https://api.countrystatecity.in/v1/countries/'
       private readonly userName='username=Juan132'
 
    constructor (
             private readonly httpService:HttpService
    ){}
 
-   async getCountries(): Promise <[Country]>{
-      const  {data} = await firstValueFrom( this.httpService.get<Countries>(`${this.url}countryInfo?${this.userName}`,
-	    {
-	       headers:{
-		  Accept:'application/json',
-	       }
-	    }))
-
-      return data.geonames
+   async getCountries(): Promise <Location[]>{
+      return countries  
    }
 
-   async getStateAndTown(id:number): Promise <[StateOrTown]>{
+
+   async getState(isoCode:string): Promise <Location[]>{
 
       
-      const  {data} = await firstValueFrom( this.httpService.get<StatesOrTowns>(`${this.url}children?geonameId=${id}&${this.userName}&fcode=HASC`,
+      const  {data} = await firstValueFrom( this.httpService.get<Location[]>(`${this.url}${isoCode}/states`,
 	    {
 	       headers:{
 		  Accept:'application/json',
-	       }
+		  "X-CSCAPI-KEY":'WXE4Ump5elZRMWFkdXdVYkpjTnZuQU5ZeENDWjJweXk5TDBIRTY3cA=='
+	       },
+	       
 	    }).
 	 pipe(
         catchError((error: AxiosError) => {
@@ -43,9 +38,8 @@ import { AxiosError } from 'axios';
 	    ))
 
 
-      return data.geonames
+      return data 
    }
-
  }
 
 

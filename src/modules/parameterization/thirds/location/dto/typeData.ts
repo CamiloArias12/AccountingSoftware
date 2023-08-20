@@ -2,7 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 
 
 @ObjectType()
-export class Location{
+export class Location {
 
     @Field()
     id: number
@@ -15,3 +15,14 @@ export class Location{
 
 }
 
+
+@ObjectType()
+export class Town{
+
+    @Field()
+    id: number
+
+    @Field()
+    name: string
+
+}
