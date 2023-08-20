@@ -2,35 +2,16 @@ import { Field, ObjectType } from "@nestjs/graphql";
 
 
 @ObjectType()
-export class Country {
+export class Location{
 
     @Field()
-    geonameId: number
+    id: number
 
     @Field()
-    countryName: string
+    name: string
 
     @Field()
-    countryCode:string
+    iso2:string
 
 }
 
-@ObjectType()
-export class StateOrTown {
-
-    @Field()
-    geonameId: number
-
-    @Field()
-    toponymName:string
-
-}
-
-export class StatesOrTowns{
-   geonames:[StateOrTown]
-}
-
-
-export class Countries{
-   geonames:[Country]
-}
