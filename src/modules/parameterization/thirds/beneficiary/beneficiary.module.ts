@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Beneficiary } from './beneficiary.entity';
 
-@Module({})
+@Module({
+   imports:[TypeOrmModule.forFeature([Beneficiary])]
+})
 export class BeneficiaryModule {}

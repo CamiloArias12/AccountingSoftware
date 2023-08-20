@@ -6,7 +6,7 @@ import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from ".
 @ObjectType()
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
-export   abstract class User implements iUser{
+export abstract class User implements iUser{
  
    @Field(() => TypeIdentification)
    @Column({
