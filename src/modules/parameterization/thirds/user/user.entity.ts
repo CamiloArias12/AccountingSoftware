@@ -1,20 +1,26 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Column, Entity, PrimaryColumn, TableInheritance } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryColumn} from "typeorm";
 import { iUser } from "./dto/user.interface";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./dto/enum-type";
+import { Affiliate } from "../affiliate/affiliate.entity";
+import { Employee } from "../employee/employee.entity";
 
 @ObjectType()
 @Entity()
-@TableInheritance({ column: { type: "varchar", name: "type" } })
-export abstract class User implements iUser{
+export class User implements iUser{
  
-   @Field(() => TypeIdentification)
+   @Field()
    @Column({
          type: 'enum',
          enum: TypeIdentification,
          nullable: false
    })
-   typeidentification: TypeIdentification;
+   typeidentification: string;
+
+
+   @Field()
+   @PrimaryColumn()
+   identification: number; 
 
    @Field()
    @Column()
@@ -44,21 +50,21 @@ export abstract class User implements iUser{
    @Column()
    lastName:string
 
-   @Field(() => Gender)
+   @Field()
    @Column({
          type: 'enum',
          enum: Gender,
          nullable: false
    })
-   gender: Gender;
+   gender: string;
 
-   @Field(() => CivilStatus)
+   @Field()
    @Column({
          type: 'enum',
          enum: CivilStatus,
          nullable: false
    })
-   statusCivil: CivilStatus;
+   statusCivil: string;
 
    @Field()
    @Column()
@@ -84,21 +90,21 @@ export abstract class User implements iUser{
    @Column()
    email: string
 
-   @Field(() => HousingType)
+   @Field()
    @Column({
    type: 'enum',
    enum: HousingType,
    nullable: false
    })
-   housingType: HousingType;
+   housingType: string;
 
-   @Field(() => Studies)
+   @Field()
    @Column({
    type: 'enum',
    enum: Studies,
    nullable: false
    })
-   studies: Studies;
+   studies: string;
 
    @Field()
    @Column()
@@ -119,6 +125,14 @@ export abstract class User implements iUser{
    @Field()
    @Column()
    publicPower: boolean
+
+   @Field(() =>Affiliate)
+   @OneToOne(() => Affiliate ,affiliate =>affiliate.user)
+   affiliate:Affiliate
+    
+
+   @OneToOne(() => Employee ,employee =>employee.user)
+   employee:Employee
 
 
 }

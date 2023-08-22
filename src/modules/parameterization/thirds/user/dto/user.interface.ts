@@ -2,8 +2,10 @@ import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from ".
 
 export interface iUser{
 
-   typeidentification: TypeIdentification;
+   typeidentification: string;
 
+   identification:number
+   
    expeditionDate:Date
 
    expeditionCity:string
@@ -18,9 +20,9 @@ export interface iUser{
 
    lastName:string
 
-   gender: Gender;
+   gender: string;
 
-   statusCivil: CivilStatus;
+   statusCivil: string;
 
    addressResidence: string
 
@@ -34,9 +36,9 @@ export interface iUser{
 
    email: string
 
-   housingType: HousingType;
+   housingType: string;
 
-   studies: Studies;
+   studies: string;
 
    profession: string
 
