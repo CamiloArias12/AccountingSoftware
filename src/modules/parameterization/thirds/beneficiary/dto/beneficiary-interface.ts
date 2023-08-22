@@ -1,6 +1,7 @@
 
 export class IBeneficiary{
-
-   percentage:number
+   
+   idDocument:number
+   name:string
 
 }
