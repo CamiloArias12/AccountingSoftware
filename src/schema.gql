@@ -13,8 +13,142 @@ type Town {
   name: String!
 }
 
+type Employee {
+  username: String!
+  password: String!
+}
+
+type User {
+  typeidentification: String!
+  identification: Float!
+  expeditionDate: DateTime!
+  expeditionCity: String!
+  countryCard: String!
+  municipalityCard: String!
+  cityCard: String!
+  name: String!
+  lastName: String!
+  gender: String!
+  statusCivil: String!
+  addressResidence: String!
+  municipality: String!
+  city: String!
+  phone: Float!
+  landLine: Float!
+  email: String!
+  housingType: String!
+  studies: String!
+  profession: String!
+  foreignOperations: Boolean!
+  publicResources: Boolean!
+  publicRecognition: Boolean!
+  publicPower: Boolean!
+  affiliate: Affiliate!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Beneficiary {
+  idDocument: Float!
+  name: String!
+  affiliate: BeneficiaryAffiliate!
+}
+
+type BeneficiaryAffiliate {
+  percentage: Float!
+  beneficiary: Beneficiary!
+  afiliate: Affiliate!
+}
+
+type Affiliate {
+  idAffiliate: Float!
+  company: String!
+  addreesCompany: String!
+  emailJob: String!
+  salary: Float!
+  bank: String!
+  jobTitle: String!
+  phone: Float!
+  incomeCompany: Float!
+  typeAccount: String!
+  numberAccount: Float!
+  user: User!
+  beneficiary: BeneficiaryAffiliate!
+}
+
 type Query {
   getCountry: [Location!]!
   getState(isoCode: String!): [Location!]!
   getTown(isoCodeCountry: String!, isoCodeState: String!): [Town!]!
+  allAfiliates: [Affiliate!]!
+  afiliate(id: Float!): User!
+  allEmployees: [Employee!]!
+}
+
+type Mutation {
+  createAfiliate(inputAffiliate: CreateAfiliateDto!, inputUser: CreateUser!): Affiliate!
+  updateAfiliate(id: Float!, input: UpdateAfiliateDto!): Affiliate!
+  createEmployee(inputEmployee: CreateEmployee!, inputUser: CreateUser!): Employee!
+  createEmployeeUserExist(inputEmployee: CreateEmployee!, idUser: Float!): Employee!
+}
+
+input CreateAfiliateDto {
+  company: String!
+  addreesCompany: String!
+  emailJob: String!
+  salary: Float!
+  bank: String!
+  jobTitle: String!
+  phone: Float!
+  incomeCompany: Float!
+  typeAccount: String!
+  numberAccount: Float!
+}
+
+input CreateUser {
+  typeidentification: String!
+  identification: Float!
+  expeditionDate: DateTime!
+  expeditionCity: String!
+  countryCard: String!
+  municipalityCard: String!
+  cityCard: String!
+  name: String!
+  lastName: String!
+  gender: String!
+  statusCivil: String!
+  addressResidence: String!
+  municipality: String!
+  city: String!
+  phone: Float!
+  landLine: Float!
+  email: String!
+  housingType: String!
+  studies: String!
+  profession: String!
+  foreignOperations: Boolean!
+  publicResources: Boolean!
+  publicRecognition: Boolean!
+  publicPower: Boolean!
+}
+
+input UpdateAfiliateDto {
+  company: String
+  addreesCompany: String
+  emailJob: String
+  salary: Float
+  bank: String
+  jobTitle: String
+  phone: Float
+  incomeCompany: Float
+  typeAccount: String
+  numberAccount: Float
+}
+
+input CreateEmployee {
+  username: String!
+  password: String!
 }
