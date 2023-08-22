@@ -1,40 +1,41 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Afiliate } from './affiliate.entity';
+import { Affiliate } from './affiliate.entity';
 import { CreateAfiliateDto } from './dto/createAfiliate.dto';
 import { UpdateAfiliateDto } from './dto/updateAfiliate.dto';
+import { User } from '../user/user.entity';
+import { UserService } from '../user/user.service';
 
 
 @Injectable()
-export class AfiliateService {
+export class AffiliateService {
     constructor(
-        @InjectRepository(Afiliate)
-        private readonly afiliateRepository: Repository<Afiliate>,
+        @InjectRepository(Affiliate)
+        private readonly afiliateRepository: Repository<Affiliate>,
+	private readonly  userService:UserService
     ) {}
 
-    async create(dto: CreateAfiliateDto): Promise<Afiliate> {
+    async create(dto: CreateAfiliateDto,user:User): Promise<Affiliate> {
         const afiliate = this.afiliateRepository.create(dto);
+	afiliate.user= user
         return await this.afiliateRepository.save(afiliate);
     }
 
-    async findAll(): Promise<Afiliate[]> {
+    async findAll(): Promise<Affiliate[]> {
         return await this.afiliateRepository.find();
     }
+/*
+    async findOne(numberAccount: number): Promise<User> {
+        const user:User = await this.userService.findOne(numberAccount)
 
-    async findOne(numberAccount: number): Promise<Afiliate> {
-        const afiliate = await this.afiliateRepository.findOne({
-            where: {
-                numberAccount,
-            },
-        });
-        if (!afiliate) {
+        if (!user&& !user.affiliate) {
             throw new NotFoundException(`Afiliado con ID ${numberAccount} no encontrado`);
-        }
-        return afiliate;
+	}
+        return user;
     }
-
-    async update(numberAccount: number, updateDto: UpdateAfiliateDto): Promise<Afiliate> {
+*/
+    async update(numberAccount: number, updateDto: UpdateAfiliateDto): Promise<Affiliate> {
         const afiliate = await this.afiliateRepository.preload({ numberAccount, ...updateDto });
         if (!afiliate) {
             throw new NotFoundException(`Afiliado con ID ${numberAccount} no encontrado`);
@@ -42,8 +43,4 @@ export class AfiliateService {
         return await this.afiliateRepository.save(afiliate);
     }
 
-    async remove(id: number): Promise<void> {
-        const afiliate = await this.findOne(id);
-        await this.afiliateRepository.remove(afiliate);
-    }
 }
