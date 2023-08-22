@@ -37,10 +37,10 @@ import { BeneficiaryAffiliate } from './modules/parameterization/thirds/benefici
 	    password: process.env.DATABASE_PASSWORD,
 	    database: process.env.DATABASE_NAME,
 	    keepConnectionAlive: true,
-	    synchronize: true,
+	    //synchronize: true,
 	    entities:[User,Affiliate,Employee,Beneficiary,BeneficiaryAffiliate]
 	 }
-      )
+      ),
     ],
   providers: [AppService ]
 })
