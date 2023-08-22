@@ -11,5 +11,4 @@ export default class Provider extends User{
    @Column()
    product:string
 
-
 }

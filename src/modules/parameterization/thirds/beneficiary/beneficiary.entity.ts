@@ -10,8 +10,14 @@ export class Beneficiary extends User implements IBeneficiary{
 
    @Field()
    @Column()
+   name:string
+
+   @Field()
+   @Column()
+   idDocument:number
+
+   @Field()
+   @Column()
    percentage:number
-
-
-
+   
 }
