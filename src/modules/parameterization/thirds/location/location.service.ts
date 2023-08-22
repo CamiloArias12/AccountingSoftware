@@ -1,17 +1,20 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { catchError, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Location, Town} from './dto/typeData';
-import { AxiosError } from 'axios';
 import {countries} from './country'
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
  export class LocationService {
       private readonly url= 'https://api.countrystatecity.in/v1/countries/'
 
    constructor (
-            private readonly httpService:HttpService
-   ){}
+            private readonly httpService:HttpService,
+	    private configService:ConfigService
+   ){
+      console.log(this.configService.get('API_KEY'))
+   }
 
    async getCountries(): Promise <Location[]>{
       return countries  
@@ -24,17 +27,10 @@ import {countries} from './country'
 	    {
 	       headers:{
 		  Accept:'application/json',
-		  "X-CSCAPI-KEY":'WXE4Ump5elZRMWFkdXdVYkpjTnZuQU5ZeENDWjJweXk5TDBIRTY3cA=='
+		  "X-CSCAPI-KEY":this.configService.get<string>('API_KEY')
 	       },
 	       
-	    }).
-	 pipe(
-        catchError((error: AxiosError) => {
-          console.log(error.response.data);
-          throw 'An error happened!';
-        }),
-	    ))
-
+	    }))
 
       return data 
    }
@@ -45,18 +41,10 @@ import {countries} from './country'
 	    {
 	       headers:{
 		  Accept:'application/json',
-		  "X-CSCAPI-KEY":'WXE4Ump5elZRMWFkdXdVYkpjTnZuQU5ZeENDWjJweXk5TDBIRTY3cA=='
+		  "X-CSCAPI-KEY":this.configService.get<string>('API_KEY')
 	       },
 	       
-	    }).
-	 pipe(
-        catchError((error: AxiosError) => {
-          console.log(error.response.data);
-          throw 'An error happened!';
-        }),
-	    ))
-
-
+	    }))
       return data 
    }
 
