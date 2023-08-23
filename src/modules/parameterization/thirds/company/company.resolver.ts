@@ -1,5 +1,3 @@
-// company.resolver.ts
-
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { CompanyService } from './company.service';
 import { Company } from './company.entity';

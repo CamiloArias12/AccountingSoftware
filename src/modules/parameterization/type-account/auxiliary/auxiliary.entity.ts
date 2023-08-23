@@ -1,10 +1,9 @@
 import { Field } from "@nestjs/graphql";
 import { Column, Entity, OneToMany, ManyToOne } from "typeorm";
 import { SubAccount } from "../sub-account/sub-account.entity";
-import { Group } from "../group/group.entity";
 
 @Entity()
-export class Account {
+export class Auxiliary {
    
    @Field()
    @Column()
@@ -18,10 +17,7 @@ export class Account {
    @Column()
    nature: string; 
 
-   @ManyToOne(() => Group, group => group.accounts)
-    group: Group;
-
-    @OneToMany(() => SubAccount, subAccount => subAccount.account)
-    subAccounts: SubAccount[];
+   @ManyToOne(() => SubAccount, subAccount => subAccount.auxiliaries)
+    subAccount: SubAccount;
 
 }
