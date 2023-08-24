@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Column, Entity, OneToMany, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, ManyToOne, PrimaryColumn, OneToOne, JoinColumn } from "typeorm";
 import { Group } from "../group/group.entity";
 import { TypeAccount } from "../type-account.entity";
 
@@ -11,18 +11,15 @@ export class ClassAccount {
     @PrimaryColumn()
     code: number;
 
-    @Field()
-    @Column()
-    name: string;
-
-    @Field()
-    @Column()
-    nature: string;
-
     @OneToMany(() => Group, group => group.classAccount)
     groups: Group[];
 
     @ManyToOne(() => TypeAccount, typeAccount => typeAccount.classAccounts)
     typeAccount: TypeAccount;
+
+    @Field(() => TypeAccount)
+    @OneToOne(() => TypeAccount, typeAccountt => typeAccountt.classAccount)
+    @JoinColumn({ name: "code" })
+    typeAccountt: TypeAccount
 
 }

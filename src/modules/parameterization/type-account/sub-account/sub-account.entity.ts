@@ -1,7 +1,8 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Column, Entity, OneToMany, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, ManyToOne, PrimaryColumn, OneToOne, JoinColumn } from "typeorm";
 import { Auxiliary } from "../auxiliary/auxiliary.entity";
 import { Account } from "../account/account.entity";
+import { TypeAccount } from "../type-account.entity";
 
 @ObjectType()
 @Entity()
@@ -11,18 +12,15 @@ export class SubAccount {
    @PrimaryColumn()
    code: number;  
 
-   @Field()
-   @Column()
-   name: string;  
-
-   @Field()
-   @Column()
-   nature: string; 
-
    @ManyToOne(() => Account, account => account.subAccounts)
     account: Account;
 
     @OneToMany(() => Auxiliary, auxiliary => auxiliary.subAccount)
     auxiliaries: Auxiliary[];
+
+    @Field(() => TypeAccount)
+    @OneToOne(() => TypeAccount, typeAccount => typeAccount.subAccount)
+    @JoinColumn({ name: "code" })
+    typeAccount: TypeAccount
 
 }
