@@ -1,11 +1,11 @@
-import { Field } from "@nestjs/graphql";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+@ObjectType()
 @Entity()
 export class TypeCredit {
    
    @Field()
-   @Column()
+   @PrimaryColumn()
    id: number;
 
    @Field()

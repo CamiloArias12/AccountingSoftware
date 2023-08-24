@@ -79,6 +79,42 @@ type Affiliate {
   beneficiary: BeneficiaryAffiliate!
 }
 
+type TypeSaving {
+  id: Float!
+  nombre: String!
+  cuentas: String!
+}
+
+type TypeCredit {
+  id: Float!
+  nombre: String!
+  cuentas: String!
+}
+
+type Auxiliary {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
+type ClassAccount {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
+type Group {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
+type Account {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
 type Query {
   getCountry: [Location!]!
   getState(isoCode: String!): [Location!]!
@@ -86,6 +122,18 @@ type Query {
   allAfiliates: [Affiliate!]!
   afiliate(id: Float!): User!
   allEmployees: [Employee!]!
+  allClassAccounts: [ClassAccount!]!
+  classAccount(code: Float!): ClassAccount!
+  allGroups: [Group!]!
+  group(code: Float!): Group!
+  allAccounts: [Account!]!
+  account(code: Float!): Account!
+  allAuxiliaries: [Auxiliary!]!
+  auxiliary(code: Float!): Auxiliary!
+  allTypeSavings: [TypeSaving!]!
+  typeSaving(id: Float!): TypeSaving!
+  allTypeCredits: [TypeCredit!]!
+  typeCredit(id: Float!): TypeCredit!
 }
 
 type Mutation {
@@ -93,6 +141,24 @@ type Mutation {
   updateAfiliate(id: Float!, input: UpdateAfiliateDto!): Affiliate!
   createEmployee(inputEmployee: CreateEmployee!, inputUser: CreateUser!): Employee!
   createEmployeeUserExist(inputEmployee: CreateEmployee!, idUser: Float!): Employee!
+  createClassAccount(input: CreateClassAccountDto!): ClassAccount!
+  updateClassAccount(code: Float!, input: UpdateClassAccountDto!): ClassAccount!
+  deleteClassAccount(code: Float!): Boolean!
+  createGroup(input: CreateGroupDto!): Group!
+  updateGroup(code: Float!, input: UpdateGroupDto!): Group!
+  deleteGroup(code: Float!): Boolean!
+  createAccount(input: CreateAccountDto!): Account!
+  updateAccount(code: Float!, input: UpdateAccountDto!): Account!
+  deleteAccount(code: Float!): Boolean!
+  createAuxiliary(input: CreateAuxiliaryDto!): Auxiliary!
+  updateAuxiliary(code: Float!, input: UpdateAuxiliaryDto!): Auxiliary!
+  deleteAuxiliary(code: Float!): Boolean!
+  createTypeSaving(input: CreateTypeSavingDto!): TypeSaving!
+  updateTypeSaving(id: Float!, input: UpdateTypeSavingDto!): TypeSaving!
+  deleteTypeSaving(id: Float!): Boolean!
+  createTypeCredit(input: CreateTypeCreditDto!): TypeCredit!
+  updateTypeCredit(id: Float!, input: UpdateTypeCreditDto!): TypeCredit!
+  deleteTypeCredit(id: Float!): Boolean!
 }
 
 input CreateAfiliateDto {
@@ -151,4 +217,76 @@ input UpdateAfiliateDto {
 input CreateEmployee {
   username: String!
   password: String!
+}
+
+input CreateClassAccountDto {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
+input UpdateClassAccountDto {
+  code: Float
+  name: String
+  nature: String
+}
+
+input CreateGroupDto {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
+input UpdateGroupDto {
+  code: Float
+  name: String
+  nature: String
+}
+
+input CreateAccountDto {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
+input UpdateAccountDto {
+  code: Float
+  name: String
+  nature: String
+}
+
+input CreateAuxiliaryDto {
+  code: Float!
+  name: String!
+  nature: String!
+}
+
+input UpdateAuxiliaryDto {
+  code: Float
+  name: String
+  nature: String
+}
+
+input CreateTypeSavingDto {
+  id: Float!
+  nombre: String!
+  cuentas: String!
+}
+
+input UpdateTypeSavingDto {
+  id: Float
+  nombre: String
+  cuentas: String
+}
+
+input CreateTypeCreditDto {
+  id: Float!
+  nombre: String!
+  cuentas: String!
+}
+
+input UpdateTypeCreditDto {
+  id: Float
+  nombre: String
+  cuentas: String
 }

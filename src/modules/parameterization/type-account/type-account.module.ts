@@ -9,9 +9,18 @@ import { Account } from './account/account.entity';
 import { TypeAccountService } from './type-account.service';
 import { AccountService } from './account/account.service';
 import { GroupService } from './group/group.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClassAccountService } from './class-account/class-account.service';
+import { ClassAccountResolver } from './class-account/class-account.resolver';
+import { GroupResolver } from './group/group.resolver';
+import { AccountResolver } from './account/account.resolver';
+import { AuxiliaryResolver } from './auxiliary/auxiliary.resolver';
+import { TypeAccount } from './type-account.entity';
 
 @Module({
-  imports: [ClassAccount, Group, SubAccount, Auxiliary, Account],
-  providers: [SubAccountService, AuxiliaryService, AuxiliaryService, AccountService, GroupService, TypeAccountService]
+  imports: [TypeOrmModule.forFeature( [TypeAccount,ClassAccount, Group, SubAccount, Auxiliary, Account])],
+  providers :[ClassAccountService,GroupService,AccountService,SubAccountService,AuxiliaryService,ClassAccountResolver,GroupResolver,AccountResolver,SubAccountService,AuxiliaryResolver,
+	      TypeAccountService 
+  ]
 })
 export class TypeAccountModule {}

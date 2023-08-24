@@ -1,14 +1,14 @@
-import { Field } from "@nestjs/graphql";
-import { Column, Entity, OneToMany, ManyToOne } from "typeorm";
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Column, Entity, OneToMany, ManyToOne, PrimaryColumn } from "typeorm";
 import { Auxiliary } from "../auxiliary/auxiliary.entity";
 import { Account } from "../account/account.entity";
 
-
+@ObjectType()
 @Entity()
 export class SubAccount {
    
    @Field()
-   @Column()
+   @PrimaryColumn()
    code: number;  
 
    @Field()

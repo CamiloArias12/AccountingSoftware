@@ -1,12 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
-import { Field } from "@nestjs/graphql";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, PrimaryColumn} from 'typeorm';
+import { Field, ObjectType } from "@nestjs/graphql";
 import { ClassAccount } from './class-account/class-account.entity';
 
+@ObjectType()
 @Entity()
 export class TypeAccount {
 
    @Field()
-   @Column()
+   @PrimaryColumn()
    code: number;  
 
    @Field()
