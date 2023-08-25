@@ -48,5 +48,6 @@ import { BeneficiaryAffiliate } from './modules/parameterization/thirds/affiliat
       ),
     ],
   providers: [AppService ]
+
 })
 export class AppModule {}
