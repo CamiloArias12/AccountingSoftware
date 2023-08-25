@@ -4,7 +4,7 @@ import { EmployeeService } from './employee.service';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.entity';
 import { CreateEmployee } from './dto/createEmployee.dto';
-import { CreateUser } from '../user/dto/input/createuser.dto';
+import { UserInput } from '../user/dto/input/createuser.dto';
 
 @Resolver()
 export class EmployeeResolver {
@@ -15,9 +15,9 @@ export class EmployeeResolver {
 
    ){}
     @Mutation(() => Employee)
-    async createEmployee(@Args('inputEmployee') inputEmployee: CreateEmployee, @Args('inputUser') inputUser:CreateUser ): Promise<Employee> {
+    async createEmployee(@Args('inputEmployee') inputEmployee: CreateEmployee, @Args('inputUser') inputUser:UserInput ): Promise<Employee> {
 
-	  let user:User =await this.userService.createUser(inputUser)
+	  let user:User =await this.userService.createUser(inputUser,null)
 	  return await this.employeeService.create(inputEmployee,user);
     }
 

@@ -2,7 +2,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "../enum-type";
 
 @InputType()
-export class CreateUser{
+export class UserInput{
 
    @Field() 
    typeidentification: TypeIdentification;

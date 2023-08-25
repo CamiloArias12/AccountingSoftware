@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn} from "typeorm";
-import { Affiliate } from "../affiliate/affiliate.entity";
 import { Beneficiary } from "../beneficiary/beneficiary.entity";
 import { Field, ObjectType } from "@nestjs/graphql";
+import { Affiliate } from "../affiliate.entity";
 
 @ObjectType()
 @Entity()
@@ -19,14 +19,14 @@ export class BeneficiaryAffiliate{
    percentage:number
 
    @Field(() =>Beneficiary)
-   @ManyToOne(() =>Beneficiary , beneficiary => beneficiary.affiliate)
+   @ManyToOne(() =>Beneficiary , beneficiary => beneficiary.beneficiaryAffiliate)
    @JoinColumn({name:"idBeneficiary"})   
    beneficiary:Beneficiary 
 
    @Field(() =>Affiliate)
-   @ManyToOne(() =>Affiliate ,affiliate => affiliate.beneficiary)
+   @ManyToOne(() =>Affiliate , affiliate => affiliate.beneficiaries)
    @JoinColumn({name:"idAffiliate"})   
-   afiliate: Affiliate
+   affiliate: Affiliate
 
 }
 

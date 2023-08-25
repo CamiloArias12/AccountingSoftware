@@ -1,8 +1,8 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { ChildEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 import { IAfiliate } from "./dto/afiliate.interface";
 import { User } from "../user/user.entity";
-import { BeneficiaryAffiliate } from "../beneficiary-affiliate/beneficiary-affiliate.entity";
+import { BeneficiaryAffiliate } from "./beneficiary-affiliate/beneficiary-affiliate.entity";
 
 
 @ObjectType()
@@ -59,9 +59,9 @@ export class Affiliate implements IAfiliate{
    @JoinColumn({name:'idAffiliate'})
    user:User
    
-   @Field(() =>BeneficiaryAffiliate)
-   @OneToMany(() => BeneficiaryAffiliate ,beneficiaryAffiliate => beneficiaryAffiliate.afiliate)
-   beneficiary:BeneficiaryAffiliate[]
+   @Field(() =>[BeneficiaryAffiliate])
+   @OneToMany(() => BeneficiaryAffiliate ,beneficiaryAffiliate => beneficiaryAffiliate.affiliate)
+   beneficiaries:BeneficiaryAffiliate[]
 
 }
 

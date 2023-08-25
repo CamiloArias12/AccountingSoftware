@@ -18,6 +18,6 @@ export class Beneficiary implements IBeneficiary{
 
    @Field(() =>BeneficiaryAffiliate)
    @OneToMany(() =>BeneficiaryAffiliate ,beneficiaryAffiliate => beneficiaryAffiliate.beneficiary)
-   affiliate:BeneficiaryAffiliate[]
+   beneficiaryAffiliate:BeneficiaryAffiliate[]
    
 }

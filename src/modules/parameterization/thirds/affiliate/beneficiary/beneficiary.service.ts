@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { Beneficiary } from './beneficiary.entity';
-import { CreateBeneficiaryDto } from './dto/createBeneficiary.dto';
 import { UpdateBeneficiaryDto } from './dto/updateBeneficiary.dto';
+import { BeneficiaryInput } from './dto/createBeneficiary.dto';
 
 
 @Injectable()
@@ -13,9 +13,16 @@ export class BeneficiaryService {
         private readonly beneficiaryRepository: Repository<Beneficiary>,
     ) {}
 
-    async create(dto: CreateBeneficiaryDto): Promise<Beneficiary> {
-        const beneficiary = this.beneficiaryRepository.create(dto);
-        return await this.beneficiaryRepository.save(beneficiary);
+    async create(dto: BeneficiaryInput,queryRunner:QueryRunner | null): Promise<Beneficiary> {
+	 
+      const beneficiary = this.beneficiaryRepository.create(dto);
+
+       if (queryRunner) {
+	    return queryRunner.manager.save(Beneficiary,beneficiary); 
+       }else{
+
+	    return await this.beneficiaryRepository.save(beneficiary);
+       }
     }
 
     async findAll(): Promise<Beneficiary[]> {

@@ -3,9 +3,10 @@ import { AffiliateService } from './affiliate.service';
 import { Affiliate } from './affiliate.entity';
 import { UpdateAfiliateDto } from './dto/updateAfiliate.dto';
 import { CreateAfiliateDto } from './dto/createAfiliate.dto';
-import { CreateUser } from '../user/dto/input/createuser.dto';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.entity';
+import { BeneficiariesInput } from './beneficiary/dto/createBeneficiary.dto';
+import { UserInput } from '../user/dto/input/createuser.dto';
 
 
 @Resolver(() => Affiliate)
@@ -16,10 +17,9 @@ export class AffiliateResolver {
     ) {}
 
     @Mutation(() => Affiliate)
-    async createAfiliate(@Args('inputAffiliate') inputAffiliate: CreateAfiliateDto, @Args('inputUser') inputUser:CreateUser ): Promise<Affiliate> {
+    async createAfiliate(@Args('inputAffiliate') inputAffiliate: CreateAfiliateDto, @Args('inputUser') inputUser:UserInput, @Args('inputBeneficiaries') inputBeneficiaries:BeneficiariesInput ): Promise<Affiliate> {
 
-	  let user:User =await this.userService.createUser(inputUser)
-        return await this.afiliateService.create(inputAffiliate,user);
+        return await this.afiliateService.create(inputAffiliate,inputUser,inputBeneficiaries.beneficiaries,inputBeneficiaries.percentage);
     }
 /*
     @Mutation(() => Affiliate)
@@ -36,7 +36,11 @@ export class AffiliateResolver {
     async allAfiliates(): Promise<Affiliate[]> {
         return await this.afiliateService.findAll();
     }
-
+   
+    @Query(() => Affiliate)
+    async getAffiliate(@Args('identification') identification:number): Promise<Affiliate> {
+        return await this.afiliateService.findOne(identification);
+    }
     @Query(() => User)
     async afiliate(@Args('id') id: number): Promise<User> {
         return await this.userService.findOne(id);

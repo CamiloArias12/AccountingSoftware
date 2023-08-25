@@ -54,13 +54,13 @@ scalar DateTime
 type Beneficiary {
   idDocument: Float!
   name: String!
-  affiliate: BeneficiaryAffiliate!
+  beneficiaryAffiliate: BeneficiaryAffiliate!
 }
 
 type BeneficiaryAffiliate {
   percentage: Float!
   beneficiary: Beneficiary!
-  afiliate: Affiliate!
+  affiliate: Affiliate!
 }
 
 type Affiliate {
@@ -76,7 +76,7 @@ type Affiliate {
   typeAccount: String!
   numberAccount: Float!
   user: User!
-  beneficiary: BeneficiaryAffiliate!
+  beneficiaries: [BeneficiaryAffiliate!]!
 }
 
 type TypeSaving {
@@ -91,28 +91,40 @@ type TypeCredit {
   cuentas: String!
 }
 
-type Auxiliary {
+type Account {
   code: Float!
-  name: String!
-  nature: String!
-}
-
-type ClassAccount {
-  code: Float!
-  name: String!
-  nature: String!
+  typeAccount: TypeAccount!
 }
 
 type Group {
   code: Float!
-  name: String!
-  nature: String!
+  typeAccount: TypeAccount!
 }
 
-type Account {
+type ClassAccount {
+  code: Float!
+  typeAccountt: TypeAccount!
+}
+
+type TypeAccount {
   code: Float!
   name: String!
   nature: String!
+  account: Account!
+  auxiliary: Auxiliary!
+  classAccount: ClassAccount!
+  group: Group!
+  subAccount: SubAccount!
+}
+
+type Auxiliary {
+  code: Float!
+  typeAccount: TypeAccount!
+}
+
+type SubAccount {
+  code: Float!
+  typeAccount: TypeAccount!
 }
 
 type Query {
@@ -120,6 +132,7 @@ type Query {
   getState(isoCode: String!): [Location!]!
   getTown(isoCodeCountry: String!, isoCodeState: String!): [Town!]!
   allAfiliates: [Affiliate!]!
+  getAffiliate(identification: Float!): Affiliate!
   afiliate(id: Float!): User!
   allEmployees: [Employee!]!
   allClassAccounts: [ClassAccount!]!
@@ -137,9 +150,9 @@ type Query {
 }
 
 type Mutation {
-  createAfiliate(inputAffiliate: CreateAfiliateDto!, inputUser: CreateUser!): Affiliate!
+  createAfiliate(inputAffiliate: CreateAfiliateDto!, inputUser: UserInput!, inputBeneficiaries: BeneficiariesInput!): Affiliate!
   updateAfiliate(id: Float!, input: UpdateAfiliateDto!): Affiliate!
-  createEmployee(inputEmployee: CreateEmployee!, inputUser: CreateUser!): Employee!
+  createEmployee(inputEmployee: CreateEmployee!, inputUser: UserInput!): Employee!
   createEmployeeUserExist(inputEmployee: CreateEmployee!, idUser: Float!): Employee!
   createClassAccount(input: CreateClassAccountDto!): ClassAccount!
   updateClassAccount(code: Float!, input: UpdateClassAccountDto!): ClassAccount!
@@ -174,7 +187,7 @@ input CreateAfiliateDto {
   numberAccount: Float!
 }
 
-input CreateUser {
+input UserInput {
   typeidentification: String!
   identification: Float!
   expeditionDate: DateTime!
@@ -199,6 +212,16 @@ input CreateUser {
   publicResources: Boolean!
   publicRecognition: Boolean!
   publicPower: Boolean!
+}
+
+input BeneficiariesInput {
+  beneficiaries: [BeneficiaryInput!]!
+  percentage: [Float!]!
+}
+
+input BeneficiaryInput {
+  name: String!
+  idDocument: Float!
 }
 
 input UpdateAfiliateDto {
