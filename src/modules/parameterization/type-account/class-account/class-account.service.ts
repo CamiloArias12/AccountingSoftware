@@ -4,17 +4,24 @@ import { Repository } from 'typeorm';
 import { CreateClassAccountDto } from './dto/createClassAccount.dto';
 import { UpdateClassAccountDto } from './dto/updateClassAccount.dto';
 import { ClassAccount } from './class-account.entity';
+import { TypeAccountService } from '../type-account.service';
+import { TypeAccount } from '../type-account.entity';
 
 @Injectable()
 export class ClassAccountService {
     constructor(
         @InjectRepository(ClassAccount)
         private readonly classAccountRepository: Repository<ClassAccount>,
+        private readonly typeAccountService: TypeAccountService
     ) { }
 
     async create(createClassAccountDto: CreateClassAccountDto): Promise<ClassAccount> {
-        const classAccount = this.classAccountRepository.create(createClassAccountDto);
-        return await this.classAccountRepository.save(classAccount);
+        const typeAccount: TypeAccount = await this.typeAccountService.create(createClassAccountDto);
+        if (typeAccount) {
+            const classAccount :ClassAccount= new ClassAccount()
+            classAccount.typeAccount=typeAccount
+            return await this.classAccountRepository.save(classAccount);
+        }
     }
 
     async findAll(): Promise<ClassAccount[]> {

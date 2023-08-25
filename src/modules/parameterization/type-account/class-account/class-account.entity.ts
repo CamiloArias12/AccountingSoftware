@@ -14,12 +14,9 @@ export class ClassAccount {
     @OneToMany(() => Group, group => group.classAccount)
     groups: Group[];
 
-    @ManyToOne(() => TypeAccount, typeAccount => typeAccount.classAccounts)
-    typeAccount: TypeAccount;
-
     @Field(() => TypeAccount)
-    @OneToOne(() => TypeAccount, typeAccountt => typeAccountt.classAccount)
+    @OneToOne(() => TypeAccount, typeAccount => typeAccount.classAccount)
     @JoinColumn({ name: "code" })
-    typeAccountt: TypeAccount
+    typeAccount: TypeAccount
 
 }

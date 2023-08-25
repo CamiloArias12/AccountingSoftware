@@ -14,11 +14,6 @@ export class TypeAccountService {
   constructor(
     @InjectRepository(TypeAccount)
     private readonly typeAccountRepository: Repository<TypeAccount>,
-    private readonly accountService: AccountService,
-    private readonly auxiliaryService: AuxiliaryService,
-    private readonly classAccountService: ClassAccountService,
-    private readonly groupService: GroupService,
-    private readonly subAccountService: SubAccountService
   ) { }
 
   async create(data: Partial<TypeAccount>): Promise<TypeAccount> {

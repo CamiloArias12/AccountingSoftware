@@ -22,12 +22,6 @@ export class TypeAccount {
     @Column()
     nature: string;
 
-    @Column({ type: 'text', nullable: true })
-    description?: string;
-
-    @OneToMany(() => ClassAccount, classAccount => classAccount.typeAccount)
-    classAccounts: ClassAccount[];
-
     @Field(() => Account)
     @OneToOne(() => Account, account => account.typeAccount)
     account: Account
