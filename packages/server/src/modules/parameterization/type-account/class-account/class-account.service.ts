@@ -42,19 +42,46 @@ export class ClassAccountService {
     }
 
     async update(code: number, updateClassAccountDto: UpdateClassAccountDto): Promise<ClassAccount> {
-        const classAccount = await this.classAccountRepository.preload({
-            code: code,
-            ...updateClassAccountDto,
+        // Busca un ClassAccount existente basado en el código proporcionado.
+        const existingClassAccount = await this.classAccountRepository.findOne({
+            where: { code },
         });
-        if (!classAccount) {
-            throw new NotFoundException(`ClassAccount with code ${code} not found`);
+
+        if (!existingClassAccount || !existingClassAccount.typeAccount) {
+            throw new NotFoundException(`ClassAccount or its TypeAccount with code ${code} not found`);
         }
-        return await this.classAccountRepository.save(classAccount);
+
+        // Si se ha proporcionado un nuevo código en el DTO, actualizar ClassAccount con ese código.
+        if (updateClassAccountDto.code && existingClassAccount.code !== updateClassAccountDto.code) {
+            existingClassAccount.code = updateClassAccountDto.code;
+            await this.classAccountRepository.save(existingClassAccount);
+        }
+
+        // Actualiza el TypeAccount asociado con los valores del DTO.
+        await this.typeAccountService.update(existingClassAccount.typeAccount.code, {
+            code: updateClassAccountDto.code,   // Esto podría ser opcional si no deseas cambiar el código del TypeAccount
+            name: updateClassAccountDto.name,
+            nature: updateClassAccountDto.nature,
+        });
+
+        return existingClassAccount;
     }
 
     async remove(code: number): Promise<void> {
         const classAccount = await this.findOne(code);
+
+        if (!classAccount) {
+            throw new NotFoundException(`ClassAccount with code ${code} not found`);
+        }
+
+        // Primero eliminamos el ClassAccount.
         await this.classAccountRepository.remove(classAccount);
+
+        // Luego, eliminamos el TypeAccount asociado.
+        if (classAccount.typeAccount) {
+            await this.typeAccountService.remove(classAccount.typeAccount.code);
+        }
     }
+
 }
 

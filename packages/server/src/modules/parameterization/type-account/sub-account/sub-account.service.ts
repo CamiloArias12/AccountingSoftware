@@ -4,19 +4,26 @@ import { Repository } from 'typeorm';
 import { CreateSubAccountDto } from './dto/createSubAccount.dto';
 import { UpdateSubAccountDto } from './dto/updateSubAccount.dto';
 import { SubAccount } from './sub-account.entity';
+import { TypeAccountService } from '../type-account.service';
+import { TypeAccount } from '../type-account.entity';
 
 @Injectable()
 export class SubAccountService {
     constructor(
         @InjectRepository(SubAccount)
         private readonly subAccountRepository: Repository<SubAccount>,
+        private readonly typeAccountService: TypeAccountService
     ) { }
 
     async create(createSubAccountDto: CreateSubAccountDto): Promise<SubAccount> {
-        const subAccount = this.subAccountRepository.create(createSubAccountDto);
-        return await this.subAccountRepository.save(subAccount);
+        const typeAccount: TypeAccount = await this.typeAccountService.create(createSubAccountDto);
+        if (typeAccount) {
+            const subAccount: SubAccount = new SubAccount();
+            subAccount.typeAccount = typeAccount;
+            return await this.subAccountRepository.save(subAccount);
+        }
     }
-
+    
     async findAll(): Promise<SubAccount[]> {
         return await this.subAccountRepository.find();
     }

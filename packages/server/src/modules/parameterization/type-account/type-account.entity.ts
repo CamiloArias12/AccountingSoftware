@@ -22,6 +22,7 @@ export class TypeAccount {
     @Column()
     nature: string;
 
+
     @Field(() => Account)
     @OneToOne(() => Account, account => account.typeAccount)
     account: Account
@@ -35,7 +36,12 @@ export class TypeAccount {
     @OneToOne(() => Group, group => group.typeAccount)
     group: Group
 
+    @Field(() => ClassAccount)
+    @OneToOne(() => ClassAccount, classAccount => classAccount.typeAccount)
+    classAccount: ClassAccount
+    
     @Field(() => SubAccount)
+
     @OneToOne(() => SubAccount, subAccount => subAccount.typeAccount)
     subAccount: SubAccount
 }

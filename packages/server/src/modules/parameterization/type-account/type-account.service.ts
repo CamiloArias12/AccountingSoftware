@@ -34,13 +34,13 @@ export class TypeAccountService {
   }
 
   async update(code: number, data: Partial<TypeAccount>): Promise<TypeAccount> {
-    await this.findOne(code); // throws an error if not found
-    await this.typeAccountRepository.update({ code }, data);
-    return this.findOne(code);
+    const typeAccount = await this.findOne(code); 
+    Object.assign(typeAccount, data);  
+    return await this.typeAccountRepository.save(typeAccount);
   }
 
   async remove(code: number): Promise<void> {
-    const typeAccount = await this.findOne(code); // throws an error if not found
+    const typeAccount = await this.findOne(code);
     await this.typeAccountRepository.remove(typeAccount);
   }
 }

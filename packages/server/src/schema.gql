@@ -103,7 +103,7 @@ type Group {
 
 type ClassAccount {
   code: Float!
-  typeAccountt: TypeAccount!
+  typeAccount: TypeAccount!
 }
 
 type TypeAccount {
@@ -112,8 +112,8 @@ type TypeAccount {
   nature: String!
   account: Account!
   auxiliary: Auxiliary!
-  classAccount: ClassAccount!
   group: Group!
+  classAccount: ClassAccount!
   subAccount: SubAccount!
 }
 
@@ -141,6 +141,8 @@ type Query {
   group(code: Float!): Group!
   allAccounts: [Account!]!
   account(code: Float!): Account!
+  allSubAccounts: [SubAccount!]!
+  subAccount(code: Float!): SubAccount!
   allAuxiliaries: [Auxiliary!]!
   auxiliary(code: Float!): Auxiliary!
   allTypeSavings: [TypeSaving!]!
@@ -163,6 +165,9 @@ type Mutation {
   createAccount(input: CreateAccountDto!): Account!
   updateAccount(code: Float!, input: UpdateAccountDto!): Account!
   deleteAccount(code: Float!): Boolean!
+  createSubAccount(input: CreateSubAccountDto!): SubAccount!
+  updateSubAccount(code: Float!, input: UpdateSubAccountDto!): SubAccount!
+  deleteSubAccount(code: Float!): Boolean!
   createAuxiliary(input: CreateAuxiliaryDto!): Auxiliary!
   updateAuxiliary(code: Float!, input: UpdateAuxiliaryDto!): Auxiliary!
   deleteAuxiliary(code: Float!): Boolean!
@@ -249,7 +254,7 @@ input CreateClassAccountDto {
 }
 
 input UpdateClassAccountDto {
-  code: Float
+  code: Float!
   name: String
   nature: String
 }
@@ -258,6 +263,7 @@ input CreateGroupDto {
   code: Float!
   name: String!
   nature: String!
+  classAccountCode: Float!
 }
 
 input UpdateGroupDto {
@@ -270,9 +276,23 @@ input CreateAccountDto {
   code: Float!
   name: String!
   nature: String!
+  groupCode: Float!
 }
 
 input UpdateAccountDto {
+  code: Float
+  name: String
+  nature: String
+}
+
+input CreateSubAccountDto {
+  code: Float!
+  name: String!
+  nature: String!
+  accountCode: Float!
+}
+
+input UpdateSubAccountDto {
   code: Float
   name: String
   nature: String
@@ -282,6 +302,7 @@ input CreateAuxiliaryDto {
   code: Float!
   name: String!
   nature: String!
+  subAccountCode: Float!
 }
 
 input UpdateAuxiliaryDto {

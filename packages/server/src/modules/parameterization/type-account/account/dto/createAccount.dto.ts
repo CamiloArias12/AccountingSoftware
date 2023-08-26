@@ -11,4 +11,7 @@ export class CreateAccountDto {
 
     @Field()
     nature: string;
+
+    @Field()
+    groupCode: number;
 }
