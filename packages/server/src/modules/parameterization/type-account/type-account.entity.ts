@@ -22,10 +22,6 @@ export class TypeAccount {
     @Column()
     nature: string;
 
-
-    @OneToOne(() => ClassAccount, classAccount => classAccount.typeAccountt)
-    classAccounts: ClassAccount;
-
     @Field(() => Account)
     @OneToOne(() => Account, account => account.typeAccount)
     account: Account
