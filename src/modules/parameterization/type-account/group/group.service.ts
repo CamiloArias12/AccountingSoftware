@@ -4,19 +4,26 @@ import { Repository } from 'typeorm';
 import { Group } from './group.entity';
 import { CreateGroupDto } from './dto/createGroup.dto';
 import { UpdateGroupDto } from './dto/updateGroup.dto';
+import { TypeAccount } from '../type-account.entity';
+import { TypeAccountService } from '../type-account.service';
 
 @Injectable()
 export class GroupService {
     constructor(
         @InjectRepository(Group)
         private readonly groupRepository: Repository<Group>,
+        private readonly typeAccountService: TypeAccountService
     ) { }
 
     async create(createGroupDto: CreateGroupDto): Promise<Group> {
-        const group = this.groupRepository.create(createGroupDto);
-        return await this.groupRepository.save(group);
+        const typeAccount: TypeAccount = await this.typeAccountService.create(createGroupDto);
+        if (typeAccount) {
+            const group: Group = new Group();
+            group.typeAccount = typeAccount;
+            return await this.groupRepository.save(group);
+        }
     }
-
+    
     async findAll(): Promise<Group[]> {
         return await this.groupRepository.find();
     }

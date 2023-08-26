@@ -11,4 +11,7 @@ export class CreateAuxiliaryDto {
 
     @Field()
     nature: string;
+
+    @Field()
+    subAccountCode: number;
 }

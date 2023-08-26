@@ -4,18 +4,25 @@ import { Repository } from 'typeorm';
 import { Auxiliary } from './auxiliary.entity';
 import { CreateAuxiliaryDto } from './dto/createAuxiliary.dto';
 import { UpdateAuxiliaryDto } from './dto/updateAuxiliary.dto';
+import { TypeAccountService } from '../type-account.service';
+import { TypeAccount } from '../type-account.entity';
 
 @Injectable()
 export class AuxiliaryService {
     constructor(
         @InjectRepository(Auxiliary)
         private readonly auxiliaryRepository: Repository<Auxiliary>,
+        private readonly typeAccountService: TypeAccountService
     ) { }
 
     async create(createAuxiliaryDto: CreateAuxiliaryDto): Promise<Auxiliary> {
-        const auxiliary = this.auxiliaryRepository.create(createAuxiliaryDto);
-        return await this.auxiliaryRepository.save(auxiliary);
-    }
+        const typeAccount: TypeAccount = await this.typeAccountService.create(createAuxiliaryDto);
+        if (typeAccount) {
+            const auxiliary: Auxiliary = new Auxiliary();
+            auxiliary.typeAccount = typeAccount;
+            return await this.auxiliaryRepository.save(auxiliary);
+        }
+    }    
 
     async findAll(): Promise<Auxiliary[]> {
         return await this.auxiliaryRepository.find();

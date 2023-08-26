@@ -11,4 +11,7 @@ export class CreateGroupDto {
 
     @Field()
     nature: string;
+
+    @Field()
+    classAccountCode: number;
 }

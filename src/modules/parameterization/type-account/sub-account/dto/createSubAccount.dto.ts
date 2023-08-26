@@ -11,4 +11,7 @@ export class CreateSubAccountDto {
 
     @Field()
     nature: string;
+
+    @Field()
+    accountCode: number;
 }
