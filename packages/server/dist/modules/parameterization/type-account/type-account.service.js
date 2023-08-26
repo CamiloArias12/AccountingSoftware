@@ -14,22 +14,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeAccountService = void 0;
 const common_1 = require("@nestjs/common");
-const account_service_1 = require("./account/account.service");
-const auxiliary_service_1 = require("./auxiliary/auxiliary.service");
-const class_account_service_1 = require("./class-account/class-account.service");
-const group_service_1 = require("./group/group.service");
-const sub_account_service_1 = require("./sub-account/sub-account.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const type_account_entity_1 = require("./type-account.entity");
 const typeorm_2 = require("typeorm");
 let TypeAccountService = class TypeAccountService {
-    constructor(typeAccountRepository, accountService, auxiliaryService, classAccountService, groupService, subAccountService) {
+    constructor(typeAccountRepository) {
         this.typeAccountRepository = typeAccountRepository;
-        this.accountService = accountService;
-        this.auxiliaryService = auxiliaryService;
-        this.classAccountService = classAccountService;
-        this.groupService = groupService;
-        this.subAccountService = subAccountService;
     }
     async create(data) {
         const typeAccount = this.typeAccountRepository.create(data);
@@ -46,9 +36,9 @@ let TypeAccountService = class TypeAccountService {
         return typeAccount;
     }
     async update(code, data) {
-        await this.findOne(code);
-        await this.typeAccountRepository.update({ code }, data);
-        return this.findOne(code);
+        const typeAccount = await this.findOne(code);
+        Object.assign(typeAccount, data);
+        return await this.typeAccountRepository.save(typeAccount);
     }
     async remove(code) {
         const typeAccount = await this.findOne(code);
@@ -59,11 +49,6 @@ exports.TypeAccountService = TypeAccountService;
 exports.TypeAccountService = TypeAccountService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(type_account_entity_1.TypeAccount)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
-        account_service_1.AccountService,
-        auxiliary_service_1.AuxiliaryService,
-        class_account_service_1.ClassAccountService,
-        group_service_1.GroupService,
-        sub_account_service_1.SubAccountService])
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], TypeAccountService);
 //# sourceMappingURL=type-account.service.js.map

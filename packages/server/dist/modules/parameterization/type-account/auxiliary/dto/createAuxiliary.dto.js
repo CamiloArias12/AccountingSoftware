@@ -26,6 +26,10 @@ __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], CreateAuxiliaryDto.prototype, "nature", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", Number)
+], CreateAuxiliaryDto.prototype, "subAccountCode", void 0);
 exports.CreateAuxiliaryDto = CreateAuxiliaryDto = __decorate([
     (0, graphql_1.InputType)()
 ], CreateAuxiliaryDto);

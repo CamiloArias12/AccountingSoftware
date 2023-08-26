@@ -28,10 +28,10 @@ __decorate([
 ], ClassAccount.prototype, "groups", void 0);
 __decorate([
     (0, graphql_1.Field)(() => type_account_entity_1.TypeAccount),
-    (0, typeorm_1.OneToOne)(() => type_account_entity_1.TypeAccount, typeAccountt => typeAccountt.classAccount),
+    (0, typeorm_1.OneToOne)(() => type_account_entity_1.TypeAccount, typeAccount => typeAccount.classAccount),
     (0, typeorm_1.JoinColumn)({ name: "code" }),
     __metadata("design:type", type_account_entity_1.TypeAccount)
-], ClassAccount.prototype, "typeAccountt", void 0);
+], ClassAccount.prototype, "typeAccount", void 0);
 exports.ClassAccount = ClassAccount = __decorate([
     (0, graphql_1.ObjectType)(),
     (0, typeorm_1.Entity)()

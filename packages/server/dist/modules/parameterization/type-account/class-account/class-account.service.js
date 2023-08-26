@@ -46,18 +46,32 @@ let ClassAccountService = class ClassAccountService {
         return classAccount;
     }
     async update(code, updateClassAccountDto) {
-        const classAccount = await this.classAccountRepository.preload({
-            code: code,
-            ...updateClassAccountDto,
+        const existingClassAccount = await this.classAccountRepository.findOne({
+            where: { code },
         });
-        if (!classAccount) {
-            throw new common_1.NotFoundException(`ClassAccount with code ${code} not found`);
+        if (!existingClassAccount || !existingClassAccount.typeAccount) {
+            throw new common_1.NotFoundException(`ClassAccount or its TypeAccount with code ${code} not found`);
         }
-        return await this.classAccountRepository.save(classAccount);
+        if (updateClassAccountDto.code && existingClassAccount.code !== updateClassAccountDto.code) {
+            existingClassAccount.code = updateClassAccountDto.code;
+            await this.classAccountRepository.save(existingClassAccount);
+        }
+        await this.typeAccountService.update(existingClassAccount.typeAccount.code, {
+            code: updateClassAccountDto.code,
+            name: updateClassAccountDto.name,
+            nature: updateClassAccountDto.nature,
+        });
+        return existingClassAccount;
     }
     async remove(code) {
         const classAccount = await this.findOne(code);
+        if (!classAccount) {
+            throw new common_1.NotFoundException(`ClassAccount with code ${code} not found`);
+        }
         await this.classAccountRepository.remove(classAccount);
+        if (classAccount.typeAccount) {
+            await this.typeAccountService.remove(classAccount.typeAccount.code);
+        }
     }
 };
 exports.ClassAccountService = ClassAccountService;

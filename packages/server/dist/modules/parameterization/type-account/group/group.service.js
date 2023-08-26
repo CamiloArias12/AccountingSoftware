@@ -17,13 +17,19 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const group_entity_1 = require("./group.entity");
+const type_account_service_1 = require("../type-account.service");
 let GroupService = class GroupService {
-    constructor(groupRepository) {
+    constructor(groupRepository, typeAccountService) {
         this.groupRepository = groupRepository;
+        this.typeAccountService = typeAccountService;
     }
     async create(createGroupDto) {
-        const group = this.groupRepository.create(createGroupDto);
-        return await this.groupRepository.save(group);
+        const typeAccount = await this.typeAccountService.create(createGroupDto);
+        if (typeAccount) {
+            const group = new group_entity_1.Group();
+            group.typeAccount = typeAccount;
+            return await this.groupRepository.save(group);
+        }
     }
     async findAll() {
         return await this.groupRepository.find();
@@ -58,6 +64,7 @@ exports.GroupService = GroupService;
 exports.GroupService = GroupService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(group_entity_1.Group)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        type_account_service_1.TypeAccountService])
 ], GroupService);
 //# sourceMappingURL=group.service.js.map

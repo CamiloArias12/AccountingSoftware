@@ -15,7 +15,7 @@ let UpdateClassAccountDto = class UpdateClassAccountDto {
 };
 exports.UpdateClassAccountDto = UpdateClassAccountDto;
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
+    (0, graphql_1.Field)(),
     __metadata("design:type", Number)
 ], UpdateClassAccountDto.prototype, "code", void 0);
 __decorate([

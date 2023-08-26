@@ -17,13 +17,19 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const sub_account_entity_1 = require("./sub-account.entity");
+const type_account_service_1 = require("../type-account.service");
 let SubAccountService = class SubAccountService {
-    constructor(subAccountRepository) {
+    constructor(subAccountRepository, typeAccountService) {
         this.subAccountRepository = subAccountRepository;
+        this.typeAccountService = typeAccountService;
     }
     async create(createSubAccountDto) {
-        const subAccount = this.subAccountRepository.create(createSubAccountDto);
-        return await this.subAccountRepository.save(subAccount);
+        const typeAccount = await this.typeAccountService.create(createSubAccountDto);
+        if (typeAccount) {
+            const subAccount = new sub_account_entity_1.SubAccount();
+            subAccount.typeAccount = typeAccount;
+            return await this.subAccountRepository.save(subAccount);
+        }
     }
     async findAll() {
         return await this.subAccountRepository.find();
@@ -58,6 +64,7 @@ exports.SubAccountService = SubAccountService;
 exports.SubAccountService = SubAccountService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(sub_account_entity_1.SubAccount)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        type_account_service_1.TypeAccountService])
 ], SubAccountService);
 //# sourceMappingURL=sub-account.service.js.map

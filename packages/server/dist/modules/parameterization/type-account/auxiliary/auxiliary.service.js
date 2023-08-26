@@ -17,13 +17,19 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const auxiliary_entity_1 = require("./auxiliary.entity");
+const type_account_service_1 = require("../type-account.service");
 let AuxiliaryService = class AuxiliaryService {
-    constructor(auxiliaryRepository) {
+    constructor(auxiliaryRepository, typeAccountService) {
         this.auxiliaryRepository = auxiliaryRepository;
+        this.typeAccountService = typeAccountService;
     }
     async create(createAuxiliaryDto) {
-        const auxiliary = this.auxiliaryRepository.create(createAuxiliaryDto);
-        return await this.auxiliaryRepository.save(auxiliary);
+        const typeAccount = await this.typeAccountService.create(createAuxiliaryDto);
+        if (typeAccount) {
+            const auxiliary = new auxiliary_entity_1.Auxiliary();
+            auxiliary.typeAccount = typeAccount;
+            return await this.auxiliaryRepository.save(auxiliary);
+        }
     }
     async findAll() {
         return await this.auxiliaryRepository.find();
@@ -58,6 +64,7 @@ exports.AuxiliaryService = AuxiliaryService;
 exports.AuxiliaryService = AuxiliaryService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(auxiliary_entity_1.Auxiliary)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        type_account_service_1.TypeAccountService])
 ], AuxiliaryService);
 //# sourceMappingURL=auxiliary.service.js.map

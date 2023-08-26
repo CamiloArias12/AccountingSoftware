@@ -26,6 +26,10 @@ __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], CreateSubAccountDto.prototype, "nature", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", Number)
+], CreateSubAccountDto.prototype, "accountCode", void 0);
 exports.CreateSubAccountDto = CreateSubAccountDto = __decorate([
     (0, graphql_1.InputType)()
 ], CreateSubAccountDto);

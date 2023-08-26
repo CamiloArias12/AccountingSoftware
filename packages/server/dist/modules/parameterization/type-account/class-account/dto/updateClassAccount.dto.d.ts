@@ -1,5 +1,5 @@
 export declare class UpdateClassAccountDto {
-    code?: number;
+    code: number;
     name?: string;
     nature?: string;
 }

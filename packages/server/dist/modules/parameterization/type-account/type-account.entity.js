@@ -36,10 +36,6 @@ __decorate([
     __metadata("design:type", String)
 ], TypeAccount.prototype, "nature", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => class_account_entity_1.ClassAccount, classAccount => classAccount.typeAccountt),
-    __metadata("design:type", class_account_entity_1.ClassAccount)
-], TypeAccount.prototype, "classAccounts", void 0);
-__decorate([
     (0, graphql_1.Field)(() => account_entity_1.Account),
     (0, typeorm_1.OneToOne)(() => account_entity_1.Account, account => account.typeAccount),
     __metadata("design:type", account_entity_1.Account)
@@ -54,6 +50,11 @@ __decorate([
     (0, typeorm_1.OneToOne)(() => group_entity_1.Group, group => group.typeAccount),
     __metadata("design:type", group_entity_1.Group)
 ], TypeAccount.prototype, "group", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => class_account_entity_1.ClassAccount),
+    (0, typeorm_1.OneToOne)(() => class_account_entity_1.ClassAccount, classAccount => classAccount.typeAccount),
+    __metadata("design:type", class_account_entity_1.ClassAccount)
+], TypeAccount.prototype, "classAccount", void 0);
 __decorate([
     (0, graphql_1.Field)(() => sub_account_entity_1.SubAccount),
     (0, typeorm_1.OneToOne)(() => sub_account_entity_1.SubAccount, subAccount => subAccount.typeAccount),

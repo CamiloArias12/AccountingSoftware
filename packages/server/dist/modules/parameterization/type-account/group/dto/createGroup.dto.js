@@ -26,6 +26,10 @@ __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], CreateGroupDto.prototype, "nature", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", Number)
+], CreateGroupDto.prototype, "classAccountCode", void 0);
 exports.CreateGroupDto = CreateGroupDto = __decorate([
     (0, graphql_1.InputType)()
 ], CreateGroupDto);

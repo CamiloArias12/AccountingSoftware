@@ -25,15 +25,16 @@ const group_resolver_1 = require("./group/group.resolver");
 const account_resolver_1 = require("./account/account.resolver");
 const auxiliary_resolver_1 = require("./auxiliary/auxiliary.resolver");
 const type_account_entity_1 = require("./type-account.entity");
+const sub_account_resolver_1 = require("./sub-account/sub-account.resolver");
 let TypeAccountModule = class TypeAccountModule {
 };
 exports.TypeAccountModule = TypeAccountModule;
 exports.TypeAccountModule = TypeAccountModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([type_account_entity_1.TypeAccount, class_account_entity_1.ClassAccount, group_entity_1.Group, sub_account_entity_1.SubAccount, auxiliary_entity_1.Auxiliary, account_entity_1.Account])],
-        providers: [class_account_service_1.ClassAccountService, group_service_1.GroupService, account_service_1.AccountService, sub_account_service_1.SubAccountService, auxiliary_service_1.AuxiliaryService, class_account_resolver_1.ClassAccountResolver, group_resolver_1.GroupResolver, account_resolver_1.AccountResolver, sub_account_service_1.SubAccountService, auxiliary_resolver_1.AuxiliaryResolver,
-            type_account_service_1.TypeAccountService
-        ]
+        providers: [type_account_service_1.TypeAccountService, class_account_service_1.ClassAccountService, group_service_1.GroupService, account_service_1.AccountService, sub_account_service_1.SubAccountService, auxiliary_service_1.AuxiliaryService, class_account_resolver_1.ClassAccountResolver, group_resolver_1.GroupResolver, account_resolver_1.AccountResolver, sub_account_resolver_1.SubAccountResolver, auxiliary_resolver_1.AuxiliaryResolver
+        ],
+        exports: [class_account_service_1.ClassAccountService]
     })
 ], TypeAccountModule);
 //# sourceMappingURL=type-account.module.js.map

@@ -7,9 +7,9 @@ export declare class TypeAccount {
     code: number;
     name: string;
     nature: string;
-    classAccounts: ClassAccount;
     account: Account;
     auxiliary: Auxiliary;
     group: Group;
+    classAccount: ClassAccount;
     subAccount: SubAccount;
 }

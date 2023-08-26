@@ -17,13 +17,19 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const account_entity_1 = require("./account.entity");
+const type_account_service_1 = require("../type-account.service");
 let AccountService = class AccountService {
-    constructor(accountRepository) {
+    constructor(accountRepository, typeAccountService) {
         this.accountRepository = accountRepository;
+        this.typeAccountService = typeAccountService;
     }
     async create(createAccountDto) {
-        const account = this.accountRepository.create(createAccountDto);
-        return await this.accountRepository.save(account);
+        const typeAccount = await this.typeAccountService.create(createAccountDto);
+        if (typeAccount) {
+            const account = new account_entity_1.Account();
+            account.typeAccount = typeAccount;
+            return await this.accountRepository.save(account);
+        }
     }
     async findAll() {
         return await this.accountRepository.find();
@@ -58,6 +64,7 @@ exports.AccountService = AccountService;
 exports.AccountService = AccountService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(account_entity_1.Account)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        type_account_service_1.TypeAccountService])
 ], AccountService);
 //# sourceMappingURL=account.service.js.map
