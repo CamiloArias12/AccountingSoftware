@@ -4,12 +4,11 @@
   "workspaces": [
     "packages/*"
   ],
-  "dependencies": {},
-  "devDependencies": {
-    "lerna": "^7.1.5"
+  "scripts": {
+    "start": "concurrently \"yarn workspace server dev\" \"yarn workspace client dev\""
   },
-
-   "scripts": {
-    "dev": "lerna run dev"
-   }
+  "dependencies": {
+    "animejs": "^3.2.1",
+    "concurrently": "^8.2.1"
+  }
 }
