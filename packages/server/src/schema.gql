@@ -127,14 +127,19 @@ type SubAccount {
   typeAccount: TypeAccount!
 }
 
+type Token {
+  token: String!
+}
+
 type Query {
+  authUser(username: String!, password: String!): Token!
+  allEmployees: [Employee!]!
   getCountry: [Location!]!
   getState(isoCode: String!): [Location!]!
   getTown(isoCodeCountry: String!, isoCodeState: String!): [Town!]!
   allAfiliates: [Affiliate!]!
   getAffiliate(identification: Float!): Affiliate!
   afiliate(id: Float!): User!
-  allEmployees: [Employee!]!
   allClassAccounts: [ClassAccount!]!
   classAccount(code: Float!): ClassAccount!
   allGroups: [Group!]!
@@ -152,10 +157,10 @@ type Query {
 }
 
 type Mutation {
-  createAfiliate(inputAffiliate: CreateAfiliateDto!, inputUser: UserInput!, inputBeneficiaries: BeneficiariesInput!): Affiliate!
-  updateAfiliate(id: Float!, input: UpdateAfiliateDto!): Affiliate!
   createEmployee(inputEmployee: CreateEmployee!, inputUser: UserInput!): Employee!
   createEmployeeUserExist(inputEmployee: CreateEmployee!, idUser: Float!): Employee!
+  createAfiliate(inputAffiliate: CreateAfiliateDto!, inputUser: UserInput!, inputBeneficiaries: BeneficiariesInput!): Affiliate!
+  updateAfiliate(id: Float!, input: UpdateAfiliateDto!): Affiliate!
   createClassAccount(input: CreateClassAccountDto!): ClassAccount!
   updateClassAccount(code: Float!, input: UpdateClassAccountDto!): ClassAccount!
   deleteClassAccount(code: Float!): Boolean!
@@ -179,17 +184,9 @@ type Mutation {
   deleteTypeCredit(id: Float!): Boolean!
 }
 
-input CreateAfiliateDto {
-  company: String!
-  addreesCompany: String!
-  emailJob: String!
-  salary: Float!
-  bank: String!
-  jobTitle: String!
-  phone: Float!
-  incomeCompany: Float!
-  typeAccount: String!
-  numberAccount: Float!
+input CreateEmployee {
+  username: String!
+  password: String!
 }
 
 input UserInput {
@@ -219,6 +216,19 @@ input UserInput {
   publicPower: Boolean!
 }
 
+input CreateAfiliateDto {
+  company: String!
+  addreesCompany: String!
+  emailJob: String!
+  salary: Float!
+  bank: String!
+  jobTitle: String!
+  phone: Float!
+  incomeCompany: Float!
+  typeAccount: String!
+  numberAccount: Float!
+}
+
 input BeneficiariesInput {
   beneficiaries: [BeneficiaryInput!]!
   percentage: [Float!]!
@@ -240,11 +250,6 @@ input UpdateAfiliateDto {
   incomeCompany: Float
   typeAccount: String
   numberAccount: Float
-}
-
-input CreateEmployee {
-  username: String!
-  password: String!
 }
 
 input CreateClassAccountDto {
