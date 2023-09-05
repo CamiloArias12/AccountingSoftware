@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "animejs": "^3.2.1",
-    "concurrently": "^8.2.1"
+    "concurrently": "^8.2.1",
+    "react-svg": "^16.1.23"
   }
 }
