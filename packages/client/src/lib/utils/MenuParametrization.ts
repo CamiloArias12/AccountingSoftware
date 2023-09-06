@@ -10,7 +10,7 @@ export enum  LogoModuleParametrization {
 export const ParametrizationSideBar = [
    {
       name:'Terceros',
-      href:"/thirds",
+      href:"dashboard/parametrization/thirds",
       icon:LogoModuleParametrization.thirds,
    },{
       name:'Cuentas',

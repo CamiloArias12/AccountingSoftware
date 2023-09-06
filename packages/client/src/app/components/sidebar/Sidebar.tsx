@@ -1,5 +1,5 @@
 "use client"
-import { Background, LogoModules, MenuSidebar,  SideBarModules,  sideBarModules } from "@/lib/utils/SidebarOptions";
+import { Background, LogoModules, MenuSidebar,  SideBarModules } from "@/lib/utils/SidebarOptions";
 import { useState } from "react";
 import MenuParametrization from "./MenuParametrization";
 
