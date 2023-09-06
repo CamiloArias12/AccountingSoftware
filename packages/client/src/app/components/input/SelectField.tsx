@@ -8,10 +8,10 @@ type SelectFieldProps = {
     onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
-const SelectField: React.FC<SelectFieldProps> = ({ name, label, value, options, onChange }) => {
+function SelectField ({ name, label, value, options, onChange }:SelectFieldProps) {
     return (
-        <div className="mb-3">
-            <label className="form-label">{label}</label>
+        <div className="">
+            <label className="text-xs">{label}</label>
             <select name={name} className="form-select" value={value} onChange={onChange}>
                 {options.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>

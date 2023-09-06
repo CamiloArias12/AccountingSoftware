@@ -25,7 +25,7 @@ export enum  LogoModules {
 export const SideBarModules = [
    {
       name:'Parametrizacion',
-      href:"/parametrization",
+      href:"/dashboard/parametrization",
       icon:"/parametrization.svg",
       background:Background.parametrization,
       menu:MenuSidebar.parametrization,
@@ -33,7 +33,7 @@ export const SideBarModules = [
    },
    {
       name:'Cartera ,aportes, depositos y ahorros',
-      href:"/wallet",
+      href:"wallet",
       background:Background.wallet, 
       icon:"/wallet.svg",
       menu:MenuSidebar.wallet,
@@ -41,7 +41,7 @@ export const SideBarModules = [
    },
    {
       name:'Contabilidad',
-      href:"/accounting",
+      href:"accounting",
       background:Background.accounting, 
       icon:"/accounting.svg",
       menu:MenuSidebar.accounting,

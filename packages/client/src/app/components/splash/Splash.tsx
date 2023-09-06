@@ -20,8 +20,7 @@ function SplashScreen (){
   const animation=() =>{
       anime({
 	 targets: '.st0, .st1',
-	 fill:["#FFFFFF","#FFFFFF","#BBDCBF","#8CCA92","#0DA11C","#0A5F13"],
-	 stroke:["#8CCA92","#8CCA92","#0DA11C","#0A5F13"],
+	 stroke:["#0A5F13"],
 	 strokeDashoffset: [anime.setDashoffset, 0],
 	 easing: 'cubicBezier(.5, .05, .1, .3)',
 	 duration: 3000,

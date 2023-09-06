@@ -9,11 +9,11 @@ type InputFieldProps = {
     className?: string;
 };
 
-const InputField: React.FC<InputFieldProps> = ({ name, type = 'text', label, value, onChange, className }) => {
+function InputField ({ name, type = 'text', label, value, onChange, className }:InputFieldProps) {
     return (
-        <div className="mb-3">
-            <label className="form-label">{label}</label>
-            <input type={type} name={name} className={`form-control ${className}`} value={value} onChange={onChange} />
+        <div className="flex flex-col pb-4">
+            <label className="text-xs pb-2">{label}</label>
+            <input type={type} name={name}   className={`border-2 rounded-sm ${className}`} value={value} onChange={onChange} />
         </div>
     );
 };

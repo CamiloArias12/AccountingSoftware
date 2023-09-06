@@ -7,7 +7,7 @@ type CheckboxFieldProps = {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const CheckboxField: React.FC<CheckboxFieldProps> = ({ name, label, checked, onChange }) => {
+function CheckboxField ({ name, label, checked, onChange } : CheckboxFieldProps)  {
     return (
         <div>
             <input 
@@ -17,7 +17,7 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({ name, label, checked, onC
                 checked={checked} 
                 onChange={onChange} 
             />
-            <label htmlFor={name}>
+            <label htmlFor={name} className="text-xs">
                 {label}
             </label>
         </div>

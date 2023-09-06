@@ -2,12 +2,16 @@
 import { Background, LogoModules, MenuSidebar,  SideBarModules } from "@/lib/utils/SidebarOptions";
 import { useState } from "react";
 import MenuParametrization from "./MenuParametrization";
+import { useRouter } from "next/navigation";
 
 export default function SideBar(){
+      
       const [toggleBar,setToggleBar]=useState(true)
       const [background,setBackground]=useState(Background.main)
       const [chooseMenu ,setChooseMenu]=useState(MenuSidebar.main)
       const [chooseLogoModule ,setChooseLogoModule]=useState(LogoModules.main)
+
+      const route = useRouter()
 
    return (
       <div className={`${background} flex flex-col h-full w-[300px]  ${toggleBar && "w-[90px]"}`}>
@@ -43,6 +47,8 @@ export default function SideBar(){
 		  	     setChooseMenu(sidebar.menu)
 		  	     setBackground(sidebar.background)
 		  	     setChooseLogoModule(sidebar.iconModule)
+			     route.push(sidebar.href)
+
 		  	     }}>
 		  	  <div className="flex flex-row ">
 		  	     <div className="h-8 w-8 ">
