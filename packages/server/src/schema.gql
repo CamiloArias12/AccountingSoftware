@@ -132,7 +132,6 @@ type Token {
 }
 
 type Query {
-  authUser(username: String!, password: String!): Token!
   allEmployees: [Employee!]!
   getCountry: [Location!]!
   getState(isoCode: String!): [Location!]!
@@ -157,6 +156,7 @@ type Query {
 }
 
 type Mutation {
+  authUser(username: String!, password: String!): Token!
   createEmployee(inputEmployee: CreateEmployee!, inputUser: UserInput!): Employee!
   createEmployeeUserExist(inputEmployee: CreateEmployee!, idUser: Float!): Employee!
   createAfiliate(inputAffiliate: CreateAfiliateDto!, inputUser: UserInput!, inputBeneficiaries: BeneficiariesInput!): Affiliate!
