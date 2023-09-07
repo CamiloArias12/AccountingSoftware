@@ -5,24 +5,22 @@ import SelectField from "@/app/components/input/SelectField";
 import React, { useState } from 'react';
 import CheckboxField from "@/app/components/input/CheckboxField";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "@/lib/utils/thirds/enumThirds";
+import { CivilStatusForm, GenderForm, HousingTypeForm, IdentificationForm, StudiesForm } from "@/lib/utils/thirds/selectForm";
 
 
-export function GeneralInformation({generalInformation,handleChangeGeneralInformation}:{generalInformation:any, handleChangeGeneralInformation:any}){
-   
+export function GeneralInformation({ generalInformation, handleChangeGeneralInformation }: { generalInformation: any, handleChangeGeneralInformation: any }) {
+
    return (
       <div className="flex flex-col items-center justify-center w-full h-full">
-	 
-            <SelectField
-               name="typeIdentification"
-               label="Tipo de Identificación"
-               value={generalInformation.typeIdentification}
-               options={[
-                  { value: TypeIdentification.CEDULA_DE_CIUDADANIA, label: "Cédula de Ciudadanía" },
-                  { value: TypeIdentification.TARJETA_DE_EXTRANJERIA, label: "Tarjeta de Extranjería" }
-               ]}
-               onChange={handleChangeGeneralInformation}
-            />
-	 <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+
+         <SelectField
+            name="typeIdentification"
+            label="Tipo de Identificación"
+            value={generalInformation.typeIdentification}
+            options={IdentificationForm}
+            onChange={handleChangeGeneralInformation}
+         />
+         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             <InputField
                type="date"
                name="expeditionDate"
@@ -77,10 +75,7 @@ export function GeneralInformation({generalInformation,handleChangeGeneralInform
                name="gender"
                label="Género"
                value={generalInformation.gender}
-               options={[
-                  { value: Gender.MASCULINO, label: "Masculino" },
-                  { value: Gender.FEMENINO, label: "Femenino" }
-               ]}
+               options={GenderForm}
                onChange={handleChangeGeneralInformation}
             />
 
@@ -88,10 +83,7 @@ export function GeneralInformation({generalInformation,handleChangeGeneralInform
                name="statusCivil"
                label="Estado Civil"
                value={generalInformation.statusCivil}
-               options={[
-                  { value: CivilStatus.SOLTERO_A, label: "Soltero(a)" },
-                  // ... y así para todos los valores del enum
-               ]}
+               options={CivilStatusForm}
                onChange={handleChangeGeneralInformation}
             />
 
@@ -144,10 +136,7 @@ export function GeneralInformation({generalInformation,handleChangeGeneralInform
                name="housingType"
                label="Tipo de Vivienda"
                value={generalInformation.housingType}
-               options={[
-                  { value: HousingType.PROPIA, label: "Propia" },
-                  // ... y así para todos los valores del enum
-               ]}
+               options={HousingTypeForm}
                onChange={handleChangeGeneralInformation}
             />
 
@@ -155,10 +144,7 @@ export function GeneralInformation({generalInformation,handleChangeGeneralInform
                name="studies"
                label="Estudios"
                value={generalInformation.studies}
-               options={[
-                  { value: Studies.PRIMARIA, label: "Primaria" },
-                  // ... y así para todos los valores del enum
-               ]}
+               options={StudiesForm}
                onChange={handleChangeGeneralInformation}
             />
 
@@ -196,7 +182,7 @@ export function GeneralInformation({generalInformation,handleChangeGeneralInform
                checked={generalInformation.publicPower}
                onChange={handleChangeGeneralInformation}
             />
-	 </div>
+         </div>
       </div>
    );
 }

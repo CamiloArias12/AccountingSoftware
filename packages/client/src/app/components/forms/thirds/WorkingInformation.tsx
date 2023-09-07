@@ -1,33 +1,34 @@
 import InputField from '@/app/components/input/InputField';
 import SelectField from '@/app/components/input/SelectField';
+import { AccountTypeForm } from '@/lib/utils/thirds/selectForm';
 
-
-function WorkingInformtaion({workingInformation,handleChangeWorkingInformation}:{workingInformation:any, handleChangeWorkingInformation:any}){
+function WorkingInformtaion({ workingInformation, handleChangeWorkingInformation }: { workingInformation: any, handleChangeWorkingInformation: any }) {
 
     return (
-        <div>
-                <InputField 
+        <div className="flex flex-col items-center justify-center w-full h-full">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 w-full p-4">
+                <InputField
                     name="empresa"
                     label="Empresa"
                     value={workingInformation.empresa}
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     name="cargo"
                     label="Cargo"
                     value={workingInformation.cargo}
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     name="direccion"
                     label="Dirección"
                     value={workingInformation.direccion}
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     type="tel"
                     name="telefono"
                     label="Teléfono"
@@ -35,7 +36,7 @@ function WorkingInformtaion({workingInformation,handleChangeWorkingInformation}:
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     type="email"
                     name="correoLaboral"
                     label="Correo Laboral"
@@ -43,7 +44,7 @@ function WorkingInformtaion({workingInformation,handleChangeWorkingInformation}:
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     type="number"
                     name="sueldo"
                     label="Sueldo"
@@ -51,7 +52,7 @@ function WorkingInformtaion({workingInformation,handleChangeWorkingInformation}:
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     type="date"
                     name="ingresoEmpresa"
                     label="Ingreso a la Empresa"
@@ -59,33 +60,31 @@ function WorkingInformtaion({workingInformation,handleChangeWorkingInformation}:
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     name="banco"
                     label="Banco"
                     value={workingInformation.banco}
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <SelectField 
+                <SelectField
                     name="tipoCuenta"
                     label="Tipo de Cuenta"
                     value={workingInformation.tipoCuenta}
-                    options={[
-                        { value: '', label: 'Seleccionar...' },
-                        { value: 'Ahorros', label: 'Ahorros' },
-                        { value: 'Corriente', label: 'Corriente' }
-                    ]}
+                    options={AccountTypeForm}
                     onChange={handleChangeWorkingInformation}
                 />
 
-                <InputField 
+                <InputField
                     name="numero"
                     label="Número de Cuenta"
                     value={workingInformation.numero}
                     onChange={handleChangeWorkingInformation}
                 />
+            </div>
         </div>
     );
 }
 
 export default WorkingInformtaion;
+
