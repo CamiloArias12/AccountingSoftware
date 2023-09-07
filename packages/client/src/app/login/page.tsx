@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import './page.css'
 import SplashScreen from "../components/splash/Splash";
+
 export default  function Login (){
 
    const [splash,setSplash]=useState(false)
@@ -12,7 +13,7 @@ export default  function Login (){
    useEffect(() =>{
       setTimeout(()=>{
 	 setSplash(true)
-      },3000)
+      },3200)
 
    },[])
 
