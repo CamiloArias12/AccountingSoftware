@@ -3,29 +3,16 @@ import { useState } from "react"
 export function FormWorkingInformation (){
 
       const [workingInformation,setWorkingInformation]= useState({
-      typeIdentification: '',
-      expeditionDate: new Date(),
-      expeditionCity: '',
-      countryCard: '',
-      municipalityCard: '',
-      cityCard: '',
-      name: '',
-      lastName: '',
-      gender: '',
-      statusCivil: '',
-      addressResidence: '',
-      municipality: '',
-      city: '',
-      phone: 0,
-      landLine: 0,
-      email: '',
-      housingType: '',
-      studies: '',
-      profession: '',
-      foreignOperations: false,
-      publicResources: false,
-      publicRecognition: false,
-      publicPower: false
+         empresa: '',
+         cargo: '',
+         direccion: '',
+         telefono: '',
+         correoLaboral: '',
+         sueldo: 0,
+         ingresoEmpresa: new Date(),
+         banco: '',
+         tipoCuenta: '',
+         numero: ''
       })
 
       const handleChangeWorkingInformation = (event: React.ChangeEvent<HTMLInputElement |HTMLSelectElement>) => {

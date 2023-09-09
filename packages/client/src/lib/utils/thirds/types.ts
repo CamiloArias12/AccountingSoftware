@@ -25,3 +25,10 @@ export type FormData = {
     publicRecognition: boolean;
     publicPower: boolean;
 };
+
+
+export type country ={
+   id:number
+   name:string
+   iso:string
+}

@@ -1,9 +1,9 @@
       
 export enum Background {
-      main="bg-[#0C745B]",
-      parametrization="bg-[#123C63]",
-      wallet="bg-[#956302]", 
-      accounting="bg-[#631212]"
+      main="border-l-[#0C745B]",
+      parametrization="border-l-[#006AE7]",
+      wallet="border-l-[#956302]", 
+      accounting="border-l-[#631212]"
 }
 
 
@@ -17,7 +17,7 @@ export enum MenuSidebar {
 
 
 export enum  LogoModules {
-   main="/logoMain.svg",
+   main="/logo.svg",
    parametrization="/logoParametrization.svg",
    wallet="/logoWallet.svg",
    accounting="/logoAccounting.svg"
@@ -29,15 +29,15 @@ export const SideBarModules = [
       icon:"/parametrization.svg",
       background:Background.parametrization,
       menu:MenuSidebar.parametrization,
-      iconModule:LogoModules.parametrization
+      iconModule:LogoModules.parametrization,
    },
    {
-      name:'Cartera ,aportes, depositos y ahorros',
+      name:'Cartera ,aportes',
       href:"wallet",
       background:Background.wallet, 
       icon:"/wallet.svg",
       menu:MenuSidebar.wallet,
-      iconModule:LogoModules.wallet
+      iconModule:LogoModules.wallet,
    },
    {
       name:'Contabilidad',
@@ -45,7 +45,7 @@ export const SideBarModules = [
       background:Background.accounting, 
       icon:"/accounting.svg",
       menu:MenuSidebar.accounting,
-      iconModule:LogoModules.accounting
+      iconModule:LogoModules.accounting,
    },
 
 

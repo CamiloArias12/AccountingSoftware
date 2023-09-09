@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- License: MIT. Made by halfmage: https://github.com/halfmage/pixelarticons -->
-<svg width="800px" height="800px" viewBox="0 0 24 24" stroke="#ffffff" xmlns="http://www.w3.org/2000/svg">
+<svg width="800px" height="800px" viewBox="0 0 24 24" stroke="#000000" xmlns="http://www.w3.org/2000/svg">
     <path d="M16 3H8v4H2v14h20V7h-6V3zm-2 4h-4V5h4v2zM4 19V9h16v10H4zm6-8h4v3h-4v-3zm-2 4h8v2H8v-2z" fill="#fff"/>
 </svg>

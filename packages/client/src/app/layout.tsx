@@ -7,7 +7,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Foncastel',
-  icons:'/logo.svg'
+  icons:'/logo.svg',
+
 }
 
 export default function RootLayout({

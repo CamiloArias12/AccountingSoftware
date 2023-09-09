@@ -13,7 +13,7 @@ function InputField ({ name, type = 'text', label, value, onChange, className }:
     return (
         <div className="flex flex-col pb-4">
             <label className="text-xs pb-2">{label}</label>
-            <input type={type} name={name}   className={`border-2 rounded-sm ${className}`} value={value} onChange={onChange} />
+            <input type={type} name={name}   className="bg-white rounded-sm border border-zinc-100 p-[5px]" value={value} onChange={onChange} />
         </div>
     );
 };
