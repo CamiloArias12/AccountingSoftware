@@ -11,7 +11,7 @@ type InputFieldProps = {
 
 function InputField ({ name, type = 'text', label, value, onChange, className }:InputFieldProps) {
     return (
-        <div className="flex flex-col pb-4">
+        <div className="flex flex-col ">
             <label className="text-xs pb-2">{label}</label>
             <input type={type} name={name}   className="bg-white rounded-sm border border-zinc-100 p-[5px]" value={value} onChange={onChange} />
         </div>

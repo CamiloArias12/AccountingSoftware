@@ -43,6 +43,7 @@ type User {
   publicResources: Boolean!
   publicRecognition: Boolean!
   publicPower: Boolean!
+  status: Boolean!
   affiliate: Affiliate!
 }
 

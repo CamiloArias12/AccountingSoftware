@@ -20,10 +20,9 @@ async function CreatePage(){
 
    } )
    return (
-      <>
-	 <CreateThird countries={data.getCountry} />
-      </>
-
+	 <>
+	    <CreateThird countries={data.getCountry} />
+	 </>
    )
 }
 

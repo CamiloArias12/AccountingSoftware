@@ -5,4 +5,9 @@
 @tailwind utilities;
 
 
-
+table tbody tr:nth-child(odd) {
+	background: #ffffff;
+}
+table tbody tr:nth-child(even) {
+	background: #EEEEEE;
+}

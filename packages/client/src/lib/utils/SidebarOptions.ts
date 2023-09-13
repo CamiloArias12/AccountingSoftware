@@ -1,7 +1,7 @@
       
 export enum Background {
       main="border-l-[#0C745B]",
-      parametrization="border-l-[#006AE7]",
+      parametrization="border-l-[#3C7AC2]",
       wallet="border-l-[#956302]", 
       accounting="border-l-[#631212]"
 }
@@ -23,6 +23,15 @@ export enum  LogoModules {
    accounting="/logoAccounting.svg"
 }
 export const SideBarModules = [
+   {
+      name:'Inicio',
+      href:"/dashboard",
+      icon:"/home.svg",
+      background:Background.main,
+      menu:MenuSidebar.main,
+      iconModule:LogoModules.main,
+   },
+
    {
       name:'Parametrizacion',
       href:"/dashboard/parametrization",

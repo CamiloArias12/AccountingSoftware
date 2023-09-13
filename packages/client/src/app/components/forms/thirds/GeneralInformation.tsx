@@ -8,10 +8,29 @@ import SelectFieldTest from "../../input/SelectFieldSearch";
 export function GeneralInformation({ generalInformation, handleChangeGeneralInformation,countries }: { generalInformation: any, handleChangeGeneralInformation: any,countries:any }) {
 
    return (
-      <div className="flex flex-col justify-center">
-        <div className="py-6">
-                </div>
-         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+         <div className=" flex-grow grid grid-cols-2  gap-4 lg:grid-cols-4 lg:grid-rows-9 m-10">
+
+	 <div className="row-start-1 " >
+	    <InputField
+               name="names"
+               label="Nombres"
+               value={generalInformation.expeditionCity}
+               onChange={handleChangeGeneralInformation}
+            />
+	 </div>
+	 <div>
+	    <InputField
+               name="last"
+               label="Apellidos"
+               value={generalInformation.expeditionCity}
+               onChange={handleChangeGeneralInformation}
+            />
+	 </div>
+	 <div className="row-start-1 col-start-4 flex items-center justify-end " >
+	    <button className="bg-[#3C7AC2] text-white px-5 py-2  rounded-lg hover:shadow-lg  " >Siguiente </button> 
+	 </div>
+
+	 <div className="row-start-2">
 	    <SelectField
 	       name="typeIdentification"
 	       label="Tipo de Identificación"
@@ -20,20 +39,17 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
 	       onChange={handleChangeGeneralInformation}
 	    />
 
-	    <InputField
-               name="names"
-               label="Nombres"
-               value={generalInformation.expeditionCity}
+	 </div>
+	 <div className="row-start-2">
+            <InputField
+               type="number"
+               name="identification"
+               label="Numero de Identificación"
+               value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
                onChange={handleChangeGeneralInformation}
             />
-	    <InputField
-               name="last"
-               label="Apellidos"
-               value={generalInformation.expeditionCity}
-               onChange={handleChangeGeneralInformation}
-            />
-
-	    <SelectFieldTest options={countries} />
+	 </div>
+	 <div className="row-start-2">
             <InputField
                type="date"
                name="expeditionDate"
@@ -41,48 +57,51 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
                onChange={handleChangeGeneralInformation}
             />
+	 </div>
+	 <div className="row-start-2">
+            <InputField
+               type="text"
+               name="expeditionDate"
+               label="Ciudad de Expedición"
+               value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
+               onChange={handleChangeGeneralInformation}
+            />
+	 </div>
 
+	 <div className="row-start-3">
+            <InputField
+               type="date"
+               name="expeditionDate"
+               label="Fecha de nacimiento"
+               value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
+               onChange={handleChangeGeneralInformation}
+            />
+	 </div>
+
+
+	 <div className="row-start-4">
+	    <SelectFieldTest options={countries} />
+	 </div>
+	 <div className="row-start-4">
 	    <SelectField
                name="Pais de expedicion"
-               label="Estudios"
+               label="Estado/Departamento"
                value={generalInformation.studies}
                options={countries}
                onChange={handleChangeGeneralInformation}
             />
-	     <InputField
-               name="expeditionCity"
-               label="Ciudad de Expedición"
-               value={generalInformation.expeditionCity}
+	 </div>
+	 <div className="row-start-4">
+	    <SelectField
+               name="Pais de expedicion"
+               label="Ciudad"
+               value={generalInformation.studies}
+               options={countries}
                onChange={handleChangeGeneralInformation}
             />
+	 </div>
 
-            <InputField
-               name="municipalityCard"
-               label="Municipalidad de la Tarjeta"
-               value={generalInformation.municipalityCard}
-               onChange={handleChangeGeneralInformation}
-            />
-
-            <InputField
-               name="cityCard"
-               label="Ciudad de la Tarjeta"
-               value={generalInformation.cityCard}
-               onChange={handleChangeGeneralInformation}
-            />
-
-            <InputField
-               name="name"
-               label="Nombres Completos"
-               value={generalInformation.name}
-               onChange={handleChangeGeneralInformation}
-            />
-
-            <InputField
-               name="lastName"
-               label="Apellidos Completos"
-               value={generalInformation.lastName}
-               onChange={handleChangeGeneralInformation}
-            />
+	 <div className="row-start-5">
 
             <SelectField
                name="gender"
@@ -91,6 +110,8 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                options={GenderForm}
                onChange={handleChangeGeneralInformation}
             />
+	 </div>
+	 <div className="row-start-5">
 
             <SelectField
                name="statusCivil"
@@ -99,28 +120,32 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                options={CivilStatusForm}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-6">
             <InputField
                name="addressResidence"
                label="Dirección de Residencia"
                value={generalInformation.addressResidence}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-6">
             <InputField
                name="municipality"
                label="Ciudad"
                value={generalInformation.municipality}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-6">
             <InputField
                name="city"
                label="Departamento"
                value={generalInformation.city}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-7">
             <InputField
                type="email"
                name="email"
@@ -128,7 +153,8 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                value={generalInformation.email}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-7">
             <InputField
                type="tel"
                name="phone"
@@ -136,7 +162,8 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                value={generalInformation.phone.toString()}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-7">
             <InputField
                type="tel"
                name="landLine"
@@ -144,7 +171,8 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                value={generalInformation.landLine.toString()}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-[8]">
             <SelectField
                name="housingType"
                label="Tipo de Vivienda"
@@ -152,7 +180,9 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                options={HousingTypeForm}
                onChange={handleChangeGeneralInformation}
             />
+	 </div>
 
+	 <div className="row-start-[8]">
             <SelectField
                name="studies"
                label="Estudios"
@@ -160,43 +190,49 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                options={StudiesForm}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-[8]">
             <InputField
                name="profession"
                label="Profesión"
                value={generalInformation.profession}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-[9]">
             <CheckboxField
                name="foreignOperations"
                label="¿Realiza operaciones en el exterior?"
                checked={generalInformation.foreignOperations}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-[9]">
             <CheckboxField
                name="publicResources"
                label="¿Accede a recursos públicos?"
                checked={generalInformation.publicResources}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-[9]">
             <CheckboxField
                name="publicRecognition"
                label="¿Tiene reconocimiento público?"
                checked={generalInformation.publicRecognition}
                onChange={handleChangeGeneralInformation}
             />
-
+	 </div>
+	 <div className="row-start-[9]">
             <CheckboxField
                name="publicPower"
                label="¿Posee poder público?"
                checked={generalInformation.publicPower}
                onChange={handleChangeGeneralInformation}
             />
+	 </div>
+
          </div>
-      </div>
    );
 }
 

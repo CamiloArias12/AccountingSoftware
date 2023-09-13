@@ -1,25 +1,26 @@
 import { ParametrizationSideBar } from "@/lib/utils/MenuParametrization"
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AddSvg } from "../logo/Add";
 
-import { delay, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 function MenuParametrization({ toggleBar }: { toggleBar: boolean }) {
 
 	const router = useRouter()
 	return (
-		<div className="my-3 ml-5 p-3">
+		<div className={`my-3  ${!toggleBar &&"ml-5"}`}>
 			{ParametrizationSideBar.map((sidebar) => (
-				<div key={sidebar.name} className={`w-full flex flex-row justify-betwen   ${!toggleBar && "hover:shadow"}  py-5 `}>
-					<div className={`${toggleBar && ""} w-full flex flex-row`} onClick={() => {
+				<motion.div whileHover={{scale:1.1}} key={sidebar.name} className={`w-full flex flex-row justify-betwen   ${!toggleBar && " hover:pb-1 hover:border-b-[1px]"}  my-5 `}>
+					<div className={`${toggleBar && "flex flex col items-center justify-center"} w-full flex flex-row`} onClick={() => {
 						router.push(sidebar.href)
 					}}>
-						<div className="h-4 w-4 ">
+						<motion.div  whileHover={{scale:2}} className={`h-4 w-4
+      
+						${toggleBar && "h-8 w-8 p-2"} ` }>
 							<img src={sidebar.icon} />
-						</div>
+						</motion.div>
 						{!toggleBar &&
-							<label className="text-xs pl-2">{sidebar.name}</label>
+							<label className="text-[13px] pl-2">{sidebar.name}</label>
 						}
 					</div>
 					{!toggleBar &&
@@ -27,14 +28,15 @@ function MenuParametrization({ toggleBar }: { toggleBar: boolean }) {
 						initial={{ opacity: 0, scale: 0.5 }}
 						animate={{ opacity: 1, scale: 1 }}
 						transition={{duration: 0.5, delay: 0.2, ease: [0, 0.71, 0.2, 1.01] }}
-						className="rounded-[50%] bg-[#006AE7] p-1" onClick={ () => {
+						className="  flex items-center justify center h-6 w-6 rounded-[50%] bg-[#3C7AC2] p-1" onClick={ () => {
+						      console.log("Heelloo")
 						      router.push(`${sidebar.href}/create`)}
 						}>
 							<AddSvg color="#ffffff" />
 						</motion.div>
 
 					}
-				</div>
+				</motion.div>
 			))}
 		</div>
 

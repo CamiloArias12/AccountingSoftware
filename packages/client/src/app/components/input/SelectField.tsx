@@ -12,8 +12,8 @@ type SelectFieldProps = {
 function SelectField ({ name, label, value, options, onChange,children }:SelectFieldProps) {
       const [toggle,setToggle]=useState<boolean>(false)
     return (
-      <div className="relative">
-            <label className="text-xs">{label}</label>
+      <>
+            <label className="text-xs pb-2">{label}</label>
 	    <button className="bg-white relative w-full border border-gray-300 rounded-sm shadow-sm pl-3 pr-10 py-4 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 	       onClick={() => {setToggle(!toggle) }
 	       }	  
@@ -34,7 +34,7 @@ function SelectField ({ name, label, value, options, onChange,children }:SelectF
 	       }
 	       </div>
 	    </ul>
-        </div>
+        </>
 
     );
 };

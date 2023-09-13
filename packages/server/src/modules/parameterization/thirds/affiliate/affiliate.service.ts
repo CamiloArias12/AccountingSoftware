@@ -79,7 +79,9 @@ export class AffiliateService {
     }
 
     async findAll(): Promise<Affiliate[]> {
-        return await this.affiliateRepository.find();
+      console.log("Obtener afiliados") 
+       return await this.affiliateRepository.createQueryBuilder('affiliate').leftJoinAndSelect('affiliate.user','user').getMany()
+
     }
 
 

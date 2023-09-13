@@ -32,3 +32,13 @@ export type country ={
    name:string
    iso:string
 }
+
+export type Affiliate ={
+      identification:number
+      name:string
+      lastName:string
+      phone:number
+      city:string
+      salary:string
+      status:boolean
+}
