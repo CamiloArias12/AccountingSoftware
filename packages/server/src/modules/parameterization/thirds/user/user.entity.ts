@@ -126,6 +126,11 @@ export class User implements iUser{
    @Column()
    publicPower: boolean
 
+   @Field()
+   @Column({default:true})
+   status:boolean
+
+
    @Field(() =>Affiliate)
    @OneToOne(() => Affiliate ,affiliate =>affiliate.user)
    affiliate:Affiliate
