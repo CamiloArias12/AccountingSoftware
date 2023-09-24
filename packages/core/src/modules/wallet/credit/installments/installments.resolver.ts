@@ -1,35 +1,40 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { InstallmentsService } from './installments.service';
-import { Installment } from './entities/installment.entity';
 import { CreateInstallmentInput } from './dto/create-installment.input';
 import { UpdateInstallmentInput } from './dto/update-installment.input';
+import { Installment } from './installment.entity';
 
 @Resolver(() => Installment)
 export class InstallmentsResolver {
-  constructor(private readonly installmentsService: InstallmentsService) {}
+  constructor(private readonly installmentsService: InstallmentsService) { }
 
   @Mutation(() => Installment)
-  createInstallment(@Args('createInstallmentInput') createInstallmentInput: CreateInstallmentInput) {
+  async createInstallment(
+    @Args('createInstallmentInput') createInstallmentInput: CreateInstallmentInput
+  ): Promise<Installment> {
     return this.installmentsService.create(createInstallmentInput);
   }
 
   @Query(() => [Installment], { name: 'installments' })
-  findAll() {
+  async findAll(): Promise<Installment[]> {
     return this.installmentsService.findAll();
   }
 
   @Query(() => Installment, { name: 'installment' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  async findOne(@Args('id', { type: () => Int }) id: number): Promise<Installment> {
     return this.installmentsService.findOne(id);
   }
 
   @Mutation(() => Installment)
-  updateInstallment(@Args('updateInstallmentInput') updateInstallmentInput: UpdateInstallmentInput) {
+  async updateInstallment(
+    @Args('updateInstallmentInput') updateInstallmentInput: UpdateInstallmentInput
+  ): Promise<Installment> {
     return this.installmentsService.update(updateInstallmentInput.id, updateInstallmentInput);
   }
 
   @Mutation(() => Installment)
-  removeInstallment(@Args('id', { type: () => Int }) id: number) {
+  async removeInstallment(@Args('id', { type: () => Int }) id: number): Promise<Installment> {
     return this.installmentsService.remove(id);
   }
 }
+

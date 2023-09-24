@@ -1,5 +1,5 @@
-import { CreateCreditInput } from './create-credit.input';
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { CreateCreditInput } from './create-credit.input';
 
 @InputType()
 export class UpdateCreditInput extends PartialType(CreateCreditInput) {

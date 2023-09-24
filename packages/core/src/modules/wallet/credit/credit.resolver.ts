@@ -1,12 +1,12 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { CreditService } from './credit.service';
-import { Credit } from './entities/credit.entity';
 import { CreateCreditInput } from './dto/create-credit.input';
 import { UpdateCreditInput } from './dto/update-credit.input';
+import { Credit } from './credit.entity';
 
 @Resolver(() => Credit)
 export class CreditResolver {
-  constructor(private readonly creditService: CreditService) {}
+  constructor(private readonly creditService: CreditService) { }
 
   @Mutation(() => Credit)
   createCredit(@Args('createCreditInput') createCreditInput: CreateCreditInput) {
@@ -24,7 +24,9 @@ export class CreditResolver {
   }
 
   @Mutation(() => Credit)
-  updateCredit(@Args('updateCreditInput') updateCreditInput: UpdateCreditInput) {
+  async updateCredit(
+    @Args('updateCreditInput') updateCreditInput: UpdateCreditInput
+  ): Promise<Credit> {
     return this.creditService.update(updateCreditInput.id, updateCreditInput);
   }
 
