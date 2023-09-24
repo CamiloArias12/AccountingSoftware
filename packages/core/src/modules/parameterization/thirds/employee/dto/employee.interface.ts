@@ -1,6 +1,6 @@
 export interface IEmployee{
       
-   idEmployee:number
+   idEmployee?:number
 
    username:string
 

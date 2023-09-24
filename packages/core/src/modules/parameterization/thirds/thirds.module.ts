@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { LocationModule } from './location/location.module';
-import { AffiliateModule } from './affiliate/affiliate.module';
-import { EmployeeModule } from './employee/employee.module';
-import { ProviderModule } from './provider/provider.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from '../auth/auth.module';
 
 
 @Module({
-   imports:[UserModule,LocationModule,AffiliateModule,EmployeeModule,ProviderModule ],
+   imports:[UserModule,LocationModule,AuthModule ],
    providers: []
 
 })

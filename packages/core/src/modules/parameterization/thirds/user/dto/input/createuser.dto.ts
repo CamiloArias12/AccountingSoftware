@@ -1,5 +1,10 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "../enum-type";
+import { InputAffiliateCreate } from "../../../affiliate/dto/InputAffiliate";
+
+
+
+
 
 @InputType()
 export class UserInput{
@@ -77,3 +82,4 @@ export class UserInput{
    publicPower: boolean
 
 }
+

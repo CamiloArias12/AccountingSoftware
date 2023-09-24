@@ -1,14 +1,18 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { ChildEntity, Column } from "typeorm";
-import { User } from "../user/user.entity";
+import { ObjectType, Field} from '@nestjs/graphql';
+import { Entity, JoinColumn, OneToOne, PrimaryColumn, } from 'typeorm';
+import { User } from '../user/user.entity';
 
 
 @ObjectType()
-@ChildEntity()
-export default class Provider extends User{
+@Entity()
+export class Provider { 
+   
+   @PrimaryColumn()
+   idProvider:number
 
-   @Field()
-   @Column()
-   product:string
-
+   @Field(() =>Provider)
+   @OneToOne(() => User ,user => user.provider)
+   @JoinColumn({name: "idProvider"})
+   user:User
 }
+

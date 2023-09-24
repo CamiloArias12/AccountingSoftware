@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
 import { User } from "../user/user.entity";
 import { IEmployee } from "./dto/employee.interface";
 
@@ -8,7 +8,7 @@ import { IEmployee } from "./dto/employee.interface";
 @Entity()
 export class Employee implements IEmployee{ 
    
-   @PrimaryGeneratedColumn()
+   @PrimaryColumn()
    idEmployee:number
 
 
@@ -17,7 +17,7 @@ export class Employee implements IEmployee{
    username:string
 
    @Field()
-   @Column()
+  @Column()
    password:string
 
 

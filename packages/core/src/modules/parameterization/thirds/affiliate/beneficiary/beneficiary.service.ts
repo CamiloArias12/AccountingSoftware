@@ -13,7 +13,7 @@ export class BeneficiaryService {
         private readonly beneficiaryRepository: Repository<Beneficiary>,
     ) {}
 
-    async create(dto: BeneficiaryInput,queryRunner:QueryRunner | null): Promise<Beneficiary> {
+    async create(dto: BeneficiaryInput,queryRunner?:QueryRunner ): Promise<Beneficiary> {
 	 
       const beneficiary = this.beneficiaryRepository.create(dto);
 

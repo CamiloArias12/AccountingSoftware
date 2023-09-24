@@ -4,6 +4,7 @@ import { iUser } from "./dto/user.interface";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./dto/enum-type";
 import { Affiliate } from "../affiliate/affiliate.entity";
 import { Employee } from "../employee/employee.entity";
+import { Provider } from "../provider/provider.entity";
 
 @ObjectType()
 @Entity()
@@ -136,8 +137,13 @@ export class User implements iUser{
    affiliate:Affiliate
     
 
+   @Field(() =>Employee)
    @OneToOne(() => Employee ,employee =>employee.user)
    employee:Employee
+   
+   @Field(() =>Employee)
+   @OneToOne(() => Provider,provider=>provider.user)
+   provider:Employee
 
 
 }

@@ -9,7 +9,6 @@ import { BeneficiaryAffiliate } from "./beneficiary-affiliate/beneficiary-affili
 @Entity()
 export class Affiliate implements IAfiliate{ 
 
-   @Field()
    @PrimaryColumn()
    idAffiliate:number
 
@@ -54,7 +53,7 @@ export class Affiliate implements IAfiliate{
    numberAccount:number
 
 
-   @Field()
+   @Field(() => User)
    @OneToOne(() => User,user => user.affiliate)
    @JoinColumn({name:'idAffiliate'})
    user:User
