@@ -1,7 +1,7 @@
 import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
-export class CreateClassAccountDto {
+export class CreateTypeAccountInput{
     
     @Field()
     code: number;
@@ -11,4 +11,5 @@ export class CreateClassAccountDto {
 
     @Field()
     nature: string;
+
 }

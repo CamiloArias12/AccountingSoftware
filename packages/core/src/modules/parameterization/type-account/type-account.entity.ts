@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, PrimaryColumn, OneToOne } from 'typeorm';
+import { Entity,  Column,  PrimaryColumn, OneToOne } from 'typeorm';
 import { Field, ObjectType } from "@nestjs/graphql";
 import { ClassAccount } from './class-account/class-account.entity';
 import { Account } from './account/account.entity';
@@ -21,6 +21,10 @@ export class TypeAccount {
     @Field()
     @Column()
     nature: string;
+
+    @Field()
+    @Column({default:true})
+    state: boolean;
 
 
     @Field(() => Account)

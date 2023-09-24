@@ -17,10 +17,11 @@ import { AccountResolver } from './account/account.resolver';
 import { AuxiliaryResolver } from './auxiliary/auxiliary.resolver';
 import { TypeAccount } from './type-account.entity';
 import { SubAccountResolver } from './sub-account/sub-account.resolver';
+import {TypeAccountResolver} from './type-account.resolver';
 
 @Module({
   imports: [TypeOrmModule.forFeature( [TypeAccount,ClassAccount, Group, SubAccount, Auxiliary, Account])],
-  providers :[TypeAccountService ,ClassAccountService,GroupService,AccountService,SubAccountService,AuxiliaryService,ClassAccountResolver,GroupResolver,AccountResolver,SubAccountResolver,AuxiliaryResolver
+  providers :[TypeAccountService ,ClassAccountService,GroupService,AccountService,SubAccountService,AuxiliaryService,TypeAccountResolver,ClassAccountResolver,GroupResolver,AccountResolver,SubAccountResolver,AuxiliaryResolver
 	      
   ],
   exports:[ClassAccountService, GroupService, AccountService, SubAccountService, AuxiliaryService]
