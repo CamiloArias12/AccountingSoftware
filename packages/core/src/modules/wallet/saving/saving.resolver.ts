@@ -6,7 +6,7 @@ import { Saving } from './saving.entity';
 
 @Resolver(() => Saving)
 export class SavingResolver {
-  constructor(private readonly savingService: SavingService) {}
+  constructor(private readonly savingService: SavingService) { }
 
   @Mutation(() => Saving)
   createSaving(@Args('createSavingInput') createSavingInput: CreateSavingInput) {
@@ -24,7 +24,9 @@ export class SavingResolver {
   }
 
   @Mutation(() => Saving)
-  updateSaving(@Args('updateSavingInput') updateSavingInput: UpdateSavingInput) {
+  async updateSaving(
+    @Args('updateSavingInput') updateSavingInput: UpdateSavingInput
+  ): Promise<Saving> {
     return this.savingService.update(updateSavingInput.id, updateSavingInput);
   }
 
@@ -33,3 +35,4 @@ export class SavingResolver {
     return this.savingService.remove(id);
   }
 }
+

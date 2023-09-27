@@ -3,6 +3,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, Primar
 import { SubAccount } from "../type-account/sub-account/sub-account.entity";
 import { Auxiliary } from "../type-account/auxiliary/auxiliary.entity";
 import { Account } from "../type-account/account/account.entity";
+import { Credit } from "src/modules/wallet/credit/credit.entity";
 @ObjectType()
 @Entity()
 export class TypeCredit {
@@ -26,5 +27,9 @@ export class TypeCredit {
    @ManyToMany(() => Account)
    @JoinTable()
    accounts: Account[] | null;
+
+   @Field(() => [Credit])
+   @OneToMany(() => Credit, credit => credit.typeCredit)
+   credits: Credit[];
 
 }

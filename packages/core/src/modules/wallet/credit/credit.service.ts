@@ -30,19 +30,19 @@ export class CreditService {
     if (updateCreditInput.startDate) {
       const date = new Date(updateCreditInput.startDate);
       updateCreditInput.startDate = new Date(date.toISOString().split('T')[0]);
-    }    
+    }
     
-    await this.creditRepository.update(id, updateCreditInput);
-    const updatedCredit = await this.creditRepository.findOne({ where: { id: id } });
-    if (!updatedCredit) {
+    const existingCredit = await this.creditRepository.preload({ id, ...updateCreditInput });
+    if (!existingCredit) {
       throw new Error('Credit not found');
     }
-    return updatedCredit;
+    return this.creditRepository.save(existingCredit);
   }
 
   async remove(id: number): Promise<void> {
     await this.creditRepository.delete(id);
   }
 }
+
 
 

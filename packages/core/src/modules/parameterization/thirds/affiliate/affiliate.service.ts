@@ -96,18 +96,6 @@ export class AffiliateService {
 	return await user.getOne();
     }
 
-
-      
-/*
-    async findOne(numberAccount: number): Promise<User> {
-        const user:User = await this.userService.findOne(numberAccount)
-
-        if (!user&& !user.affiliate) {
-            throw new NotFoundException(`Afiliado con ID ${numberAccount} no encontrado`);
-	}
-        return user;
-    }
-*/
     async update(numberAccount: number, updateDto: UpdateAfiliateDto): Promise<Affiliate> {
         const afiliate = await this.affiliateRepository.preload({ numberAccount, ...updateDto });
         if (!afiliate) {

@@ -3,65 +3,76 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, Primary
 import { IAfiliate } from "./dto/afiliate.interface";
 import { User } from "../user/user.entity";
 import { BeneficiaryAffiliate } from "./beneficiary-affiliate/beneficiary-affiliate.entity";
+import { Credit } from "src/modules/wallet/credit/credit.entity";
+import { Saving } from "src/modules/wallet/saving/saving.entity";
 
 
 @ObjectType()
 @Entity()
-export class Affiliate implements IAfiliate{ 
+export class Affiliate implements IAfiliate {
 
    @Field()
    @PrimaryColumn()
-   idAffiliate:number
+   idAffiliate: number
 
    @Field()
    @Column()
-   company:string
+   company: string
 
    @Field()
    @Column()
-   addreesCompany:string
+   addreesCompany: string
 
    @Field()
    @Column()
-   emailJob:string
+   emailJob: string
 
    @Field()
    @Column()
-   salary:number
+   salary: number
 
    @Field()
    @Column()
-   bank:string
+   bank: string
 
    @Field()
    @Column()
-   jobTitle:string
+   jobTitle: string
 
    @Field()
    @Column()
-   phone:number
+   phone: number
 
    @Field()
    @Column()
-   incomeCompany:number
+   incomeCompany: number
 
    @Field()
    @Column()
-   typeAccount:string
+   typeAccount: string
 
    @Field()
    @Column()
-   numberAccount:number
+   numberAccount: number
 
 
    @Field()
-   @OneToOne(() => User,user => user.affiliate)
-   @JoinColumn({name:'idAffiliate'})
-   user:User
-   
-   @Field(() =>[BeneficiaryAffiliate])
-   @OneToMany(() => BeneficiaryAffiliate ,beneficiaryAffiliate => beneficiaryAffiliate.affiliate)
-   beneficiaries:BeneficiaryAffiliate[]
+   @OneToOne(() => User, user => user.affiliate)
+   @JoinColumn({ name: 'idAffiliate' })
+   user: User
+
+   @Field(() => [BeneficiaryAffiliate])
+   @OneToMany(() => BeneficiaryAffiliate, beneficiaryAffiliate => beneficiaryAffiliate.affiliate)
+   beneficiaries: BeneficiaryAffiliate[]
+
+   @Field(() => [Credit])
+   @OneToMany(() => Credit, credit => credit.affiliate, { cascade: true, eager: true })
+   credits: Credit[];
+
+   @Field(() => [Saving])
+   @OneToMany(() => Saving, saving => saving.affiliate, { cascade: true, eager: true })
+   savings: Saving[];
+
 
 }
 

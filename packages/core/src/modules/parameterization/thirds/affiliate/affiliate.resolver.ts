@@ -53,10 +53,5 @@ export class AffiliateResolver {
     ): Promise<Affiliate> {
         return await this.afiliateService.update(id, input);
     }
-/*
-    @Mutation(() => Boolean)
-    async deleteAfiliate(@Args('id') id: number): Promise<boolean> {
-        await this.afiliateService.remove(id);
-        return true;
-    }*/
+
 }

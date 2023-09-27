@@ -1,4 +1,4 @@
-import { InputType, Float, Field } from '@nestjs/graphql';
+import { InputType, Float, Field, Int } from '@nestjs/graphql';
 
 @InputType()
 export class CreateCreditInput {
@@ -13,6 +13,13 @@ export class CreateCreditInput {
 
   @Field()
   startDate: Date;
+
+  @Field()
+  affiliateId: number;
+
+  @Field(() => Int)
+  typeCreditId: number;
+
 }
 
 
