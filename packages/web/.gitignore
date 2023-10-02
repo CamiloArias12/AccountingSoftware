@@ -1,4 +1,7 @@
 # compiled output
+# compiled output
+/.next
+.next/
 /dist
 /node_modules
 /.vs

@@ -126,6 +126,34 @@ type Affiliate {
   beneficiaries: [BeneficiaryAffiliate!]!
 }
 
+type Credit {
+  id: Int!
+  loanAmount: Float!
+  annualInterest: Float!
+  loanPeriod: Float!
+  startDate: DateTime!
+  installments: [Installment!]!
+}
+
+type Installment {
+  id: Int!
+  number: Int
+  paymentDate: DateTime!
+  initialBalance: Float!
+  scheduledPayment: Float!
+  extraPayment: Float!
+  totalPayment: Float!
+  capital: Float!
+  interest: Float!
+  finalBalance: Float!
+  credit: Credit!
+}
+
+type Saving {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Query {
   getCountry: [Location!]!
   getState(isoCode: String!): [Location!]!
@@ -144,6 +172,10 @@ type Query {
   subAccount(code: Float!): SubAccount!
   allAuxiliaries: [Auxiliary!]!
   auxiliary(code: Float!): Auxiliary!
+  credit(id: Int!): Credit!
+  installments: [Installment!]!
+  installment(id: Int!): Installment!
+  saving(id: Int!): Saving!
 }
 
 type Mutation {
@@ -161,6 +193,15 @@ type Mutation {
   updateTypeSaving(data: UpdateTypeSavingDto!): TypeSaving!
   createTypeCredit(data: CreateTypeCreditDto!): TypeCredit!
   updateTypeCredit(data: UpdateTypeCreditDto!): TypeCredit!
+  createCredit(createCreditInput: CreateCreditInput!): Credit!
+  updateCredit(updateCreditInput: UpdateCreditInput!): Credit!
+  removeCredit(id: Int!): Credit!
+  createInstallment(createInstallmentInput: CreateInstallmentInput!): Installment!
+  updateInstallment(updateInstallmentInput: UpdateInstallmentInput!): Installment!
+  removeInstallment(id: Int!): Installment!
+  createSaving(createSavingInput: CreateSavingInput!): Saving!
+  updateSaving(updateSavingInput: UpdateSavingInput!): Saving!
+  removeSaving(id: Int!): Saving!
 }
 
 input CreateAfiliateDto {
@@ -301,4 +342,55 @@ input UpdateTypeCreditDto {
   subAccount: [Int!]
   account: [Int!]
   auxiliary: [Int!]
+}
+
+input CreateCreditInput {
+  loanAmount: Float!
+  annualInterest: Float!
+  loanPeriod: Float!
+  startDate: DateTime!
+}
+
+input UpdateCreditInput {
+  loanAmount: Float
+  annualInterest: Float
+  loanPeriod: Float
+  startDate: DateTime
+  id: Int!
+}
+
+input CreateInstallmentInput {
+  paymentDate: DateTime!
+  initialBalance: Float!
+  scheduledPayment: Float!
+  extraPayment: Float!
+  totalPayment: Float!
+  capital: Float!
+  interest: Float!
+  finalBalance: Float!
+  creditId: Int!
+}
+
+input UpdateInstallmentInput {
+  paymentDate: DateTime
+  initialBalance: Float
+  scheduledPayment: Float
+  extraPayment: Float
+  totalPayment: Float
+  capital: Float
+  interest: Float
+  finalBalance: Float
+  creditId: Int
+  id: Int!
+}
+
+input CreateSavingInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateSavingInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }

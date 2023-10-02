@@ -20,37 +20,40 @@ import { BeneficiaryAffiliate } from './modules/parameterization/thirds/affiliat
 import { TypeCredit } from './modules/parameterization/type-credit/type-credit.entity';
 import { TypeSaving } from './modules/parameterization/type-saving/type-saving.entity';
 import Provider from './modules/parameterization/thirds/provider/provider.entity';
+import { Installment } from './modules/wallet/credit/installments/installment.entity';
+import { Credit } from './modules/wallet/credit/credit.entity';
+import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
-  
-  imports: [ParameterizationModule,
-      GraphQLModule.forRoot(
-	 {
-	    driver:ApolloDriver,
-	    autoSchemaFile:join(process.cwd(),'src/schema.gql')
-	 }
-      ),
 
-   ConfigModule.forRoot({
-	    envFilePath:'.env',
-	    isGlobal:true,
-	 }
-      ),
-      TypeOrmModule.forRoot(
-	 {
-	    type: 'mysql',
-	    host: process.env.HOST,
-	    port: parseInt(process.env.PORT),
-	    username: process.env.DATABASE_USER,
-	    password: process.env.DATABASE_PASSWORD,
-	    database: process.env.DATABASE_NAME,
-	    keepConnectionAlive: true,
-	    synchronize: true,
-	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving]
-	 }
-      ),
-    ],
-  providers: [AppService ]
+	imports: [ParameterizationModule, WalletModule,
+		GraphQLModule.forRoot(
+			{
+				driver: ApolloDriver,
+				autoSchemaFile: join(process.cwd(), 'src/schema.gql')
+			}
+		),
+
+		ConfigModule.forRoot({
+			envFilePath: '.env',
+			isGlobal: true,
+		}
+		),
+		TypeOrmModule.forRoot(
+			{
+				type: 'mysql',
+				host: 'localhost',
+				port: 3306,
+				username: 'root',
+				password: '9898',
+				database: 'testaccounting',
+				keepConnectionAlive: true,
+				synchronize: true,
+				entities: [Affiliate, Beneficiary, BeneficiaryAffiliate, User, Employee, TypeAccount, Account, SubAccount, ClassAccount, Auxiliary, Group, TypeCredit, TypeSaving, Installment, Credit]
+			}
+		),
+	],
+	providers: [AppService]
 
 })
-export class AppModule {}
+export class AppModule { }

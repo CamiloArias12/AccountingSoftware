@@ -3,6 +3,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, Primar
 import { SubAccount } from "../type-account/sub-account/sub-account.entity";
 import { Auxiliary } from "../type-account/auxiliary/auxiliary.entity";
 import { Account } from "../type-account/account/account.entity";
+import { Saving } from "src/modules/wallet/saving/saving.entity";
 @ObjectType()
 @Entity()
 export class TypeSaving {
@@ -26,5 +27,10 @@ export class TypeSaving {
    @ManyToMany(() => Account)
    @JoinTable()
    accounts: Account[] | null;
+
+   @Field(() => [Saving])
+   @OneToMany(() => Saving, saving => saving.typeSaving)
+   savings: Saving[];
+
 
 }
