@@ -12,7 +12,7 @@ interface ModalProps {
 function Modal ({title,children,onClick,size}:ModalProps) {
      return (
      <div className="fixed inset-0  w-screen flex items-center justify-center z-50">
-      <div className={`bg-white flex flex-col rounded-[30px] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] ${size} p-6`}>
+      <div className={`bg-white flex flex-col rounded-lg shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] ${size} p-6`}>
 	       <div className="flex  items-center justify-between border-b border-[#BABBBB] p-4">
 		  <div>
 		  <label className="font-sans text-lg" >{title}</label>
