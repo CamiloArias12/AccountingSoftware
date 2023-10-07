@@ -171,7 +171,7 @@ export const TypePersonForm = [
     }
 ]
 
-export const AccountTypeForm = [
+export const AccountTypeOptions = [
     {
         id: 1,
         name: AccountType.AHORRO,

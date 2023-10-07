@@ -1,34 +1,58 @@
-import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./enumThirds";
 
 export type GeneralInformationData = {
-    typeIdentification: TypeIdentification | string;
-    expeditionDate: Date | string;
-    expeditionCity: string;
-    countryCard: string;
-    municipalityCard: string;
-    cityCard: string;
-    name: string;
-    lastName: string;
-    gender: Gender | string;
-    statusCivil: CivilStatus | string;
-    addressResidence: string;
-    municipality: string;
-    city: string;
-    phone: number;
-    landLine: number;
-    email: string;
-    housingType: HousingType | string;
-    studies: Studies | string;
-    profession: string;
-    foreignOperations: boolean;
-    publicResources: boolean;
-    publicRecognition: boolean;
-    publicPower: boolean;
+
+   typeIdentification: string
+   identification:any
+   name:string
+   lastName:string
+   expeditionDate:Date
+   expeditionCity:string
+   birthDate:Date
+   countryBirth: string;
+   stateBirth: string
+   cityBirth: string
+   gender: string;
+   statusCivil: string;
+   addressResidence: string
+   countryResidence: string;
+   stateResidence: string
+   cityResidence: string
+   phone: string 
+   landLine:string 
+   email: string
+   housingType: string;
+   studies: string;
+   profession: string
+   foreignOperations: boolean
+   publicResources: boolean
+   publicRecognition: boolean
+   publicPower: boolean
+
 };
 
 
+export interface IAfiliate{
+   company:string
 
+   addreesCompany:string
 
+   emailJob:string
+
+   salary:any
+
+   bank:string
+
+   jobTitle:string
+
+   phone:any
+
+   incomeCompany:string
+
+   typeAccount:string
+
+   numberAccount:any
+
+}
 export type country ={
    id:number
    name:string
@@ -65,4 +89,17 @@ export type TypeSavingFormData = {
     nombre: string;
 };
 
+interface BeneficiaryInput {
+    name: string;
+    idDocument: any;
+
+}
+
+
+export interface Beneficiaries{
+
+   beneficiary:BeneficiaryInput
+   percentage:any
+
+}
 
