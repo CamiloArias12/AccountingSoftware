@@ -19,7 +19,7 @@ module.exports = {
         'layout': '200px minmax(900px, 1fr) 100px',
       },
        backgroundImage:{
-	 'img-bg':"url('/bg-login.jpg')",
+	 'img-bg':"url('/bglogin.png')",
       },
    }
 
