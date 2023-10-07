@@ -1,16 +1,12 @@
+import { TypeAccounnt } from "@/lib/utils/type-account/types";
 import { useState } from "react";
 
 export function useTypeAccount() {
 
-    const [typeAccount, setTypeAccount] = useState({
-        code: null,
+    const [typeAccount, setTypeAccount] = useState<TypeAccounnt>({
+        code: NaN,
         name: '',
-        nature: '',
-        account: null,
-        auxiliary: null,
-        group: null,
-        classAccount: null,
-        subAccount: null
+        nature: ''
     });
 
     const handleTypeAccount = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
