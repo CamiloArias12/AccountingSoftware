@@ -4,31 +4,29 @@ import InputField from "../../input/InputField";
 function CredentialsForm () {
       const {credential,handleChangeCredential}= FormCredential()
   return (
-      <>
+      <div className=" flex-grow grid grid-cols-4 gap-4">
 	        <InputField
-                    type="tel"
-                    name="telefono"
-                    label="Teléfono"
+                    type="text"
+                    name="username"
+                    label="Usuario"
                     value={credential.username}
                     onChange={handleChangeCredential}
                 />
 
                 <InputField
-                    type="email"
-                    name="correoLaboral"
-                    label="Correo Laboral"
+                    type="password"
+                    name="passwd"
+                    label="Contrasena"
                     value={credential.passwd}
                     onChange={handleChangeCredential}
                 />
-
-                <InputField
-                    type="number"
-                    name="sueldo"
-                    label="Sueldo"
-                    value={credential.passwdVerify}
-                    onChange={handleChangeCredential}
+	       <InputField
+                    type="password"
+                    label="Repetir contrasena"
                 />
-      </>
+
+
+      </div>
   ); 
 }
 

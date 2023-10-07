@@ -1,28 +1,89 @@
 import InputField from "@/app/components/input/InputField";
-import SelectField from "@/app/components/input/SelectField";
 import CheckboxField from "@/app/components/input/CheckboxField";
 import { CivilStatusForm, GenderForm, HousingTypeForm, IdentificationForm, StudiesForm } from "@/lib/utils/thirds/selectForm";
-import SelectFieldTest from "../../input/SelectFieldSearch";
+import { GeneralInformationData } from "@/lib/utils/thirds/types";
+import SelectField from "../../input/SelectField";
+import { gql, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import InputCalendar from "../../input/Calendar";
 
 
-export function GeneralInformation({ generalInformation, handleChangeGeneralInformation,countries }: { generalInformation: any, handleChangeGeneralInformation: any,countries:any }) {
+interface GeneralInformationProps {
+   generalInformation:GeneralInformationData
+   handleChangeGeneralInformation:any
+   countries:any
+   handleGeneralInformation:any
+}
+
+const STATES=gql`query ($isoCode:String!){
+   getState(isoCode:$isoCode){
+    id
+    name
+    iso2
+  }
+}`
+
+const TOWN = gql `query ($isoCode:String!,$isoCodeState:String!){
+  getTown(isoCodeCountry:$isoCode,isoCodeState:$isoCodeState){
+    id
+    name
+  
+  }
+  
+}
+`
+
+
+
+export function GeneralInformation({ generalInformation,handleGeneralInformation ,handleChangeGeneralInformation,countries }:GeneralInformationProps ) {
+  
+   
+   const [country,setCountry]=useState("CO")
+   const [state,setState]=useState("")
+   const {data}=useQuery(STATES,{
+      variables:{ isoCode:country}
+   })
+   const {data:dataTown}=useQuery(TOWN,{
+      variables:{ isoCode:country,isoCodeState:state}
+   })
+
+
+   useEffect( () =>{
+    countries.find((country:any) =>{
+	 console.log(country,generalInformation.countryBirth)
+      if(country.name===generalInformation.countryBirth){
+	 console.log(country.name,generalInformation.countryBirth)
+	 setCountry(country.iso2)
+      };
+   })},[])
+
+
+   useEffect (() => {
+      handleGeneralInformation("stateBirth",'')
+      handleGeneralInformation("cityBirth",'')
+   },[country])
+   
+   useEffect (() => {
+      handleGeneralInformation("cityBirth",'')
+
+   },[state])
 
    return (
-         <div className=" flex-grow grid grid-cols-2  gap-4 lg:grid-cols-4 lg:grid-rows-9 m-10">
+         <div className=" flex-grow grid grid-cols-2  gap-4 lg:grid-cols-4 lg:grid-rows-9 ">
 
 	 <div className="row-start-1 " >
 	    <InputField
-               name="names"
+               name="name"
                label="Nombres"
-               value={generalInformation.expeditionCity}
+               value={generalInformation.name}
                onChange={handleChangeGeneralInformation}
             />
 	 </div>
 	 <div>
 	    <InputField
-               name="last"
+               name="lastName"
                label="Apellidos"
-               value={generalInformation.expeditionCity}
+               value={generalInformation.lastName}
                onChange={handleChangeGeneralInformation}
             />
 	 </div>
@@ -33,71 +94,80 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
 	       label="Tipo de Identificación"
 	       value={generalInformation.typeIdentification}
 	       options={IdentificationForm}
-	       onChange={handleChangeGeneralInformation}
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
+	      
 	    />
-
 	 </div>
 	 <div className="row-start-2">
             <InputField
                type="number"
                name="identification"
                label="Numero de Identificación"
-               value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
+               value={generalInformation.identification}
                onChange={handleChangeGeneralInformation}
             />
 	 </div>
-	 <div className="row-start-2">
-            <InputField
-               type="date"
+	 <div className="row-start-3">
+            <InputCalendar
                name="expeditionDate"
                label="Fecha de Expedición"
-               value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
-               onChange={handleChangeGeneralInformation}
+               value={generalInformation.expeditionDate}
+               onChange={handleGeneralInformation}
             />
 	 </div>
-	 <div className="row-start-2">
-            <InputField
-               type="text"
-               name="expeditionDate"
-               label="Ciudad de Expedición"
-               value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
-               onChange={handleChangeGeneralInformation}
-            />
-	 </div>
-
 	 <div className="row-start-3">
             <InputField
-               type="date"
+               type="text"
+               name="expeditionCity"
+               label="Ciudad de Expedición"
+               value={generalInformation.expeditionCity}
+               onChange={handleChangeGeneralInformation}
+            />
+	 </div>
+	 
+	<div className="row-start-4">
+            <InputCalendar
                name="expeditionDate"
                label="Fecha de nacimiento"
-               value={generalInformation.expeditionDate?.toISOString().substr(0, 10) || ''}
-               onChange={handleChangeGeneralInformation}
+               value={generalInformation.birthDate}
+               onChange={handleGeneralInformation}
             />
-	 </div>
-
-
-	 <div className="row-start-4">
-	    <SelectFieldTest options={countries} />
 	 </div>
 	 <div className="row-start-4">
 	    <SelectField
-               name="Pais de expedicion"
+               name="countryBirth"
+               label="Pais"
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={true}
+               value={generalInformation.countryBirth}
+               options={countries}
+	       country={country}
+	       setCountry={setCountry}
+            />
+	 </div>
+
+	 <div className="row-start-4">
+	    <SelectField
+               name="stateBirth"
                label="Estado/Departamento"
-               value={generalInformation.studies}
-               options={countries}
-               onChange={handleChangeGeneralInformation}
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
+               value={generalInformation.stateBirth}
+               options={data?.getState}
+	       setState={setState}
             />
 	 </div>
-	 <div className="row-start-4">
+	  <div className="row-start-4">
 	    <SelectField
-               name="Pais de expedicion"
-               label="Ciudad"
-               value={generalInformation.studies}
-               options={countries}
-               onChange={handleChangeGeneralInformation}
+               name="cityBirth"
+               label="Municipio/Ciudad"
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
+               value={generalInformation.cityBirth}
+               options={dataTown?.getTown}
             />
 	 </div>
-
 	 <div className="row-start-5">
 
             <SelectField
@@ -105,7 +175,8 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                label="Género"
                value={generalInformation.gender}
                options={GenderForm}
-               onChange={handleChangeGeneralInformation}
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
             />
 	 </div>
 	 <div className="row-start-5">
@@ -115,33 +186,57 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
                label="Estado Civil"
                value={generalInformation.statusCivil}
                options={CivilStatusForm}
-               onChange={handleChangeGeneralInformation}
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
             />
 	 </div>
+
 	 <div className="row-start-6">
             <InputField
+	       type="text"
                name="addressResidence"
                label="Dirección de Residencia"
                value={generalInformation.addressResidence}
                onChange={handleChangeGeneralInformation}
             />
 	 </div>
+
 	 <div className="row-start-6">
-            <InputField
-               name="municipality"
-               label="Ciudad"
-               value={generalInformation.municipality}
-               onChange={handleChangeGeneralInformation}
+	    <SelectField
+               name="countryResidence"
+               label="Pais"
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={true}
+               value={generalInformation.countryResidence}
+               options={countries}
+	       country={country}
+	       setCountry={setCountry}
             />
 	 </div>
+
 	 <div className="row-start-6">
-            <InputField
-               name="city"
-               label="Departamento"
-               value={generalInformation.city}
-               onChange={handleChangeGeneralInformation}
+	    <SelectField
+               name="stateResidence"
+               label="Estado/Departamento"
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
+               value={generalInformation.stateResidence}
+               options={data?.getState}
+	       setState={setState}
             />
 	 </div>
+	  <div className="row-start-6">
+	    <SelectField
+               name="cityResidence"
+               label="Municipio/Ciudad"
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
+               value={generalInformation.cityResidence}
+               options={dataTown?.getTown}
+            />
+	 </div>
+
+ 
 	 <div className="row-start-7">
             <InputField
                type="email"
@@ -153,41 +248,51 @@ export function GeneralInformation({ generalInformation, handleChangeGeneralInfo
 	 </div>
 	 <div className="row-start-7">
             <InputField
-               type="tel"
+               type="number"
                name="phone"
                label="Celular"
-               value={generalInformation.phone.toString()}
+               value={generalInformation.phone}
                onChange={handleChangeGeneralInformation}
             />
 	 </div>
 	 <div className="row-start-7">
             <InputField
-               type="tel"
+               type="number"
                name="landLine"
                label="Teléfono Fijo"
-               value={generalInformation.landLine.toString()}
+               value={generalInformation.landLine}
                onChange={handleChangeGeneralInformation}
             />
 	 </div>
+	 
+	
 	 <div className="row-start-[8]">
-            <SelectField
-               name="housingType"
-               label="Tipo de Vivienda"
-               value={generalInformation.housingType}
-               options={HousingTypeForm}
-               onChange={handleChangeGeneralInformation}
-            />
+	    <SelectField
+	       name="housingType"
+	       label="housingType"
+	       value={generalInformation.housingType}
+	       options={HousingTypeForm}
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
+	      
+	    />
+
 	 </div>
 
 	 <div className="row-start-[8]">
-            <SelectField
-               name="studies"
-               label="Estudios"
-               value={generalInformation.studies}
-               options={StudiesForm}
-               onChange={handleChangeGeneralInformation}
-            />
+	    <SelectField
+	       name="studies"
+	       label="Estudios"
+	       value={generalInformation.studies}
+	       options={StudiesForm}
+	       handleGeneralInformation={handleGeneralInformation}
+	       image={false}
+	      
+	    />
+
 	 </div>
+
+	 
 	 <div className="row-start-[8]">
             <InputField
                name="profession"
