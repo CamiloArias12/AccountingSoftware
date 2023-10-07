@@ -8,23 +8,22 @@ import { Account } from "../type-account/account/account.entity";
 export class TypeCredit {
 
    @Field()
-   @PrimaryColumn()
-   idTypeCredit: number;
+   @PrimaryGeneratedColumn()
+   id: number;
 
    @Field()
    @Column()
-   nombre: string;
-
-   @ManyToMany(() => SubAccount)
-   @JoinTable()
-   subAccounts: SubAccount[] | null;
-
+   name: string;
+   
+   @Field()
+   @Column()
+   interest:number;
+   
+   @Field(() => [Auxiliary])
    @ManyToMany(() => Auxiliary)
    @JoinTable()
-   auxiliarys: Auxiliary[] | null;
+   auxiliarys: Auxiliary[] ;
 
-   @ManyToMany(() => Account)
-   @JoinTable()
-   accounts: Account[] | null;
+  
 
 }

@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { TypeCreditService } from './type-credit.service';
 import { TypeCredit } from './type-credit.entity';
 import { CreateTypeCreditDto } from './dto/createTypeCredit.dto';
@@ -19,6 +19,11 @@ export class TypeCreditResolver {
     @Mutation(() => TypeCredit)
     async updateTypeCredit(@Args('data') updateTypeCreditDto: UpdateTypeCreditDto): Promise<TypeCredit> {
         return await this.typeCreditService.updateOrCreateTypeCredit(updateTypeCreditDto);
+    }
+
+   @Query(() => [TypeCredit])
+      async getTypeCreditAll(): Promise<TypeCredit[]> {
+        return await this.typeCreditService.findAll();
     }
 
 }

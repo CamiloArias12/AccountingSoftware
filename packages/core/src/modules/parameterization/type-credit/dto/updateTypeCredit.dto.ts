@@ -3,17 +3,14 @@ import { InputType, Field, Int } from '@nestjs/graphql';
 @InputType()
 export class UpdateTypeCreditDto {
     @Field()
-    idTypeCredit: number;
+    id: number;
 
     @Field({ nullable: true })
-    nombre?: string;
-
-    @Field(() => [Int], { nullable: true }) 
-    subAccount?: number[];
-
-    @Field(() => [Int], { nullable: true }) 
-    account?: number[];
-
+    name?: string;
+   
+    @Field({ nullable: true })
+    interest?: number;
+    
     @Field(() => [Int], { nullable: true }) 
     auxiliary?: number[];
 }
