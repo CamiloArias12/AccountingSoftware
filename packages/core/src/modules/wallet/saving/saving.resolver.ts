@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { SavingService } from './saving.service';
-import { Saving } from './entities/saving.entity';
 import { CreateSavingInput } from './dto/create-saving.input';
 import { UpdateSavingInput } from './dto/update-saving.input';
+import { Saving } from './saving.entity';
 
 @Resolver(() => Saving)
 export class SavingResolver {

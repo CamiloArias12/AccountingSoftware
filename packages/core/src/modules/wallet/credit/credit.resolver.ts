@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { CreditService } from './credit.service';
-import { Credit } from './entities/credit.entity';
 import { CreateCreditInput } from './dto/create-credit.input';
 import { UpdateCreditInput } from './dto/update-credit.input';
+import { Credit } from './credit.entity';
 
 @Resolver(() => Credit)
 export class CreditResolver {

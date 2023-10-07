@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { InstallmentsService } from './installments.service';
-import { Installment } from './entities/installment.entity';
 import { CreateInstallmentInput } from './dto/create-installment.input';
 import { UpdateInstallmentInput } from './dto/update-installment.input';
+import { Installment } from './installment.entity';
 
 @Resolver(() => Installment)
 export class InstallmentsResolver {
