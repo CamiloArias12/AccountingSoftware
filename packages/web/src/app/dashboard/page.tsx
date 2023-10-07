@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import './page.css'
 import SideBar from "../components/sidebar/Sidebar";
 import CountChart from "../components/chart/count";
@@ -8,9 +8,11 @@ import { ChartLine } from "../components/chart/Multiaxis";
 import { BarChart } from "../components/chart/VerticalChart";
 import { Charm } from "next/font/google";
 import { Chart } from "../components/chart/Chart";
+import SplashScreen from "../components/splash/Splash";
 export default  function Dashboard (){
 
    return (
+   <Suspense fallback ={<SplashScreen />}>
       <div className=" m-4 flex-grow flex flex-col">
 	 <div className=" flex flex-row ">
 	    <CountChart value={21834} title="Afiliados" background="bg-[#147898]"/>
@@ -32,6 +34,7 @@ export default  function Dashboard (){
 	    <div className="bg-white"></div>
 	 </div>
       </div>
+   </Suspense>
       );
   
 
