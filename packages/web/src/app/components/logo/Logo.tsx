@@ -1,10 +1,23 @@
 
+import {motion} from "framer-motion"
 
-function Logo({colorStroke,colorFill, className}:{colorStroke:string,colorFill:string ,className:string}){
+function Logo(){
    return(
-	 <svg width="233" height="195" viewBox="0 0 233 195"xmlns="http://www.w3.org/2000/svg">
-	 <g stroke={colorStroke}  fill={colorFill} strokeWidth={'2px'}>
-	 <path className="st0"  d="M53.5085 18.1385C50.0956 18.5852 47.4172 19.1991 44.8968 
+	 <motion.svg width="233" height="195" viewBox="0 0 233 195"xmlns="http://www.w3.org/2000/svg">
+	 <motion.g stroke="#1A5DAD"  strokeWidth={'6px'}>
+	 <motion.path 
+	 initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{
+            duration: 2,
+            ease: "easeInOut",
+            repeat: Infinity,
+            repeatType: "loop",
+          }}
+          strokeWidth={6}
+          strokeDasharray="0 1"
+          fill="none"
+	 d="M53.5085 18.1385C50.0956 18.5852 47.4172 19.1991 44.8968 
                                  20.113C43.9921 20.4411 43.0776 20.7586 42.865 20.8185C37.2107 22.4091 30.2749 29.4437 27.2459 36.6597C26.7833 37.7626 26.7076 37.9727 26.4059 38.9999C26.2323 39.5897 26.022 40.2477 25.9381 
                40.4625C25.016 42.8221 24.3002 49.4 24.4737 53.9172C24.6811 59.3001 24.6601 71.6965 24.4242
                                 83.4601C24.3071 89.305 24.1237 100.361 24.0171 108.03C23.9105 115.698 23.7311 124.78 23.618 
@@ -185,8 +198,8 @@ function Logo({colorStroke,colorFill, className}:{colorStroke:string,colorFill:s
                      112.507C97.4278 113.083 100.698 112.64 100.935 111.886C101.346 110.583 100.502 110.158 97.6317 
                      110.224C93.0031 110.33 90.8741 105.828 93.994 102.531C94.4116 102.09 94.4751 101.878 94.3877 
                      101.222C94.2671 100.313 94.4139 100.139 95.6267 99.7556C96.8558 99.3665 96.9047 99.3788 97.4196 100.201Z" />
-		  </g> 
-               </svg>
+		  </motion.g> 
+               </motion.svg>
          )
       }
 
