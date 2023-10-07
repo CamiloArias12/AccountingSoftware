@@ -1,9 +1,11 @@
 import { Row, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { motion} from "framer-motion"
-import React from "react"
+import React, { use, useState } from "react"
 import { useVirtual } from "react-virtual"
+import TypeAccountGeneral from "../forms/type-account/TypeAccountGeneral"
+import { useRouter } from "next/navigation"
 
-function Table ({columns , data,setShowOptions}:{columns:any,data:any,setShowOptions:any}){
+function Table ({columns , data,setShowOptions,setSelected}:{columns:any,data:any,setShowOptions:any,setSelected:any}){
    
    const rerender = React.useReducer(() => ({}), {})[1]
 
@@ -19,23 +21,26 @@ function Table ({columns , data,setShowOptions}:{columns:any,data:any,setShowOpt
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
+    
   })
 
 
-   console.log(table) 
 
  const tableContainerRef = React.useRef<HTMLDivElement>(null)
 
   const { rows } = table.getRowModel()
+  const [idrow,setIdRow]=useState<string>('')
+  const [expanded,setExpanded]=useState<boolean>(false)
+  const [value,setValue]= useState<any>()
 
-  console.log("Rows",rows)
   const rowVirtualizer = useVirtual ({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 10,
+    overscan: 12,
   })
   const { virtualItems: virtualRows} = rowVirtualizer
 
+      
   return (
       <div className="mx-4 my-2 flex-grow">
         <table className="h-full w-full table-fixed  ">
@@ -79,19 +84,48 @@ function Table ({columns , data,setShowOptions}:{columns:any,data:any,setShowOpt
             {virtualRows.map(virtualRow => {
               const row = rows[virtualRow.index] as Row<any>
               return (
-                <motion.tr  key={row.id} className=" hover:border-l-4  hover:border-l-[#3C7AC2] ">
+	      <>
+	      {(row.id!==idrow )?
+	       <motion.tr  key={row.id} className="default-table hover:border-l-4  hover:border-l-[#3C7AC2] ">
                   {row.getVisibleCells().map(cell => {
                     return (
-                      <td  onClick={() =>{ setShowOptions(true) }} className="font-light px-2"key={cell.id} >
+		    <>
+                      <td  onClick={() =>{ setShowOptions(true)
+
+			   if(row._valuesCache.code){ 
+			   
+			   setSelected(row._valuesCache.code)}
+			   if(idrow==row.id){
+			      setIdRow(row.id)
+			      setExpanded(!expanded)
+			   }else {
+			      
+			      setExpanded(false)
+			      setIdRow(row.id)
+			      setExpanded(!true)
+			   }
+			   console.log("Flex render",flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        ))
+
+			   }} className="font-light px-2"key={cell.id} >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
                         )}
 				
                       </td>
-                    )
-                  })}
-                </motion.tr>
+		      </>
+		     )
+		     })}
+		  </motion.tr>
+		:
+		  <motion.tr>
+		     <td>Helll</td>
+		  </motion.tr>
+		}
+		</>
               )
             })}
           </tbody>
