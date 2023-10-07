@@ -9,8 +9,13 @@ export class ClassAccountResolver {
 
 
   @Query(() => ClassAccount)
-  async classAccount(@Args('code') code: number): Promise<ClassAccount> {
+  async getClassAccount(@Args('code') code: number): Promise<ClassAccount> {
     return await this.classAccountService.findOne(code);
+  }
+
+  @Query(() => [ClassAccount])
+  async getClassAccountAll():Promise<ClassAccount[]>{
+     return this.classAccountService.findAll();
   }
 
     

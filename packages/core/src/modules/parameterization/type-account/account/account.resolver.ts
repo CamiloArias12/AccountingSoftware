@@ -8,12 +8,18 @@ export class AccountResolver {
 
 
     @Query(() => [Account])
-    async allAccounts(): Promise<Account[]> {
+    async getAccountAll(): Promise<Account[]> {
         return await this.accountService.findAll();
     }
+   
+    @Query(() => [Account])
+    async getAccountsByGroup(@Args('code') code:number): Promise<Account[]> {
+        return await this.accountService.findByGroup(code);
+    }
+
 
     @Query(() => Account)
-    async account(@Args('code') code: number): Promise<Account> {
+    async getAccount(@Args('code') code: number): Promise<Account> {
         return await this.accountService.findOne(code);
     }
 

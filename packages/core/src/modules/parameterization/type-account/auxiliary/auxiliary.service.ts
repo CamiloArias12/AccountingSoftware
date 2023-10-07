@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Auxiliary } from './auxiliary.entity';
-import { TypeAccountService } from '../type-account.service';
 import { TypeAccount } from '../type-account.entity';
 import { SubAccount } from '../sub-account/sub-account.entity';
 
@@ -24,7 +23,11 @@ export class AuxiliaryService {
 
 
     async findAll(): Promise<Auxiliary[]> {
-        return await this.auxiliaryRepository.find();
+        return await this.auxiliaryRepository.find(
+	 {relations:{
+	    typeAccount:true
+	 }}
+	);
     }
 
     async findOne(code: number): Promise<Auxiliary> {
@@ -39,11 +42,27 @@ export class AuxiliaryService {
         return auxiliary;
     }
 
-    async findAuxiliary(codes: number[]): Promise<Auxiliary[]> {
+
+    async findAuxiliarys(codes: number[]): Promise<Auxiliary[]> {
         return await this.auxiliaryRepository.find(
             { where: { code: In(codes) } }
         );
     }
+
+   async findBySubAccount(code:number): Promise<Auxiliary[]> {
+        return await this.auxiliaryRepository.find({
+	     relations:{
+		  typeAccount:true
+	  	  },
+	     where:{
+		  subAccount:{
+		     code:code,
+		  }
+	     }
+	 }
+	);
+      }
+
 
     }
 

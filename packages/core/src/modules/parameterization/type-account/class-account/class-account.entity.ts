@@ -10,7 +10,11 @@ export class ClassAccount {
     @Field()
     @PrimaryColumn()
     code: number;
-
+   
+    @Field({defaultValue:"Clase"})
+    type:string
+   
+    @Field(() => [Group])
     @OneToMany(() => Group, group => group.classAccount)
     groups: Group[];
 

@@ -19,8 +19,26 @@ export class GroupService {
 	    return await this.groupRepository.save(account);
       }
     async findAll(): Promise<Group[]> {
-        return await this.groupRepository.find();
+        return await this.groupRepository.find(
+	  {relations:{
+	    typeAccount:true
+	 }}
+
+	);
     }
+      async findByClass(codeClass:number): Promise<Group[]> {
+        return await this.groupRepository.find({
+	     relations:{
+		  typeAccount:true
+	  	  },
+	     where:{
+		  classAccount:{
+		     code:codeClass,
+		  }
+	     }
+	 }
+	);
+      }
 
     async findOne(code: number): Promise<Group> {
         const group = await this.groupRepository.findOne({

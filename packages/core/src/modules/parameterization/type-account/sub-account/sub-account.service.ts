@@ -21,7 +21,11 @@ export class SubAccountService {
       }
 
     async findAll(): Promise<SubAccount[]> {
-        return await this.subAccountRepository.find();
+        return await this.subAccountRepository.find(
+	    {relations:{
+	    typeAccount:true
+	 }}
+	);
     }
 
     async findOne(code: number): Promise<SubAccount> {
@@ -35,12 +39,26 @@ export class SubAccountService {
         }
         return subAccount;
     }
-
-    async findSubAccount(codes: number[]): Promise<SubAccount[]> {
+   async findSubAccounts(codes: number[]): Promise<SubAccount[]> {
         return await this.subAccountRepository.find(
             { where: { code: In(codes) } }
         );
     }
+
+    async findByAccount(code:number): Promise<SubAccount[]> {
+        return await this.subAccountRepository.find({
+	     relations:{
+		  typeAccount:true
+	  	  },
+	     where:{
+		  account:{
+		     code:code,
+		  }
+	     }
+	 }
+	);
+      }
+
 
 }
 

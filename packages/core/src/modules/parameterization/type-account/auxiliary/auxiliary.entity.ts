@@ -9,6 +9,9 @@ export class Auxiliary {
    @Field()
    @PrimaryColumn()
    code: number;   
+   
+   @Field({defaultValue:"Auxiliar"})
+   type:string
 
    @ManyToOne(() => SubAccount, subAccount => subAccount.auxiliaries,{onUpdate:'CASCADE'})
     subAccount: SubAccount;

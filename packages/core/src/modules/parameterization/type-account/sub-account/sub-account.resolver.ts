@@ -7,14 +7,19 @@ export class SubAccountResolver {
     constructor(private readonly subAccountService: SubAccountService) { }
 
     @Query(() => [SubAccount])
-    async allSubAccounts(): Promise<SubAccount[]> {
+    async getSubAccountAll(): Promise<SubAccount[]> {
         return await this.subAccountService.findAll();
     }
 
     @Query(() => SubAccount)
-    async subAccount(@Args('code') code: number): Promise<SubAccount> {
+    async getSubAccount(@Args('code') code: number): Promise<SubAccount> {
         return await this.subAccountService.findOne(code);
     }
+   @Query(() => [SubAccount])
+    async getSubAccountByAccount(@Args('code') code:number): Promise<SubAccount[]> {
+        return await this.subAccountService.findByAccount(code);
+    }
+
 
 
 }

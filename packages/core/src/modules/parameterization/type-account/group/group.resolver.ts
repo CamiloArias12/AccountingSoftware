@@ -7,15 +7,19 @@ export class GroupResolver {
     constructor(private readonly groupService: GroupService) { }
 
     @Query(() => [Group])
-    async allGroups(): Promise<Group[]> {
+    async getGroupAll(): Promise<Group[]> {
         return await this.groupService.findAll();
     }
 
     @Query(() => Group)
-    async group(@Args('code') code: number): Promise<Group> {
+    async getGroup(@Args('code') code: number): Promise<Group> {
         return await this.groupService.findOne(code);
     }
 
-    
+     @Query(() => [Group])
+    async getGroupByClass(@Args('code') code: number): Promise<Group[]> {
+        return await this.groupService.findByClass(code);
+    }
+
 }
 

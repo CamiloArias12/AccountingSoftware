@@ -1,17 +1,18 @@
-import { Entity,  Column,  PrimaryColumn, OneToOne } from 'typeorm';
+import { Entity,  Column,  PrimaryColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from "@nestjs/graphql";
 import { ClassAccount } from './class-account/class-account.entity';
 import { Account } from './account/account.entity';
 import { Auxiliary } from './auxiliary/auxiliary.entity';
 import { Group } from './group/group.entity';
 import { SubAccount } from './sub-account/sub-account.entity';
+import { NatureEnum } from './dto/enum-type';
 
 @ObjectType()
 @Entity()
 export class TypeAccount {
 
     @Field()
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
     code: number;
 
     @Field()
@@ -19,7 +20,13 @@ export class TypeAccount {
     name: string;
 
     @Field()
-    @Column()
+    @Column(
+      {
+	 type:'enum',
+	 enum:NatureEnum,
+	 nullable:false
+      }
+    )
     nature: string;
 
     @Field()
@@ -45,7 +52,6 @@ export class TypeAccount {
     classAccount: ClassAccount
     
     @Field(() => SubAccount)
-
     @OneToOne(() => SubAccount, subAccount => subAccount.typeAccount)
     subAccount: SubAccount
 

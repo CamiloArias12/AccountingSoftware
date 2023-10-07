@@ -7,14 +7,20 @@ export class AuxiliaryResolver {
     constructor(private readonly auxiliaryService: AuxiliaryService) { }
 
    @Query(() => [Auxiliary])
-    async allAuxiliaries(): Promise<Auxiliary[]> {
+    async getAuxilaryAll(): Promise<Auxiliary[]> {
         return await this.auxiliaryService.findAll();
     }
 
     @Query(() => Auxiliary)
-    async auxiliary(@Args('code') code: number): Promise<Auxiliary> {
+    async getAuxiliary(@Args('code') code: number): Promise<Auxiliary> {
         return await this.auxiliaryService.findOne(code);
     }
+  
+    @Query(() => [Auxiliary])
+    async getAccountBySubAccount(@Args('code') code:number): Promise<Auxiliary[]> {
+        return await this.auxiliaryService.findBySubAccount(code);
+    }
+
 
 }
 

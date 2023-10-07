@@ -7,7 +7,7 @@ import { SubAccountService } from './sub-account/sub-account.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeAccount } from './type-account.entity';
 import { Repository } from 'typeorm';
-import { CreateTypeAccountInput } from './dto/createTypeAccount';
+import { CreateTypeAccount } from './dto/createTypeAccount';
 import { TypeAccountEnum } from './dto/enum-type';
 import { ClassAccount } from './class-account/class-account.entity';
 import { Group } from './group/group.entity';
@@ -29,29 +29,29 @@ export class TypeAccountService {
 
   ) { }
 
-  async create(data:CreateTypeAccountInput,type:TypeAccountEnum,code?:number): Promise<TypeAccount> {
+  async create(data:CreateTypeAccount,type:TypeAccountEnum,code?:number): Promise<TypeAccount> {
      
      if(!await this.findOne(data.code)){
       const typeAccount = this.typeAccountRepository.create(data);
+      let queryTypeAccount:TypeAccount=new TypeAccount()
 
       if(type===TypeAccountEnum.CLASS ){
-	 console.log("Create class")
-        const queryTypeAccount:TypeAccount= await this.typeAccountRepository.save(typeAccount);
+        queryTypeAccount= await this.typeAccountRepository.save(typeAccount);
 	const classAccount:ClassAccount= await this.classAccountService.create(queryTypeAccount);
 
 	if(classAccount) return queryTypeAccount;
        }
 
       if(type===TypeAccountEnum.GROUP && await this.findOne(code)){
-        const queryTypeAccount:TypeAccount= await this.typeAccountRepository.save(typeAccount);
-      	const classAccount:ClassAccount= await this.classAccountService.findOne(code);
+        queryTypeAccount= await this.typeAccountRepository.save(typeAccount);
+      	const classAccount= await this.classAccountService.findOne(code);
         const group:Group= await this.groupAccountService.create(queryTypeAccount,classAccount);
 
 	if(group) return queryTypeAccount;
        }
 
       if(type===TypeAccountEnum.ACCOUNT && await this.findOne(code)){
-	const queryTypeAccount:TypeAccount= await this.typeAccountRepository.save(typeAccount);
+	queryTypeAccount= await this.typeAccountRepository.save(typeAccount);
       	const group:Group= await this.groupAccountService.findOne(code);
         const account:Account= await this.accountService.create(queryTypeAccount,group);
 
@@ -59,7 +59,7 @@ export class TypeAccountService {
        }
 
       if(type===TypeAccountEnum.SUBACCOUNT && await this.findOne(code)){
-        const queryTypeAccount:TypeAccount= await this.typeAccountRepository.save(typeAccount);
+        queryTypeAccount= await this.typeAccountRepository.save(typeAccount);
       	const account:Account= await this.accountService.findOne(code);
         const subAccount:SubAccount= await this.subAccountService.create(queryTypeAccount,account);
 
@@ -68,7 +68,7 @@ export class TypeAccountService {
        }
 
       if(type===TypeAccountEnum.AUXILIARY && await this.findOne(code)){
-	 const queryTypeAccount:TypeAccount= await this.typeAccountRepository.save(typeAccount);
+	 queryTypeAccount= await this.typeAccountRepository.save(typeAccount);
 	 const subAccount:SubAccount= await this.subAccountService.findOne(code);
 	 const auxiliary:Auxiliary= await this.auxiliaryService.create(queryTypeAccount,subAccount);
 
@@ -83,7 +83,8 @@ export class TypeAccountService {
   }
 
   async findAll(): Promise<TypeAccount[]> {
-    return await this.typeAccountRepository.find();
+    return await this.typeAccountRepository.find(
+    );
   }
 
   async findOne(code: number): Promise<TypeAccount> {

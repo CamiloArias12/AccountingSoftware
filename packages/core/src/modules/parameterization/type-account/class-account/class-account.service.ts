@@ -19,12 +19,34 @@ export class ClassAccountService {
 
 
   async findOne(code: number): Promise<ClassAccount> {
-    const classAccount = await this.classAccountRepository.findOne({
+    return  await this.classAccountRepository.findOne({
       where: {
         code,
       },
     });
-    return classAccount;
+  }
+
+  async findAll(): Promise<ClassAccount[]> {
+      return await this.classAccountRepository.find(
+	 {
+	    relations:{
+	       typeAccount:true,
+	       groups:{
+		  typeAccount:true,
+		  accounts:{
+		     typeAccount:true,
+		     subAccounts:{
+			typeAccount:true,
+			auxiliaries:{
+			   typeAccount:true
+			}
+		     }
+		  }
+
+	       }
+	    }
+	 }
+      );
   }
 
 

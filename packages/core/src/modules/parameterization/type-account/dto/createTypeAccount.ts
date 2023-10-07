@@ -1,7 +1,8 @@
 import { InputType, Field } from '@nestjs/graphql';
+import { NatureEnum } from './enum-type';
 
 @InputType()
-export class CreateTypeAccountInput{
+export class CreateTypeAccount{
     
     @Field()
     code: number;
@@ -10,6 +11,6 @@ export class CreateTypeAccountInput{
     name: string;
 
     @Field()
-    nature: string;
+    nature: NatureEnum;
 
 }

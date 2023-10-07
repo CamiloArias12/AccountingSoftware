@@ -11,10 +11,14 @@ export class SubAccount {
    @Field()
    @PrimaryColumn()
    code: number;  
+   
+   @Field({defaultValue:"SubCuenta"})
+   type:string
 
    @ManyToOne(() => Account, account => account.subAccounts,{onUpdate:'CASCADE'})
     account: Account;
 
+    @Field(() => [Auxiliary])
     @OneToMany(() => Auxiliary, auxiliary => auxiliary.subAccount)
     auxiliaries: Auxiliary[];
 

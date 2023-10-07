@@ -11,10 +11,13 @@ export class Group {
     @Field()
     @PrimaryColumn()
     code: number;
+   
+    @Field({defaultValue:"Grupo"})
+    type:string
 
     @ManyToOne(() => ClassAccount, classAccount => classAccount.groups,{onUpdate:'CASCADE'})
     classAccount: ClassAccount;
-
+    @Field(() => [Account])
     @OneToMany(() => Account, account => account.group)
     accounts: Account[];
 
