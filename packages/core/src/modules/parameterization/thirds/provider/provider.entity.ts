@@ -6,7 +6,7 @@ import { User } from '../user/user.entity';
 @ObjectType()
 @Entity()
 export class Provider { 
-   
+   @Field() 
    @PrimaryColumn()
    idProvider:number
 

@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Column, Entity, OneToOne, PrimaryColumn} from "typeorm";
-import { iUser } from "./dto/user.interface";
+import { IUser} from "./dto/user.interface";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./dto/enum-type";
 import { Affiliate } from "../affiliate/affiliate.entity";
 import { Employee } from "../employee/employee.entity";
@@ -8,7 +8,7 @@ import { Provider } from "../provider/provider.entity";
 
 @ObjectType()
 @Entity()
-export class User implements iUser{
+export class User implements IUser{
  
    @Field()
    @Column({
@@ -16,33 +16,13 @@ export class User implements iUser{
          enum: TypeIdentification,
          nullable: false
    })
-   typeidentification: string;
+   typeIdentification: TypeIdentification;
 
 
    @Field()
    @PrimaryColumn()
    identification: number; 
-
-   @Field()
-   @Column()
-   expeditionDate:Date
-
-   @Field()
-   @Column()
-   expeditionCity:string
-
-   @Field()
-   @Column()
-   countryCard: string;
-
-   @Field()
-   @Column()
-   municipalityCard: String
-
-   @Field()
-   @Column()
-   cityCard: String
-
+   
    @Field()
    @Column()
    name:string
@@ -52,12 +32,37 @@ export class User implements iUser{
    lastName:string
 
    @Field()
+   @Column()
+   expeditionDate:Date
+   
+   @Field()
+   @Column()
+   expeditionCity:string
+
+   @Field()
+   @Column()
+   birthDate:Date
+ 
+   @Field()
+   @Column()
+   countryBirth: string;
+
+   @Field()
+   @Column()
+   stateBirth: String
+
+   @Field()
+   @Column()
+   cityBirth: String
+
+   
+   @Field()
    @Column({
          type: 'enum',
          enum: Gender,
          nullable: false
    })
-   gender: string;
+   gender: Gender;
 
    @Field()
    @Column({
@@ -65,27 +70,32 @@ export class User implements iUser{
          enum: CivilStatus,
          nullable: false
    })
-   statusCivil: string;
+   statusCivil: CivilStatus;
 
    @Field()
    @Column()
    addressResidence: string
 
+ 
    @Field()
    @Column()
-   municipality: String
+   countryResidence: string;
 
    @Field()
    @Column()
-   city: String
+   stateResidence: String
 
    @Field()
    @Column()
-   phone: number
+   cityResidence: String
 
    @Field()
    @Column()
-   landLine: number
+   phone: string
+
+   @Field()
+   @Column()
+   landLine:string 
 
    @Field()
    @Column()
@@ -97,7 +107,7 @@ export class User implements iUser{
    enum: HousingType,
    nullable: false
    })
-   housingType: string;
+   housingType: HousingType;
 
    @Field()
    @Column({
@@ -105,7 +115,7 @@ export class User implements iUser{
    enum: Studies,
    nullable: false
    })
-   studies: string;
+   studies: Studies;
 
    @Field()
    @Column()
@@ -132,18 +142,18 @@ export class User implements iUser{
    status:boolean
 
 
-   @Field(() =>Affiliate)
+   @Field(() =>Affiliate,{nullable:true})
    @OneToOne(() => Affiliate ,affiliate =>affiliate.user)
    affiliate:Affiliate
     
 
-   @Field(() =>Employee)
+   @Field(() =>Employee,{nullable:true})
    @OneToOne(() => Employee ,employee =>employee.user)
    employee:Employee
    
-   @Field(() =>Employee)
+   @Field(() =>Provider,{nullable:true})
    @OneToOne(() => Provider,provider=>provider.user)
-   provider:Employee
+   provider:Provider
 
 
 }

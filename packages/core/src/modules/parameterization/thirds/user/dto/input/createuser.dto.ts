@@ -1,34 +1,20 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType,Int } from "@nestjs/graphql";
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "../enum-type";
-import { InputAffiliateCreate } from "../../../affiliate/dto/InputAffiliate";
+import { IUser } from "../user.interface";
 
 
 
 
 
 @InputType()
-export class UserInput{
+export class UserInput implements IUser{
+
 
    @Field() 
-   typeidentification: TypeIdentification;
-
+   typeIdentification: TypeIdentification;
+   
    @Field()
-   identification:number
-
-   @Field()
-   expeditionDate:Date
-
-   @Field()
-   expeditionCity:string
-
-   @Field()
-   countryCard: string;
-
-   @Field()
-   municipalityCard: String
-
-   @Field()
-   cityCard: String
+   identification:number;
 
    @Field()
    name:string
@@ -36,6 +22,25 @@ export class UserInput{
    @Field()
    lastName:string
 
+    @Field()
+   expeditionDate:Date
+
+   @Field()
+   expeditionCity:string
+
+   @Field()
+   birthDate: Date;
+
+   @Field()
+   countryBirth: string;
+
+   @Field()
+   stateBirth: string;
+
+   @Field()
+   cityBirth: string;
+
+  
    @Field()
    gender: Gender;
 
@@ -46,16 +51,19 @@ export class UserInput{
    addressResidence: string
 
    @Field()
-   municipality: String
+   countryResidence: string
 
    @Field()
-   city: String
+   stateResidence: string
 
    @Field()
-   phone: number
+   cityResidence: String;
 
    @Field()
-   landLine: number
+   phone:string 
+
+   @Field()
+   landLine:string 
 
    @Field()
    email: string

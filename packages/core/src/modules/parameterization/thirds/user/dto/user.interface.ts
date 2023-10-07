@@ -1,44 +1,48 @@
 import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./enum-type";
 
-export interface iUser{
+export interface IUser{
 
-   typeidentification: string;
+   typeIdentification: TypeIdentification;
 
    identification:number
    
-   expeditionDate:Date
-
-   expeditionCity:string
-
-   countryCard: string;
-
-   municipalityCard: String
-
-   cityCard: String
-
    name:string
 
    lastName:string
 
-   gender: string;
+   expeditionDate:Date
 
-   statusCivil: string;
+   expeditionCity:string
+
+   birthDate:Date
+ 
+   countryBirth: string;
+
+   stateBirth: String
+
+   cityBirth: String
+   
+   gender: Gender;
+
+   statusCivil: CivilStatus;
 
    addressResidence: string
 
-   municipality: String
+   countryResidence: string;
 
-   city: String
+   stateResidence: String
 
-   phone: number
+   cityResidence: String
 
-   landLine: number
+   phone:string 
+
+   landLine:string 
 
    email: string
 
-   housingType: string;
+   housingType: HousingType;
 
-   studies: string;
+   studies: Studies;
 
    profession: string
 
@@ -49,4 +53,6 @@ export interface iUser{
    publicRecognition: boolean
 
    publicPower: boolean
+
+
 }

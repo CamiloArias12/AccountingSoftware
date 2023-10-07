@@ -35,17 +35,11 @@ export class BeneficiaryService {
                 idDocument,
             },
         });
-        if (!beneficiary) {
-            throw new NotFoundException(`Beneficiary with ID ${idDocument} not found`);
-        }
         return beneficiary;
     }
 
     async update(idDocument: number, updateDto: UpdateBeneficiaryDto): Promise<Beneficiary> {
         const beneficiary = await this.beneficiaryRepository.preload({ idDocument, ...updateDto });
-        if (!beneficiary) {
-            throw new NotFoundException(`Beneficiary with ID ${idDocument} not found`);
-        }
         return await this.beneficiaryRepository.save(beneficiary);
     }
 

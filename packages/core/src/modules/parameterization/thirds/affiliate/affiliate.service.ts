@@ -7,7 +7,7 @@ import { UpdateAfiliateDto } from './dto/updateAfiliate.dto';
 import { User } from '../user/user.entity';
 import { BeneficiaryAffiliate } from './beneficiary-affiliate/beneficiary-affiliate.entity';
 import { Beneficiary } from './beneficiary/beneficiary.entity';
-import { BeneficiaryInput } from './beneficiary/dto/createBeneficiary.dto';
+import { BeneficiaryInput,BeneficiaryInputGeneral} from './beneficiary/dto/createBeneficiary.dto';
 import { BeneficiaryService } from './beneficiary/beneficiary.service';
 import { BeneficiaryAffiliateService } from './beneficiary-affiliate/beneficiary-affiliate.service';
 
@@ -21,7 +21,7 @@ export class AffiliateService {
 	private readonly beneficiaryAffiliateService:BeneficiaryAffiliateService,
     ) {}
 
-    async create(queryRunner:QueryRunner,affiliateInput: CreateAfiliateDto,user:User,beneficiaryInput:BeneficiaryInput[],beneficiariesPercentage:number[]){
+    async create(queryRunner:QueryRunner,affiliateInput: CreateAfiliateDto,user:User,beneficiaryInput:BeneficiaryInputGeneral[]){
 
          console.log("createAfiliate") 
 	    const affiliate :Affiliate= this.affiliateRepository.create(affiliateInput);
@@ -30,23 +30,22 @@ export class AffiliateService {
 	       
 	    for (const data of beneficiaryInput) {
 
-	       const queryBeneficiary:Beneficiary= await queryRunner.manager.findOneBy(Beneficiary,{ idDocument:data.idDocument})
+	       const queryBeneficiary:Beneficiary= await queryRunner.manager.findOneBy(Beneficiary,{ idDocument:data.beneficiary.idDocument})
 
 	       if(!queryBeneficiary){
 		  const beneficiary:Beneficiary= new Beneficiary()
-		  beneficiary.idDocument=data.idDocument
-		  beneficiary.name=data.name
+		  beneficiary.idDocument=data.beneficiary.idDocument
+		  beneficiary.name=data.beneficiary.name
 		  await this.beneficiaryService.create(beneficiary,queryRunner) 
 		  
 		  }
 	       const beneficiaryAffiliate:BeneficiaryAffiliate= new BeneficiaryAffiliate()
 	       const beneficiary:Beneficiary=new Beneficiary()
-	       beneficiary.idDocument=data.idDocument
-	       beneficiary.name=data.name
+	       beneficiary.idDocument=data.beneficiary.idDocument
+	       beneficiary.name=data.beneficiary.name
 	       beneficiaryAffiliate.affiliate=affiliate
 	       beneficiaryAffiliate.beneficiary=beneficiary
-	       beneficiaryAffiliate.percentage=beneficiariesPercentage[0]
-	       beneficiariesPercentage.shift()
+	       beneficiaryAffiliate.percentage=data.percentage
 
 	    console.log(   await this.beneficiaryAffiliateService.create(beneficiaryAffiliate,queryRunner))
 

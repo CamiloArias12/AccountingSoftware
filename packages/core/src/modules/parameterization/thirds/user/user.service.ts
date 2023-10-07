@@ -22,7 +22,7 @@ export class UserService {
       private readonly dataSource:DataSource
    ){}
 
-   async create(dto:UserInput,affiliateInput?:InputAffiliateCreate,employee?:InputEmployeeCreate, provider?:boolean): Promise<User >{
+   async create(dto:UserInput,affiliateInput?:InputAffiliateCreate,employee?:InputEmployeeCreate, provider?:boolean): Promise<Boolean >{
 
    if(affiliateInput || employee || provider){
 
@@ -34,8 +34,7 @@ export class UserService {
 	 try {
 	 const queryUser:User =await queryRunner.manager.save(user)
 	    if(affiliateInput){
-	       await this.affiliateService.create(queryRunner,affiliateInput.inputAffiliate,queryUser,
-		  affiliateInput.beneficiary.beneficiaries,affiliateInput.beneficiary.percentage);
+	       await this.affiliateService.create(queryRunner,affiliateInput.inputAffiliate,queryUser,affiliateInput.beneficiaries);
 	    }
 	    if(employee){
 	       await this.employeeService.create(employee,queryUser,queryRunner)
@@ -46,7 +45,7 @@ export class UserService {
 	       await this.providerService.create(queryUser,queryRunner)
 	    }
 	    await queryRunner.commitTransaction()
-	    return await this.findOne(user.identification)
+	    return true
 	    
 
 	 }catch(a){
@@ -56,6 +55,9 @@ export class UserService {
 	    await queryRunner.release()
 	 }
 
+      
+      }else{
+	 return false;
       }
       }
       
@@ -63,10 +65,18 @@ export class UserService {
 
    async findOne(identification:number): Promise<User | null>{
       const user:User=await this.userRepository.find({relations:{
-      affiliate:true,
+      affiliate:{
+	 beneficiaries:{
+	    beneficiary:true,
+	 },
+      },
+      provider:true,
+      employee:true,
+      
       },where:{
 	    identification:identification,
       }}).then ((data)=>{
+	 console.log(data)
       if(data.length===0){
 	 return null;
       }else {
@@ -77,6 +87,15 @@ export class UserService {
       
       return user;
       
+   }
+
+   async findUsers():Promise <User[]>{
+      return await this.userRepository.find();
+   }
+
+   async changeStatus(identification:number,status:boolean):Promise<User>{
+      console.log(await this.userRepository.update({identification:identification},{status:status}));
+      return await this.findOne(identification);
    }
 }
 

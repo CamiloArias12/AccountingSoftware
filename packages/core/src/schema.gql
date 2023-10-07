@@ -2,25 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Account {
-  code: Float!
-  typeAccount: TypeAccount!
-}
-
-type Group {
-  code: Float!
-  typeAccount: TypeAccount!
-}
-
-type ClassAccount {
-  code: Float!
-  typeAccount: TypeAccount!
-}
-
 type TypeAccount {
   code: Float!
   name: String!
   nature: String!
+  state: Boolean!
   account: Account!
   auxiliary: Auxiliary!
   group: Group!
@@ -28,24 +14,51 @@ type TypeAccount {
   subAccount: SubAccount!
 }
 
-type Auxiliary {
+type ClassAccount {
   code: Float!
+  type: String!
+  groups: [Group!]!
+  typeAccount: TypeAccount!
+}
+
+type Group {
+  code: Float!
+  type: String!
+  accounts: [Account!]!
+  typeAccount: TypeAccount!
+}
+
+type Account {
+  code: Float!
+  type: String!
+  subAccounts: [SubAccount!]!
   typeAccount: TypeAccount!
 }
 
 type SubAccount {
   code: Float!
+  type: String!
+  auxiliaries: [Auxiliary!]!
+  typeAccount: TypeAccount!
+}
+
+type Auxiliary {
+  code: Float!
+  type: String!
   typeAccount: TypeAccount!
 }
 
 type TypeSaving {
-  idTypeSaving: Float!
-  nombre: String!
+  id: Float!
+  name: String!
+  auxiliarys: [Auxiliary!]!
 }
 
 type TypeCredit {
-  idTypeCredit: Float!
-  nombre: String!
+  id: Float!
+  name: String!
+  interest: Float!
+  auxiliarys: [Auxiliary!]!
 }
 
 type Location {
@@ -58,45 +71,6 @@ type Town {
   id: Float!
   name: String!
 }
-
-type Employee {
-  username: String!
-  password: String!
-}
-
-type User {
-  typeidentification: String!
-  identification: Float!
-  expeditionDate: DateTime!
-  expeditionCity: String!
-  countryCard: String!
-  municipalityCard: String!
-  cityCard: String!
-  name: String!
-  lastName: String!
-  gender: String!
-  statusCivil: String!
-  addressResidence: String!
-  municipality: String!
-  city: String!
-  phone: Float!
-  landLine: Float!
-  email: String!
-  housingType: String!
-  studies: String!
-  profession: String!
-  foreignOperations: Boolean!
-  publicResources: Boolean!
-  publicRecognition: Boolean!
-  publicPower: Boolean!
-  status: Boolean!
-  affiliate: Affiliate!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Beneficiary {
   idDocument: Float!
@@ -111,7 +85,6 @@ type BeneficiaryAffiliate {
 }
 
 type Affiliate {
-  idAffiliate: Float!
   company: String!
   addreesCompany: String!
   emailJob: String!
@@ -126,41 +99,132 @@ type Affiliate {
   beneficiaries: [BeneficiaryAffiliate!]!
 }
 
+type Employee {
+  username: String!
+  password: String!
+}
+
+type Provider {
+  idProvider: Float!
+  user: Provider!
+}
+
+type User {
+  typeIdentification: String!
+  identification: Float!
+  name: String!
+  lastName: String!
+  expeditionDate: DateTime!
+  expeditionCity: String!
+  birthDate: DateTime!
+  countryBirth: String!
+  stateBirth: String!
+  cityBirth: String!
+  gender: String!
+  statusCivil: String!
+  addressResidence: String!
+  countryResidence: String!
+  stateResidence: String!
+  cityResidence: String!
+  phone: String!
+  landLine: String!
+  email: String!
+  housingType: String!
+  studies: String!
+  profession: String!
+  foreignOperations: Boolean!
+  publicResources: Boolean!
+  publicRecognition: Boolean!
+  publicPower: Boolean!
+  status: Boolean!
+  affiliate: Affiliate
+  employee: Employee
+  provider: Provider
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Token {
+  token: String!
+}
+
 type Query {
+  getUser(id: Int!): User!
+  getAllUsers: [User!]!
+  allAfiliates: [Affiliate!]!
+  getAffiliate(identification: Float!): Affiliate!
+  allEmployees: [Employee!]!
+  provider(id: Int!): Provider!
   getCountry: [Location!]!
   getState(isoCode: String!): [Location!]!
   getTown(isoCodeCountry: String!, isoCodeState: String!): [Town!]!
-  allAfiliates: [Affiliate!]!
-  getAffiliate(identification: Float!): Affiliate!
-  afiliate(id: Float!): User!
-  allEmployees: [Employee!]!
-  allClassAccounts: [TypeAccount!]!
-  classAccount(code: Float!): ClassAccount!
-  allGroups: [Group!]!
-  group(code: Float!): Group!
-  allAccounts: [Account!]!
-  account(code: Float!): Account!
-  allSubAccounts: [SubAccount!]!
-  subAccount(code: Float!): SubAccount!
-  allAuxiliaries: [Auxiliary!]!
-  auxiliary(code: Float!): Auxiliary!
+  allTypeAccount: [TypeAccount!]!
+  getClassAccount(code: Float!): ClassAccount!
+  getClassAccountAll: [ClassAccount!]!
+  getGroupAll: [Group!]!
+  getGroup(code: Float!): Group!
+  getGroupByClass(code: Float!): [Group!]!
+  getAccountAll: [Account!]!
+  getAccountsByGroup(code: Float!): [Account!]!
+  getAccount(code: Float!): Account!
+  getSubAccountAll: [SubAccount!]!
+  getSubAccount(code: Float!): SubAccount!
+  getSubAccountByAccount(code: Float!): [SubAccount!]!
+  getAuxilaryAll: [Auxiliary!]!
+  getAuxiliary(code: Float!): Auxiliary!
+  getAccountBySubAccount(code: Float!): [Auxiliary!]!
+  getTypeSavingAll: [TypeSaving!]!
+  getTypeCreditAll: [TypeCredit!]!
 }
 
 type Mutation {
-  createAfiliate(inputAffiliate: CreateAfiliateDto!, inputUser: UserInput!, inputBeneficiaries: BeneficiariesInput!): Affiliate!
+  createUser(createUserInput: UserInput!, createAffiiate: InputAffiliateCreate, createEmployee: InputEmployeeCreate, createProvider: Boolean): Boolean!
+  updateStatus(identification: Int!, status: Boolean!): User!
   updateAfiliate(id: Float!, input: UpdateAfiliateDto!): Affiliate!
-  createEmployee(inputEmployee: CreateEmployee!, inputUser: UserInput!): Employee!
-  createEmployeeUserExist(inputEmployee: CreateEmployee!, idUser: Float!): Employee!
-  createClassAccount(input: CreateClassAccountDto!): ClassAccount!
-  updateClassAccount(code: Float!, input: UpdateClassAccountDto!): ClassAccount!
-  createGroup(input: CreateGroupDto!): Group!
-  createAccount(input: CreateAccountDto!): Account!
-  createSubAccount(input: CreateSubAccountDto!): SubAccount!
-  createAuxiliary(input: CreateAuxiliaryDto!): Auxiliary!
+  removeProvider(id: Int!): Provider!
+  authUser(username: String!, password: String!): Token!
+  createAccount(createTypeAccount: CreateTypeAccount!, type: String, referenceTypeAccount: Float): TypeAccount!
   createTypeSaving(data: CreateTypeSavingDto!): TypeSaving!
   updateTypeSaving(data: UpdateTypeSavingDto!): TypeSaving!
   createTypeCredit(data: CreateTypeCreditDto!): TypeCredit!
   updateTypeCredit(data: UpdateTypeCreditDto!): TypeCredit!
+}
+
+input UserInput {
+  typeIdentification: String!
+  identification: Float!
+  name: String!
+  lastName: String!
+  expeditionDate: DateTime!
+  expeditionCity: String!
+  birthDate: DateTime!
+  countryBirth: String!
+  stateBirth: String!
+  cityBirth: String!
+  gender: String!
+  statusCivil: String!
+  addressResidence: String!
+  countryResidence: String!
+  stateResidence: String!
+  cityResidence: String!
+  phone: String!
+  landLine: String!
+  email: String!
+  housingType: String!
+  studies: String!
+  profession: String!
+  foreignOperations: Boolean!
+  publicResources: Boolean!
+  publicRecognition: Boolean!
+  publicPower: Boolean!
+}
+
+input InputAffiliateCreate {
+  inputAffiliate: CreateAfiliateDto!
+  beneficiaries: [BeneficiaryInputGeneral!]!
 }
 
 input CreateAfiliateDto {
@@ -176,41 +240,19 @@ input CreateAfiliateDto {
   numberAccount: Float!
 }
 
-input UserInput {
-  typeidentification: String!
-  identification: Float!
-  expeditionDate: DateTime!
-  expeditionCity: String!
-  countryCard: String!
-  municipalityCard: String!
-  cityCard: String!
-  name: String!
-  lastName: String!
-  gender: String!
-  statusCivil: String!
-  addressResidence: String!
-  municipality: String!
-  city: String!
-  phone: Float!
-  landLine: Float!
-  email: String!
-  housingType: String!
-  studies: String!
-  profession: String!
-  foreignOperations: Boolean!
-  publicResources: Boolean!
-  publicRecognition: Boolean!
-  publicPower: Boolean!
-}
-
-input BeneficiariesInput {
-  beneficiaries: [BeneficiaryInput!]!
-  percentage: [Float!]!
+input BeneficiaryInputGeneral {
+  beneficiary: BeneficiaryInput!
+  percentage: Float!
 }
 
 input BeneficiaryInput {
   name: String!
   idDocument: Float!
+}
+
+input InputEmployeeCreate {
+  username: String!
+  password: String!
 }
 
 input UpdateAfiliateDto {
@@ -226,79 +268,34 @@ input UpdateAfiliateDto {
   numberAccount: Float
 }
 
-input CreateEmployee {
-  username: String!
-  password: String!
-}
-
-input CreateClassAccountDto {
+input CreateTypeAccount {
   code: Float!
   name: String!
   nature: String!
-}
-
-input UpdateClassAccountDto {
-  code: Float!
-  name: String
-  nature: String
-}
-
-input CreateGroupDto {
-  code: Float!
-  name: String!
-  nature: String!
-  classAccountCode: Float!
-}
-
-input CreateAccountDto {
-  code: Float!
-  name: String!
-  nature: String!
-  groupCode: Float!
-}
-
-input CreateSubAccountDto {
-  code: Float!
-  name: String!
-  nature: String!
-  accountCode: Float!
-}
-
-input CreateAuxiliaryDto {
-  code: Float!
-  name: String!
-  nature: String!
-  subAccountCode: Float!
 }
 
 input CreateTypeSavingDto {
-  idTypeSaving: Float!
-  nombre: String!
-  subAccount: [Int!]
-  account: [Int!]
+  name: String!
   auxiliary: [Int!]
 }
 
 input UpdateTypeSavingDto {
-  idTypeSaving: Float!
-  nombre: String!
+  id: Float!
+  name: String!
   subAccount: [Int!]
   account: [Int!]
   auxiliary: [Int!]
 }
 
 input CreateTypeCreditDto {
-  idTypeCredit: Float!
-  nombre: String!
-  subAccount: [Int!]
-  account: [Int!]
-  auxiliary: [Int!]
+  name: String!
+  interest: Float!
+  auxiliary: [Int!]!
 }
 
 input UpdateTypeCreditDto {
-  idTypeCredit: Float!
-  nombre: String
-  subAccount: [Int!]
-  account: [Int!]
+  id: Float!
+  name: String
+  interest: Float
   auxiliary: [Int!]
 }
