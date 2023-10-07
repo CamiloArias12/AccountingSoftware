@@ -1,43 +1,65 @@
 import { GeneralInformationData } from "@/lib/utils/thirds/types";
+import { parse } from "path";
 import { useState } from "react"
 
-export function FormGeneralInformation({generalInformationData}:{generalInformationData?:GeneralInformationData}) {
+export function FormGeneralInformation({data}:{data?:GeneralInformationData}) {
 
-   const [generalInformation, setGeneralInformation] = useState <GeneralInformationData>({
-      typeIdentification: generalInformationData?.typeIdentification || '',
-      expeditionDate:  generalInformationData?.expeditionDate ||new Date(),
-      expeditionCity: generalInformationData?.expeditionCity  ||'',
-      countryCard: generalInformationData?.countryCard ||'',
-      municipalityCard:generalInformationData?.municipalityCard || '',
-      cityCard: generalInformationData?.cityCard || '',
-      name: generalInformationData?.name || '',
-      lastName: generalInformationData?.lastName || '',
-      gender:  generalInformationData?.gender ||'',
-      statusCivil: generalInformationData?.statusCivil ||'',
-      addressResidence: generalInformationData?.addressResidence ||'',
-      municipality: generalInformationData?.municipality || '',
-      city: generalInformationData?.city || '',
-      phone: generalInformationData?.phone || 0,
-      landLine:generalInformationData?.landLine || 0,
-      email:  generalInformationData?.email || '',
-      housingType: generalInformationData?.housingType ||'',
-      studies: generalInformationData?.studies ||'',
-      profession: generalInformationData?.profession || '',
-      foreignOperations: generalInformationData?.foreignOperations || false,
-      publicResources: generalInformationData?.publicResources ||false,
-      publicRecognition: generalInformationData?.publicRecognition ||false,
-      publicPower: generalInformationData?.publicPower ||false
+   
+   const [generalInformation, setGeneralInformation] = useState <GeneralInformationData>(data ? data :{
+      typeIdentification: "",
+      identification:11,
+      name: "JUan",
+      lastName:"Arias",
+      expeditionDate:new Date(),
+      expeditionCity: "Tunja",
+      birthDate:new Date(),
+      countryBirth:"Colombia",
+      stateBirth:"",
+      cityBirth:"",
+      gender:"",
+      statusCivil: "",
+      addressResidence: "sadfdsf",
+      countryResidence:"Colombia",
+      stateResidence:"",
+      cityResidence:"",
+      phone: '',
+      landLine: '',
+      email:  'safsdf@gmail.com',
+      housingType: '',
+      studies: "",
+      profession:  '',
+      foreignOperations: false,
+      publicResources: false,
+      publicRecognition: false,
+      publicPower: false
    })
 
+   console.log(generalInformation)
    const handleChangeGeneralInformation = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = event.target;
-      setGeneralInformation(prevData => ({ ...prevData, [name]: value }));
+	    setGeneralInformation({ ...generalInformation, [name]: value});
    };
 
+    const handleGeneralInformation = (name:string ,value:string) => {
+      setGeneralInformation(prevData => ({ ...prevData, [name]: value }));
+   };
+   
+   const convertNumber =() =>{
+      if(!Number(generalInformation.identification)){
+	 return false;
+      }else{
+	 setGeneralInformation(prevData => ({ ...prevData, identification: parseFloat(generalInformation.identification )}));
+	 return true;
+	 }
+   }
+   
 
    return {
       generalInformation,
-      handleChangeGeneralInformation
+      convertNumber,
+      setGeneralInformation,
+      handleChangeGeneralInformation,
+      handleGeneralInformation
    };
 
 }

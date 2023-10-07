@@ -22,7 +22,8 @@ export function FormCompanyInformation() {
 
     return {
         companyInformation,
-        handleChangeCompanyInformation
+        handleChangeCompanyInformation,
+	setCompanyInformation
     };
 
 }

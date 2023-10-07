@@ -1,18 +1,25 @@
+import { IAfiliate } from "@/lib/utils/thirds/types";
 import { useState } from "react"
 
-export function FormWorkingInformation (){
+interface FormWorkingInformationProps {
+   workingInformationAffiliate?:IAfiliate
 
-      const [workingInformation,setWorkingInformation]= useState({
-         empresa: '',
-         cargo: '',
-         direccion: '',
-         telefono: '',
-         correoLaboral: '',
-         sueldo: 0,
-         ingresoEmpresa: new Date(),
-         banco: '',
-         tipoCuenta: '',
-         numero: ''
+}
+
+export function FormWorkingInformation ({workingInformationAffiliate}:FormWorkingInformationProps){
+
+      const [workingInformation,setWorkingInformation]= useState<IAfiliate>({
+         company:'',
+         addreesCompany:'',
+         jobTitle:'',
+         incomeCompany:"",
+	 emailJob:'',
+         phone: "",
+         salary: "",
+         bank: '',
+         typeAccount:'',
+         numberAccount:"",
+
       })
 
       const handleChangeWorkingInformation = (event: React.ChangeEvent<HTMLInputElement |HTMLSelectElement>) => {
@@ -22,8 +29,10 @@ export function FormWorkingInformation (){
 
 
    return {
+      setWorkingInformation,
       workingInformation,
       handleChangeWorkingInformation
    };
 
 }
+
