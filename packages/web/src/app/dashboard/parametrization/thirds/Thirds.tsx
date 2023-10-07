@@ -2,23 +2,29 @@
 "use client"
 
 import Table from "@/app/components/forms/thirds/TableThirds"
+import UpdateThird from "@/app/components/forms/thirds/UpdateThird"
 import ListChange from "@/app/components/list-change/ListChange"
 import { AddSvg } from "@/app/components/logo/Add"
-import { Affiliate } from "@/lib/utils/thirds/types"
+import { Affiliate, Beneficiaries } from "@/lib/utils/thirds/types"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import CreateThird from "./create/CreateThird"
-import Modal from "@/app/components/modal/Modal"
+import { Suspense, use, useEffect, useState } from "react"
 import { ThirdsType } from "@/lib/utils/thirds/OptionsThirds"
+
 
 export const revalidate=0
 
 function Thirds ( {affiliates}:{affiliates:Affiliate[]}){
    const [index,setIndex]=useState(1)
    const [showOptions,setShowOptions]=useState(false)
-   const [showModal,setShowModal]=useState(false)
+   const [showUpdate,setShowUpdate]=useState(false)
+   const [userSelected,setUserSelected]=useState<number>(0)
    const route =useRouter()
+
+   const [beneficiaryInformation, setBeneficiaryInformation] = useState<Beneficiaries[]>([]);
+
+
    return (
+
       <div className="flex flex-col flex-grow mx-4 mt-16">
 	 <ListChange indexForm={index} setIndexForm={setIndex} list={ThirdsType} color="bg-[#3C7AC2]"/>
 	 <div className="flex flex-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">	  
@@ -26,11 +32,16 @@ function Thirds ( {affiliates}:{affiliates:Affiliate[]}){
 	       <div>
 	       {showOptions &&
 		     <div className="flex flex-row p-2 rounded-[40px] bg-[#F2F5FA] ">
-			<button className="flex flex-row" onClick={() =>{ setShowModal(true)}}>
+			<button className="flex flex-row" 
+			onClick={() =>{
+			    
+			}}>
 			   <img  src="/view.svg"/>
 			   <label className="font-sans px-6 text-sm">Ver</label>
 			</button>
-			<button className="flex flex-row" onClick={() =>{ setShowModal(true)}}>
+			<button className="flex flex-row" onClick={() =>{
+			   setShowUpdate(true)
+			   }}>
 			   <img  src="/edit.svg"/>
 			   <label className="font-sans px-6 text-sm">Editar</label>
 			</button>
@@ -49,21 +60,17 @@ function Thirds ( {affiliates}:{affiliates:Affiliate[]}){
 			   <AddSvg color="#ffffff" /> 
 			</div>
 			<label className="pl-2 hidden group-hover:block text-[12px]">Crear</label>
-		     </div>
+	       </div>
 		  </div>
 		  
-		  <Table affiliates={affiliates} showOptions={showOptions} setShowOptions={setShowOptions} />
+		  <Table affiliates={affiliates} showOptions={showOptions} setShowOptions={setShowOptions} setSelected={setUserSelected} />
 
 	    </div>
 
-	    {showModal &&
-	       <Modal 
-	       title="Actualizar afiliado"
-	       size="w-[80%] h-[90%]"
-	       onClick={() =>{ setShowModal(false)}}
-	       children={<CreateThird/>}
-	       />
+	    {(showUpdate)&&
+	         <UpdateThird thirdIdentification={userSelected} setShow={setShowUpdate}/> 
 	    }
+	       
 	 </div>
    )
 
