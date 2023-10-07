@@ -1,42 +1,87 @@
 import { getClient } from "@/lib/graphql/apollo-client-server"
-import { Affiliate } from "@/lib/utils/thirds/types";
-import { TypeAccounnt } from "@/lib/utils/type-account/types";
+import { GeneralTypeAccount} from "@/lib/utils/type-account/types";
 import { gql } from "@apollo/client";
-import Modal from "@/app/components/modal/Modal";
 import CreateTypeAccount from "./TypeAccount";
 
 export const revalidate=0
 
 export default async function Page(){
    
-   const typeAccounnts:TypeAccounnt[]= await getTypeAccounts()
+   const typeAccounnts:GeneralTypeAccount[]= await getTypeAccounts()
+
    
    return (
       <>
-	 {<CreateTypeAccount typeAccounts={typeAccounnts}/>}
+	    <CreateTypeAccount typeAccounts={typeAccounnts}/>
       </>
 
    )
 }
 
-async  function getTypeAccounts():Promise<TypeAccounnt[]>{
- const AFFILIATES=gql`query {
-	 allClassAccounts{
-	    code
-	    name
-	    nature
-	 }
-      }`
+async  function getTypeAccounts():Promise<GeneralTypeAccount[]>{
+ const AFFILIATES=gql`
+query {
+  getClassAccountAll{
+	type
+    typeAccount {
+      code
+      name
+      nature
+      state
+    }
+    
+  }
+  
+  getGroupAll{
+    type
+    typeAccount {
+      code
+      name
+      nature
+      state
+    }
+    
+  }
+  getAccountAll{
+    type
+    typeAccount {
+      code
+      name
+      nature
+      state
+    }
+    
+  }
+  getSubAccountAll{
+    type
+    typeAccount {
+      code
+      name
+      nature
+      state
+    }
+    
+  }
+  
+  getAuxilaryAll{
+    type
+    typeAccount {
+      code
+      name
+      nature
+      state
+    }
+    
+  }
+  
+  
+}`
    
    const {data}=await getClient().query({query:AFFILIATES})
-   const typeAccounts:TypeAccounnt[]=[]
-   await data.allClassAccounts.map ( (response:TypeAccounnt) => {
-	typeAccounts.push(response) 
-   } ) 
    
-   console.log(typeAccounts)
-
-   return typeAccounts;
+      console.log("Data",data)
+      return data.getClassAccountAll.concat(data.getGroupAll,
+	    data.getAccountAll,data.getSubAccountAll,data.getAuxilaryAll);
 }
 
 
