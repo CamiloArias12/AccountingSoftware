@@ -20,17 +20,13 @@ import { BeneficiaryAffiliate } from './modules/parameterization/thirds/affiliat
 import { TypeCredit } from './modules/parameterization/type-credit/type-credit.entity';
 import { TypeSaving } from './modules/parameterization/type-saving/type-saving.entity';
 import { Provider } from './modules/parameterization/thirds/provider/provider.entity';
+import { Installment } from './modules/wallet/credit/installments/installment.entity';
+import { Credit } from './modules/wallet/credit/credit.entity';
+import { WalletModule } from './modules/wallet/wallet.module';
+import { Saving } from './modules/wallet/saving/saving.entity';
 
 @Module({
-  
-  imports: [ParameterizationModule,
-      GraphQLModule.forRoot(
-	 {
-	    driver:ApolloDriver,
-	    autoSchemaFile:join(process.cwd(),'src/schema.gql')
-	 }
-      ),
-
+	imports: [ParameterizationModule, WalletModule,
    ConfigModule.forRoot({
 	    envFilePath:'.env',
 	    isGlobal:true,
@@ -46,11 +42,11 @@ import { Provider } from './modules/parameterization/thirds/provider/provider.en
 	    database: process.env.DATABASE_NAME,
 	    keepConnectionAlive: true,
 	    synchronize: true,
-	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving,Provider]
+	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving,Provider,Credit,Installment,Saving]
 	 }
       ),
     ],
   providers: [AppService ]
 
 })
-export class AppModule {}
+export class AppModule { }

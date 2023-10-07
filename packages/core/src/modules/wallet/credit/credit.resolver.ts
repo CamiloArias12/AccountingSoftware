@@ -6,7 +6,7 @@ import { Credit } from './credit.entity';
 
 @Resolver(() => Credit)
 export class CreditResolver {
-  constructor(private readonly creditService: CreditService) {}
+  constructor(private readonly creditService: CreditService) { }
 
   @Mutation(() => Credit)
   createCredit(@Args('createCreditInput') createCreditInput: CreateCreditInput) {
@@ -24,7 +24,9 @@ export class CreditResolver {
   }
 
   @Mutation(() => Credit)
-  updateCredit(@Args('updateCreditInput') updateCreditInput: UpdateCreditInput) {
+  async updateCredit(
+    @Args('updateCreditInput') updateCreditInput: UpdateCreditInput
+  ): Promise<Credit> {
     return this.creditService.update(updateCreditInput.id, updateCreditInput);
   }
 
@@ -33,3 +35,4 @@ export class CreditResolver {
     return this.creditService.remove(id);
   }
 }
+

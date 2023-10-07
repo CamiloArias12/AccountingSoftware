@@ -99,6 +99,7 @@ type Affiliate {
   beneficiaries: [BeneficiaryAffiliate!]!
 }
 
+<<<<<<< HEAD
 type Employee {
   username: String!
   password: String!
@@ -149,6 +150,34 @@ scalar DateTime
 
 type Token {
   token: String!
+=======
+type Credit {
+  id: Int!
+  loanAmount: Float!
+  annualInterest: Float!
+  loanPeriod: Float!
+  startDate: DateTime!
+  installments: [Installment!]!
+}
+
+type Installment {
+  id: Int!
+  number: Int
+  paymentDate: DateTime!
+  initialBalance: Float!
+  scheduledPayment: Float!
+  extraPayment: Float!
+  totalPayment: Float!
+  capital: Float!
+  interest: Float!
+  finalBalance: Float!
+  credit: Credit!
+}
+
+type Saving {
+  """Example field (placeholder)"""
+  exampleField: Int!
+>>>>>>> 15bb989
 }
 
 type Query {
@@ -161,6 +190,7 @@ type Query {
   getCountry: [Location!]!
   getState(isoCode: String!): [Location!]!
   getTown(isoCodeCountry: String!, isoCodeState: String!): [Town!]!
+<<<<<<< HEAD
   allTypeAccount: [TypeAccount!]!
   getClassAccount(code: Float!): ClassAccount!
   getClassAccountAll: [ClassAccount!]!
@@ -178,6 +208,26 @@ type Query {
   getAccountBySubAccount(code: Float!): [Auxiliary!]!
   getTypeSavingAll: [TypeSaving!]!
   getTypeCreditAll: [TypeCredit!]!
+=======
+  allAfiliates: [Affiliate!]!
+  getAffiliate(identification: Float!): Affiliate!
+  afiliate(id: Float!): User!
+  allEmployees: [Employee!]!
+  allClassAccounts: [TypeAccount!]!
+  classAccount(code: Float!): ClassAccount!
+  allGroups: [Group!]!
+  group(code: Float!): Group!
+  allAccounts: [Account!]!
+  account(code: Float!): Account!
+  allSubAccounts: [SubAccount!]!
+  subAccount(code: Float!): SubAccount!
+  allAuxiliaries: [Auxiliary!]!
+  auxiliary(code: Float!): Auxiliary!
+  credit(id: Int!): Credit!
+  installments: [Installment!]!
+  installment(id: Int!): Installment!
+  saving(id: Int!): Saving!
+>>>>>>> 15bb989
 }
 
 type Mutation {
@@ -191,6 +241,15 @@ type Mutation {
   updateTypeSaving(data: UpdateTypeSavingDto!): TypeSaving!
   createTypeCredit(data: CreateTypeCreditDto!): TypeCredit!
   updateTypeCredit(data: UpdateTypeCreditDto!): TypeCredit!
+  createCredit(createCreditInput: CreateCreditInput!): Credit!
+  updateCredit(updateCreditInput: UpdateCreditInput!): Credit!
+  removeCredit(id: Int!): Credit!
+  createInstallment(createInstallmentInput: CreateInstallmentInput!): Installment!
+  updateInstallment(updateInstallmentInput: UpdateInstallmentInput!): Installment!
+  removeInstallment(id: Int!): Installment!
+  createSaving(createSavingInput: CreateSavingInput!): Saving!
+  updateSaving(updateSavingInput: UpdateSavingInput!): Saving!
+  removeSaving(id: Int!): Saving!
 }
 
 input UserInput {
@@ -298,4 +357,55 @@ input UpdateTypeCreditDto {
   name: String
   interest: Float
   auxiliary: [Int!]
+}
+
+input CreateCreditInput {
+  loanAmount: Float!
+  annualInterest: Float!
+  loanPeriod: Float!
+  startDate: DateTime!
+}
+
+input UpdateCreditInput {
+  loanAmount: Float
+  annualInterest: Float
+  loanPeriod: Float
+  startDate: DateTime
+  id: Int!
+}
+
+input CreateInstallmentInput {
+  paymentDate: DateTime!
+  initialBalance: Float!
+  scheduledPayment: Float!
+  extraPayment: Float!
+  totalPayment: Float!
+  capital: Float!
+  interest: Float!
+  finalBalance: Float!
+  creditId: Int!
+}
+
+input UpdateInstallmentInput {
+  paymentDate: DateTime
+  initialBalance: Float
+  scheduledPayment: Float
+  extraPayment: Float
+  totalPayment: Float
+  capital: Float
+  interest: Float
+  finalBalance: Float
+  creditId: Int
+  id: Int!
+}
+
+input CreateSavingInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateSavingInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }

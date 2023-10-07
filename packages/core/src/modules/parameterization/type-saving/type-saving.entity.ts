@@ -1,6 +1,8 @@
 import { Field, ObjectType} from "@nestjs/graphql";
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Auxiliary } from "../type-account/auxiliary/auxiliary.entity";
+import { Saving } from "src/modules/wallet/saving/saving.entity";
+
 @ObjectType()
 @Entity()
 export class TypeSaving {
@@ -20,4 +22,9 @@ export class TypeSaving {
    @JoinTable()
    auxiliarys: Auxiliary[];
 
-  }
+  @Field(() => [Saving])
+   @OneToMany(() => Saving, saving => saving.typeSaving)
+   savings: Saving[];
+
+
+}

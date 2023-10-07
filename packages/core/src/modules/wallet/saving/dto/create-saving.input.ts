@@ -1,7 +1,22 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
+import { InputType, Float, Field, Int } from '@nestjs/graphql';
 
 @InputType()
 export class CreateSavingInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => Float)
+  loanAmount: number;
+
+  @Field(() => Float)
+  annualInterest: number;
+
+  @Field(() => Float)
+  loanPeriod: number;
+
+  @Field()
+  startDate: Date;
+
+  @Field()
+  affiliateId: number;
+
+  @Field(() => Int)
+   typeSavingId: number;
 }
