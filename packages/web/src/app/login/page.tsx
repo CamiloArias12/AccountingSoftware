@@ -22,7 +22,7 @@ export default  function Login (){
    useEffect(() =>{
       setTimeout(()=>{
 	 setSplash(true)
-      },3200)
+      },2000)
    },[])
 
    if(data){
@@ -35,20 +35,22 @@ export default  function Login (){
    if(splash){
 
    return (
-      <div className="flex flex-row h-screen w-screen">
-	 <div className="  flex p-10  flex-col flex-grow w-[500px] items-center   " > 
-		  <div className="flex justify-center items-center py-8">
-		     <img src="logoName.png" className="w-[170px] h-[80px]"/>
+      <div className="flex flex-row h-screen w-screen  items-center justify-center">
+	 <div className=" bg-cover flex flex-grow h-screen  bg-img-bg "></div>
+	 <div className="   flex p-10 md:max-w-[400px] lg:max-w-[600px] flex-col items-center justify-center  items-center" > 
+		  <div className="flex flex-row  justify-center items-center pt-8 pb-14 px-10 ">
+		     <img  className=" h-20 pr-10" src="/foncaster.png"/> 
+		     <img className="h-20 border-l border-black pl-10  "  src="/logoName.png"/> 
 		  </div>
 
-		  <div className=" flex  flex-grow flex-col   w-full m-8 justify-center  ">
-			<div className="flex flex-col w-full justify-center pt-10">
-			   <label className="pb-3" >Usuario o correo </label>
-			   <input onChange={(e) => setEmail(e.target.value)} className=" bg-neutral-100 rounded-[10px] border border-white h-[55px]"/> 
+		  <div className=" flex   flex-col   w-full m-8 justify-center  ">
+			<div className="flex flex-col  justify-center pt-10">
+			   <label className="pb-3 font-bold text-[#1A5DAD] " >Usuario / correo </label>
+			   <input onChange={(e) => setEmail(e.target.value)} className=" bg-[#DEE2E9]  rounded-[10px] border border-white p-2 "/> 
 			</div>
 			<div className="flex flex-col w-full justify-center py-10">
-			   <label className="pb-3 ">Contrasena</label>
-			   <input type="password" onChange={(e) => setPassword(e.target.value)} className="bg-neutral-100 rounded-[10px] border border-white h-[55px] "/>   
+			   <label className="pb-3 font-bold text-[#1A5DAD] ">Contrasena</label>
+			   <input type="password" onChange={(e) => setPassword(e.target.value)} className="bg-[#DEE2E9] rounded-[10px] border border-white p-2 "/>   
 			</div>
 			{error &&
 			   <label className="text-[#FF0000]">Datos incorrectos</label>
@@ -59,8 +61,6 @@ export default  function Login (){
 	       </div>
 	    </div>
 
-	    <div className="flex w-2/3 flex-grow  bg-img-bg bg-cover h-screen">
-	    </div>
 	 </div>
    );
    }else{
