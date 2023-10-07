@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { TypeSavingService } from './type-saving.service'; // Cambiado aquí
 import { TypeSaving } from './type-saving.entity'; // Cambiado aquí
 import { CreateTypeSavingDto } from './dto/createTypeSaving.dto';
@@ -19,6 +19,11 @@ export class TypeSavingResolver { // Cambiado aquí
     async updateTypeSaving(@Args('data') updateTypeSavingDto: UpdateTypeSavingDto): Promise<TypeSaving> {
         return await this.typeSavingService.updateOrCreateTypeSaving(updateTypeSavingDto);
     }
+    @Query(() => [TypeSaving])
+      async getTypeSavingAll(): Promise<TypeSaving[]> {
+        return await this.typeSavingService.findAll();
+    }
+
 }
 
 

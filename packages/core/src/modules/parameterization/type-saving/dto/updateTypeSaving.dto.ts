@@ -3,10 +3,10 @@ import { InputType, Field, Int } from '@nestjs/graphql';
 @InputType()
 export class UpdateTypeSavingDto {
     @Field()
-    idTypeSaving: number;
+    id: number;
 
     @Field()
-    nombre?: string;
+    name?: string;
 
     @Field(() => [Int], { nullable: true }) 
     subAccount?: number[];

@@ -13,57 +13,47 @@ export class TypeSavingService {
     constructor(
         @InjectRepository(TypeSaving)
         private readonly typeSavingRepository: Repository<TypeSaving>,
-        private readonly subAccountService: SubAccountService,
-        private readonly accountService: AccountService,
         private readonly auxiliaryService: AuxiliaryService
     ) { }
 
     async createTypeSaving(data: CreateTypeSavingDto): Promise<TypeSaving> {
         const typeSaving = new TypeSaving();
 
-        if (data.subAccount && data.subAccount.length) {
-            typeSaving.subAccounts = await this.subAccountService.findSubAccount(data.subAccount);
-        }
-
-        if (data.account && data.account.length) {
-            typeSaving.accounts = await this.accountService.findAccount(data.account);
-        }
-
         if (data.auxiliary && data.auxiliary.length) {
-            typeSaving.auxiliarys = await this.auxiliaryService.findAuxiliary(data.auxiliary);
+            typeSaving.auxiliarys = await this.auxiliaryService.findAuxiliarys(data.auxiliary);
         }
 
-        typeSaving.idTypeSaving = data.idTypeSaving;
-        typeSaving.nombre = data.nombre;
+        typeSaving.name = data.name;
 
         return await this.typeSavingRepository.save(typeSaving);
     }
 
     async updateOrCreateTypeSaving(data: UpdateTypeSavingDto): Promise<TypeSaving> {
         let typeSaving = await this.typeSavingRepository.findOne({
-            where: { idTypeSaving: data.idTypeSaving }
+            where: { id: data.id}
         });
 
         if (!typeSaving) {
             typeSaving = new TypeSaving();
-            typeSaving.idTypeSaving = data.idTypeSaving;
-        }
-
-        if (data.subAccount && data.subAccount.length) {
-            typeSaving.subAccounts = await this.subAccountService.findSubAccount(data.subAccount);
-        }
-
-        if (data.account && data.account.length) {
-            typeSaving.accounts = await this.accountService.findAccount(data.account);
+            typeSaving.id= data.id;
         }
 
         if (data.auxiliary && data.auxiliary.length) {
-            typeSaving.auxiliarys = await this.auxiliaryService.findAuxiliary(data.auxiliary);
+            typeSaving.auxiliarys = await this.auxiliaryService.findAuxiliarys(data.auxiliary);
         }
 
-        typeSaving.nombre = data.nombre;
+        typeSaving.name = data.name;
 
         return await this.typeSavingRepository.save(typeSaving);
+    }
+    async findAll(): Promise<TypeSaving[]> {
+        return await this.typeSavingRepository.find(
+	    {relations:{
+	       auxiliarys:{
+		     typeAccount:true
+	       }
+	 }}
+	);
     }
 }
 
