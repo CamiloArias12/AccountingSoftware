@@ -19,7 +19,7 @@ import { Beneficiary } from './modules/parameterization/thirds/affiliate/benefic
 import { BeneficiaryAffiliate } from './modules/parameterization/thirds/affiliate/beneficiary-affiliate/beneficiary-affiliate.entity';
 import { TypeCredit } from './modules/parameterization/type-credit/type-credit.entity';
 import { TypeSaving } from './modules/parameterization/type-saving/type-saving.entity';
-import Provider from './modules/parameterization/thirds/provider/provider.entity';
+import { Provider } from './modules/parameterization/thirds/provider/provider.entity';
 
 @Module({
   
@@ -46,7 +46,7 @@ import Provider from './modules/parameterization/thirds/provider/provider.entity
 	    database: process.env.DATABASE_NAME,
 	    keepConnectionAlive: true,
 	    synchronize: true,
-	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving]
+	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving,Provider]
 	 }
       ),
     ],
