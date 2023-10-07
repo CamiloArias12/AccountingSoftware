@@ -35,7 +35,7 @@ export default function SideBar(){
 
 	    <div className="flex flex-col rounded-md py-4 items-center justify-between h-full  w-full my-8">
 
-		 		  <div className="w-full flex flex-col justify-center items-center">
+	       <div className="w-full flex flex-col justify-center items-center">
 		  {SideBarModules.map( (sidebar) => (
 			<div key={sidebar.name} className="w-full   ">
 			   <motion.div  className={`flex flex-col  my-5    mx-3 
