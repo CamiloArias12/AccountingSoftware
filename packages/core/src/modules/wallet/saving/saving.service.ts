@@ -1,29 +1,49 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Saving } from './saving.entity';
 import { CreateSavingInput } from './dto/create-saving.input';
 import { UpdateSavingInput } from './dto/update-saving.input';
+import { AffiliateService } from 'src/modules/parameterization/thirds/affiliate/affiliate.service';
+import { TypeSavingService } from 'src/modules/parameterization/type-saving/type-saving.service';
+import { Affiliate } from 'src/modules/parameterization/thirds/affiliate/affiliate.entity';
+import { TypeSaving } from 'src/modules/parameterization/type-saving/type-saving.entity';
+import { ViewSaving } from './saving-view.entity';
 
 @Injectable()
 export class SavingService {
   constructor(
     @InjectRepository(Saving)
-    private savingRepository: Repository<Saving>,
+    private savingRepository: Repository<Saving>, 
+    private affiliateService:AffiliateService,
+    private typeSavingService:TypeSavingService,
+    private dataSource:DataSource
   ) { }
 
-  async create(createSavingInput: CreateSavingInput): Promise<Saving> {
-    createSavingInput.startDate = new Date(createSavingInput.startDate.toISOString().split('T')[0]);
+  async create(createSavingInput: CreateSavingInput): Promise<Boolean> {
+
+   try {
+
     const newSaving = this.savingRepository.create(createSavingInput);
-    return this.savingRepository.save(newSaving);
+    const affiliate:Affiliate=await this.affiliateService.findOne(createSavingInput.affiliateId)
+    const typeSaving:TypeSaving=await this.typeSavingService.findOne(createSavingInput.typeSavingId)
+    newSaving.affiliate=affiliate
+    newSaving.typeSaving=typeSaving
+    await this.savingRepository.save(newSaving)
+    return true;
+
+   } catch (e) {
+      return false;
+   }  
+    
   }
 
-  async findAll(): Promise<Saving[]> {
-    return this.savingRepository.find();
-  }
+  async findAll(): Promise<ViewSaving[]> {
+    return await this.dataSource.manager.find(ViewSaving) 
+      }
 
   async findOne(id: number): Promise<Saving> {
-    return this.savingRepository.findOne({ where: { id: id } });
+    return  await this.savingRepository.findOne({ where: { id: id } });
   }
 
   async update(id: number, updateSavingInput: UpdateSavingInput): Promise<Saving> {
@@ -36,7 +56,7 @@ export class SavingService {
     if (!existingSaving) {
       throw new Error('Saving not found');
     }
-    return this.savingRepository.save(existingSaving);
+    return await this.savingRepository.save(existingSaving);
   }
 
   async remove(id: number): Promise<void> {

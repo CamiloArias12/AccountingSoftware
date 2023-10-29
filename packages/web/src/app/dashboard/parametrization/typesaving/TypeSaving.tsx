@@ -24,16 +24,7 @@ function TypeSavings({typeSavings}:{typeSavings:TypeSaving[]}) {
 
         <div className="flex-grow flex h-full">
 	 {showModalCreate &&
-	    <Modal 
-	       size="min-w-[550px] w-[600px]"
-	       title="Crear tipo de ahorro"
-	       onClick={() => {
-		  setShowModalCreate(false) 
-		  route.push("/dashboard/parametrization/typesaving")
-		  }}
-	    >
-	       <TypeSavingForm / >
-	    </Modal>
+	       <TypeSavingForm setShowModalCreate={setShowModalCreate} / >
 	 }
 	    <TableTypeSaving typeSavings={typeSavings} setShowModalCreate={setShowModalCreate} setSelected={true} />
 	 </div>

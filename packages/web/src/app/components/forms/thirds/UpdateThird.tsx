@@ -92,7 +92,7 @@ function UpdateThird ({thirdIdentification,setShow}:{thirdIdentification:number,
       console.log(data?.getUser?.affiliate?.beneficiaries) 
       return (
 	 <Modal 
-	    size="h-[90%] w-[90%]"
+	    size="min-h-[700px] w-[90%]"
 	    title="Actualizar tercero"
 	    onClick={()=>(setShow(false)) }
 	 >
@@ -100,7 +100,7 @@ function UpdateThird ({thirdIdentification,setShow}:{thirdIdentification:number,
 	 {loading &&
 	    <SplashScreen/>
 	 }
-	 {data && <FormThirdNatural countries={data.getCountry} informationUser={data?.getUser} informationAffilate={data?.getUser?.affiliate}  />}
+	 {data && <FormThirdNatural countries={data.getCountry} informationUser={data?.getUser} informationAffilate={data?.getUser?.affiliate} informationEmployee={data?.getUser?.employee} isProvider={data?.getUser?.provider}/>}
 	 </>	
 	 </Modal>
       );

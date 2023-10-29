@@ -45,7 +45,8 @@ export class AuxiliaryService {
 
     async findAuxiliarys(codes: number[]): Promise<Auxiliary[]> {
         return await this.auxiliaryRepository.find(
-            { where: { code: In(codes) } }
+            {
+	       where: { code: In(codes) } }
         );
     }
 

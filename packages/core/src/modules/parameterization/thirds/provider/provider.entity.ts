@@ -11,7 +11,7 @@ export class Provider {
    idProvider:number
 
    @Field(() =>Provider)
-   @OneToOne(() => User ,user => user.provider)
+   @OneToOne(() => User ,user => user.provider,{onDelete:'CASCADE'})
    @JoinColumn({name: "idProvider"})
    user:User
 }

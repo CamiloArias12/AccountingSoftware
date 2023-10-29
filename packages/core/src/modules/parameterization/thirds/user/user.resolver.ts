@@ -35,4 +35,9 @@ export class UserResolver {
       console.log("Get  users",id)
     return await this.userService.changeStatus(id,status);
   }
+
+  @Mutation(()=>Boolean)
+  async deleteUser(@Args('identification', { type: () => Int }) identification: number) {
+      return this.userService.delete(identification)
+  }
 }

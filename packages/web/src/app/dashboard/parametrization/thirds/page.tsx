@@ -2,12 +2,12 @@
 import { gql } from "@apollo/client";
 import Thirds from "./Thirds";
 import { getClient } from "@/lib/graphql/apollo-client-server";
-import { Affiliate } from "@/lib/utils/thirds/types";
+import { Affiliate, Company } from "@/lib/utils/thirds/types";
 
 
 export const revalidate=0
 
-async  function getAffiliates():Promise<Affiliate[]>{
+async  function getUsers():Promise<any>{
  const AFFILIATES=gql`query {
   getAllUsers{
     name
@@ -15,19 +15,31 @@ async  function getAffiliates():Promise<Affiliate[]>{
     identification
     status
     phone
+    cityResidence
+    
+  }
+ allCompanies{ 
+    typeIdentification
+    numberIdentification
+    legalRepresentativeName
+    legalRepresentativeDocument
+    socialReason
+    typePerson
     
   }
 }`
    const {data}=await getClient().query({query:AFFILIATES}) 
-   return data.getAllUsers;
+   return data;
 }
 
 async function PageThirds(){
-   const affiliates:Affiliate[]=await getAffiliates()
+     const query =await getUsers()
+   const affiliates:Affiliate[]=query.getAllUsers
+   const companies:Company[]=query.allCompanies
 
    return (
       <>
-	    <Thirds affiliates={affiliates}/> 
+	    <Thirds affiliates={affiliates} companies={companies} /> 
       </>
    );
 

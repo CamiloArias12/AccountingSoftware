@@ -2,11 +2,9 @@
 
 import { Suspense, useEffect, useState } from "react";
 import './page.css'
-import SideBar from "../components/sidebar/Sidebar";
 import CountChart from "../components/chart/count";
 import { ChartLine } from "../components/chart/Multiaxis";
 import { BarChart } from "../components/chart/VerticalChart";
-import { Charm } from "next/font/google";
 import { Chart } from "../components/chart/Chart";
 import SplashScreen from "../components/splash/Splash";
 export default  function Dashboard (){

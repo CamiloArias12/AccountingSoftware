@@ -1,18 +1,13 @@
 import { IAfiliate } from "@/lib/utils/thirds/types";
 import { useState } from "react"
 
-interface FormWorkingInformationProps {
-   workingInformationAffiliate?:IAfiliate
-
-}
-
-export function FormWorkingInformation ({workingInformationAffiliate}:FormWorkingInformationProps){
+export function FormWorkingInformation (){
 
       const [workingInformation,setWorkingInformation]= useState<IAfiliate>({
          company:'',
          addreesCompany:'',
          jobTitle:'',
-         incomeCompany:"",
+         incomeCompany:new Date(),
 	 emailJob:'',
          phone: "",
          salary: "",
@@ -25,11 +20,25 @@ export function FormWorkingInformation ({workingInformationAffiliate}:FormWorkin
       const handleChangeWorkingInformation = (event: React.ChangeEvent<HTMLInputElement |HTMLSelectElement>) => {
 	    const { name, value } = event.target;
 	 setWorkingInformation(prevData => ({ ...prevData, [name]: value }));
+      };
+
+   const handleWorkingNumber= (name:string ,value:string) => {
+      if(!(isNaN(Number(value)))){
+      setWorkingInformation(prevData => ({ ...prevData, [name]:Number(value) }));
+	 return true;
+      }
+      return false;
    };
+    const handleWorkingInformation= (name:string ,value:string) => {
+      setWorkingInformation(prevData => ({ ...prevData, [name]:value}));
+   };
+
 
 
    return {
       setWorkingInformation,
+      handleWorkingNumber,
+      handleWorkingInformation,
       workingInformation,
       handleChangeWorkingInformation
    };

@@ -16,17 +16,14 @@ type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 function InputCalendar({label,value,name,onChange}:InputCalendarProps){
-   const [toggle,setToggle]=useState(false)
    const [date, setDate] = useState<Value>(value)
-
-   
    return (
-	 <>
-	 <label >{label}</label>
+	 <div className="flex  flex-grow  flex-col text-input pr-2">
+	 <label className="mb-2" >{label}</label>
 	 <DatePicker onChange={(event:any) =>{ setDate(event)
 	       onChange(name,event)
 	 }} value={date} />
-      </>
+      </div>
    );
 
 }

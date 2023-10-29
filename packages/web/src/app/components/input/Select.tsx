@@ -2,9 +2,9 @@ import { useState } from "react"
 import Logo from "../logo/Logo";
 
 type SelectProps = {
-    label: string;
+    label?: string;
     options: any;
-    onClick:any
+    onClick?:any
     setValue:any
     index:number
 };
@@ -17,9 +17,8 @@ function Select ({label,options,onClick ,setValue,index}:SelectProps){
    {label &&
       <label className="text-sm pb-2">{label}</label>
    }
-      <input className={`mb-1 text-sm border border-gray-300 "type="text p-2`} value={`${valueLabel}`}   onClick={() =>{setToggle(!toggle)
-	 console.log(toggle)
-	 if(toggle===false){
+      <input className={`mb-1 text-sm border border-gray-300 "type="text p-1`} value={`${valueLabel}`}   onClick={() =>{setToggle(!toggle)
+	 if(toggle===false && !onclick){
 	    console.log(onClick())
 	 }
       }}/>

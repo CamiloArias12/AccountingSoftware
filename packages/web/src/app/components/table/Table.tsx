@@ -1,15 +1,13 @@
 import { Row, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { motion} from "framer-motion"
-import React, { use, useState } from "react"
+import { useReducer, useRef, useState } from "react"
 import { useVirtual } from "react-virtual"
-import TypeAccountGeneral from "../forms/type-account/TypeAccountGeneral"
-import { useRouter } from "next/navigation"
 
-function Table ({columns , data,setShowOptions,setSelected}:{columns:any,data:any,setShowOptions:any,setSelected:any}){
+function Table ({columns , data,overscan}:{columns:any,data:any,setShowOptions:any,setSelected:any,overscan:number}){
    
-   const rerender = React.useReducer(() => ({}), {})[1]
+   const rerender = useReducer(() => ({}), {})[1]
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
    const table = useReactTable({
     data,
@@ -26,17 +24,14 @@ function Table ({columns , data,setShowOptions,setSelected}:{columns:any,data:an
 
 
 
- const tableContainerRef = React.useRef<HTMLDivElement>(null)
+ const tableContainerRef = useRef<HTMLDivElement>(null)
 
   const { rows } = table.getRowModel()
-  const [idrow,setIdRow]=useState<string>('')
-  const [expanded,setExpanded]=useState<boolean>(false)
-  const [value,setValue]= useState<any>()
 
   const rowVirtualizer = useVirtual ({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 12,
+    overscan: overscan || 12,
   })
   const { virtualItems: virtualRows} = rowVirtualizer
 
@@ -85,31 +80,11 @@ function Table ({columns , data,setShowOptions,setSelected}:{columns:any,data:an
               const row = rows[virtualRow.index] as Row<any>
               return (
 	      <>
-	      {(row.id!==idrow )?
 	       <motion.tr  key={row.id} className="default-table hover:border-l-4  hover:border-l-[#3C7AC2] ">
                   {row.getVisibleCells().map(cell => {
                     return (
 		    <>
-                      <td  onClick={() =>{ setShowOptions(true)
-
-			   if(row._valuesCache.code){ 
-			   
-			   setSelected(row._valuesCache.code)}
-			   if(idrow==row.id){
-			      setIdRow(row.id)
-			      setExpanded(!expanded)
-			   }else {
-			      
-			      setExpanded(false)
-			      setIdRow(row.id)
-			      setExpanded(!true)
-			   }
-			   console.log("Flex render",flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        ))
-
-			   }} className="font-light px-2"key={cell.id} >
+                      <td  className="font-light px-2"key={cell.id} >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -120,11 +95,6 @@ function Table ({columns , data,setShowOptions,setSelected}:{columns:any,data:an
 		     )
 		     })}
 		  </motion.tr>
-		:
-		  <motion.tr>
-		     <td>Helll</td>
-		  </motion.tr>
-		}
 		</>
               )
             })}

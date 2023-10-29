@@ -3,9 +3,9 @@ const route:string= "/dashboard/parametrization/"
 
 export enum  LogoModuleParametrization {
    thirds="/thirds.svg",
-   accounts="/typeaccount.svg",
-   savings="/savings.svg",
-   credits="/typecredit.svg"
+   typeAccounts="/typeaccount.svg",
+   typeSavings="/savings.svg",
+   typeCredits="/typecredit.svg"
 }
 export const ParametrizationSideBar = [
    {
@@ -15,15 +15,15 @@ export const ParametrizationSideBar = [
    },{
       name:'Cuentas',
       href:`${route}typeaccount`,
-      icon:LogoModuleParametrization.accounts,
+      icon:LogoModuleParametrization.typeAccounts,
    },{
       name:'Tipos de ahorro',
       href:`${route}typesaving`,
-      icon:LogoModuleParametrization.savings,
+      icon:LogoModuleParametrization.typeSavings,
    },{
       name:'Tipos de credito',
       href:`${route}typecredit`,
-      icon:LogoModuleParametrization.credits,
+      icon:LogoModuleParametrization.typeCredits,
    }
 ]
 

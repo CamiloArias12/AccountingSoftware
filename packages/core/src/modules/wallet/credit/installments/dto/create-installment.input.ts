@@ -1,33 +1,40 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, ObjectType } from '@nestjs/graphql';
+import { IInstallment } from './installment-interface';
 
-@InputType()
-export class CreateInstallmentInput {
-  @Field()
-  paymentDate: Date;
+@InputType("InstallmentInput")
+@ObjectType("InstallmentType")
+export class CreateInstallment implements IInstallment{
+   
+    @Field()
+    installmentNumber: number;
+  
+    @Field()
+    paymentDate: Date;
 
-  @Field()
-  initialBalance: number;
+    @Field()
+    initialBalance: number;
 
-  @Field()
-  scheduledPayment: number;
+    @Field()
+    scheduledPayment: number;
 
-  @Field()
-  extraPayment: number;
+    @Field()
+    extraPayment: number;
 
-  @Field()
-  totalPayment: number;
+    @Field()
+    totalPayment: number;
 
-  @Field()
-  capital: number;
+    @Field()
+    capital: number;
 
-  @Field()
-  interest: number;
+    @Field()
+    interest: number;
 
-  @Field()
-  finalBalance: number;
+    @Field()
+    finalBalance: number;
 
-  @Field(() => Int)
-  creditId: number;
+    @Field({nullable:true})
+    isPay?:boolean
+
 }
 
 

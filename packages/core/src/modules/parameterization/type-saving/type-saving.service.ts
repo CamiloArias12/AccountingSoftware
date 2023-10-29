@@ -6,7 +6,7 @@ import { CreateTypeSavingDto } from './dto/createTypeSaving.dto';
 import { SubAccountService } from '../type-account/sub-account/sub-account.service';
 import { AccountService } from '../type-account/account/account.service';
 import { AuxiliaryService } from '../type-account/auxiliary/auxiliary.service';
-import { UpdateTypeSavingDto } from './dto/updateTypeSaving.dto';
+import { UpdateTypeCreditInput } from '../type-credit/dto/updateTypeCredit.dto';
 
 @Injectable()
 export class TypeSavingService {
@@ -27,25 +27,18 @@ export class TypeSavingService {
 
         return await this.typeSavingRepository.save(typeSaving);
     }
-
-    async updateOrCreateTypeSaving(data: UpdateTypeSavingDto): Promise<TypeSaving> {
-        let typeSaving = await this.typeSavingRepository.findOne({
-            where: { id: data.id}
-        });
-
-        if (!typeSaving) {
-            typeSaving = new TypeSaving();
-            typeSaving.id= data.id;
-        }
-
-        if (data.auxiliary && data.auxiliary.length) {
-            typeSaving.auxiliarys = await this.auxiliaryService.findAuxiliarys(data.auxiliary);
-        }
-
-        typeSaving.name = data.name;
-
-        return await this.typeSavingRepository.save(typeSaving);
+   async findOne(id:number):Promise<TypeSaving> {
+      return await this.typeSavingRepository.findOne({where:{id:id}});
     }
+
+   async update(data: UpdateTypeCreditInput,id:number): Promise<Boolean> {
+     try {
+       await this.typeSavingRepository.update({id:id},{name:data.name}) 
+       return true;
+     } catch (e) {
+	return false
+     }
+  }
     async findAll(): Promise<TypeSaving[]> {
         return await this.typeSavingRepository.find(
 	    {relations:{
@@ -55,6 +48,17 @@ export class TypeSavingService {
 	 }}
 	);
     }
+
+   async delete (id:number):Promise<Boolean> {
+      try {
+	 await this.typeSavingRepository.delete(id) 
+	 return true;
+      } catch (e) {
+	 console.log(e)
+	 return false
+      }
+   }
+
 }
 
 

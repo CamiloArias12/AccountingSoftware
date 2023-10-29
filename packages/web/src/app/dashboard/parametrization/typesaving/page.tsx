@@ -1,5 +1,4 @@
 import { getClient } from "@/lib/graphql/apollo-client-server"
-import { GeneralTypeAccount} from "@/lib/utils/type-account/types";
 import { TypeSaving } from "@/lib/utils/type-saving/types";
 import { gql } from "@apollo/client";
 import TypeSavings from "./TypeSaving";
@@ -20,10 +19,9 @@ export default async function Page(){
 }
 
 async  function getTypeSavings():Promise<TypeSaving[]>{
- const AFFILIATES=gql`
+ const TYPE_SAVINGS=gql`
 query {
  getTypeSavingAll{
-    
     id
     name
     auxiliarys{
@@ -34,10 +32,9 @@ query {
     }
   }
   
-  
 }`
    
-   const {data}=await getClient().query({query:AFFILIATES})
+   const {data}=await getClient().query({query:TYPE_SAVINGS})
    
       return data.getTypeSavingAll;
 }

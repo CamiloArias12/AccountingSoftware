@@ -14,12 +14,12 @@ export class ClassAccount {
     @Field({defaultValue:"Clase"})
     type:string
    
-    @Field(() => [Group])
+    @Field(() => [Group],{name:"accounts"})
     @OneToMany(() => Group, group => group.classAccount)
     groups: Group[];
 
     @Field(() => TypeAccount)
-    @OneToOne(() => TypeAccount, typeAccount => typeAccount.classAccount,{onUpdate:'CASCADE'})
+    @OneToOne(() => TypeAccount, typeAccount => typeAccount.classAccount,{onUpdate:'CASCADE',onDelete:'CASCADE'})
     @JoinColumn({ name: "code" })
     typeAccount: TypeAccount;
 

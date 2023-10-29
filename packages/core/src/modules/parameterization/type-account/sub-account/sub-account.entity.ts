@@ -18,12 +18,12 @@ export class SubAccount {
    @ManyToOne(() => Account, account => account.subAccounts,{onUpdate:'CASCADE'})
     account: Account;
 
-    @Field(() => [Auxiliary])
+    @Field(() => [Auxiliary],{name:"accounts"})
     @OneToMany(() => Auxiliary, auxiliary => auxiliary.subAccount)
     auxiliaries: Auxiliary[];
 
     @Field(() => TypeAccount)
-    @OneToOne(() => TypeAccount, typeAccount => typeAccount.subAccount,{onUpdate:'CASCADE'})
+    @OneToOne(() => TypeAccount, typeAccount => typeAccount.subAccount,{onUpdate:'CASCADE',onDelete:'CASCADE'})
     @JoinColumn({ name: "code" })
     typeAccount: TypeAccount
 

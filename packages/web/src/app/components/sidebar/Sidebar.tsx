@@ -1,5 +1,5 @@
 "use client"
-import { Background, LogoModules, MenuSidebar,  SideBarModules } from "@/lib/utils/SidebarOptions";
+import { Background, MenuSidebar,  SideBarModules } from "@/lib/utils/SidebarOptions";
 import { useState } from "react";
 import MenuParametrization from "./MenuParametrization";
 import { useRouter } from "next/navigation";
@@ -7,18 +7,23 @@ import { motion } from "framer-motion";
 import ParametrizationLogo from "../logo/Parametrization";
 import HomeLogo from "../logo/Home";
 import WalletLogo from "../logo/Wallet";
+import MenuWallet from "./MenuWallet";
+import AccountingIcon from "../logo/Accounting";
+import TreasuryIcon from "../logo/Treasury";
+import MenuTreasury from "./MenuTreasury";
 
 export default function SideBar(){
       
       const [toggleBar,setToggleBar]=useState(false)
-      const [chooseLogoModule ,setChooseLogoModule]=useState(LogoModules.parametrization)
       const [showParametrization,setShowParametrization]=useState<boolean>(false)
+      const [showWallet,setShowWallet]=useState<boolean>(false)
+      const [showTreasury,setShowTreasury]=useState<boolean>(false)
       const [select,setSelect]=useState(MenuSidebar.main)
 
       const route = useRouter()
 
    return (
-      <div className={`border-l-4 border-[#1A5DAD] flex flex-col shadow  flex-grow justify-between bg-white  ${toggleBar ? "w-[80px]" :"w-[280px]"}`}>
+      <div className={`border-l-4 border-[#1A5DAD]  flex flex-col shadow  flex-grow justify-between bg-white  ${toggleBar ? "w-[80px]" :"w-[250px]"}`}>
 	    <div className={`flex px-10 py-8 ${!toggleBar &&"border-b-2 mx-4"}`}>
 	       <img src="/nameCompany.png"/>
 	    </div>
@@ -26,31 +31,30 @@ export default function SideBar(){
 	 <div className=" flex flex-col h-full ">
 	   <div className="relative ">
 	       <div className={`absolute h-8 w-8 -right-6 ${!toggleBar ? "-top-20":"-top-10"}`} >
-		     <img src={chooseLogoModule} onClick={() =>{
+		     <img src="/logo.svg" onClick={() =>{
 			setToggleBar(!toggleBar)
 		     }}/>
 	       </div>
 	    </div>
-		     
 
-	    <div className="flex flex-col rounded-md py-4 items-center justify-between h-full  w-full my-8">
+	    <div className="flex flex-col rounded-sm py-4 items-center justify-between h-full  w-full my-8">
 
 	       <div className="w-full flex flex-col justify-center items-center">
 		  {SideBarModules.map( (sidebar) => (
 			<div key={sidebar.name} className="w-full   ">
 			   <motion.div  className={`flex flex-col  my-5    mx-3 
 				 ${(sidebar.menu ===MenuSidebar.parametrization && showParametrization )&& "bg-[#f5f6f7] rounded-lg"}
-
+				 ${(sidebar.menu ===MenuSidebar.wallet&& showWallet)&& "bg-[#f5f6f7] rounded-lg"}
+				 ${(sidebar.menu ===MenuSidebar.treasury&& showTreasury)&& "bg-[#f5f6f7] rounded-lg"}
 				 `} whileHover={{scale:1.03}}>
 
-				 <div className={`gene w-full ${toggleBar && " rounded-lg"}`} onClick={ () => {
-				    console.log(sidebar.background)
+				 <div className={`gene w-full ${toggleBar && " rounded-sm"}`} onClick={ () => {
 				    }}>
 
 				    <div className="flex  flex-col w-full">
 
 				    <div className={` p-4 hover:border-b-2 hover:border-[#1A5DAD]
-				       ${(sidebar.menu===select ) && " rounded-lg bg-[#dde0e5] "}
+				       ${(sidebar.menu===select ) && " rounded-sm bg-[#dde0e5] "}
 
 				    `}>
 				       <div className={`flex flex-row  w-full h-full 
@@ -60,6 +64,8 @@ export default function SideBar(){
 				    `} 
 				    onClick={ () => {
 				       if (sidebar.menu===MenuSidebar.parametrization){ setShowParametrization(!showParametrization)};
+				       if (sidebar.menu===MenuSidebar.wallet){ setShowWallet(!showWallet)};
+				       if (sidebar.menu===MenuSidebar.treasury){ setShowTreasury(!showTreasury)};
 				       if (sidebar.menu===MenuSidebar.main){ route.push(sidebar.href)};
 				       setSelect(sidebar.menu)
 				    
@@ -84,6 +90,21 @@ export default function SideBar(){
 				       {(MenuSidebar.wallet===sidebar.menu && sidebar.menu!==select)  &&
 					  <WalletLogo color="#26384b"/>
 				       }	
+				       {(MenuSidebar.accounting===sidebar.menu && sidebar.menu===select)  &&
+					  <AccountingIcon color="#1A5DAD"/>
+				       }
+				       {(MenuSidebar.accounting===sidebar.menu && sidebar.menu!==select)  &&
+					  <AccountingIcon color="#26384b"/>
+				       }	
+				       
+				       {(MenuSidebar.treasury===sidebar.menu && sidebar.menu===select)  &&
+					  <TreasuryIcon color="#1A5DAD"/>
+				       }
+
+				       {(MenuSidebar.treasury===sidebar.menu && sidebar.menu!==select)  &&
+					  <TreasuryIcon color="#26384b"/>
+				       }	
+
 				    </div>
 				    {!toggleBar &&
 				    <label className={`pl-6 text-sm font-sans  ${sidebar.menu==select ? "text-[#1A5DAD] font-semibold":"text-[#26384b]" }`}>{sidebar.name}</label>}
@@ -104,6 +125,17 @@ export default function SideBar(){
 				    </div>
 				 </div>
 				 }
+			      {sidebar.menu ===MenuSidebar.wallet&& showWallet&&
+				    <div className={` ${!toggleBar && " mx-6 pl-4 border-l border-[#505050] "}`}>
+				    <MenuWallet toggleBar={toggleBar} setSelect={setSelect}/>
+				    </div>
+				 }
+				 {sidebar.menu ===MenuSidebar.treasury&& showTreasury&&
+				    <div className={` ${!toggleBar && " mx-6 pl-4 border-l border-[#505050] "}`}>
+				    <MenuTreasury toggleBar={toggleBar} setSelect={setSelect}/>
+				    </div>
+				 }
+
 			      </div>
 		  	  </div>
 		     </motion.div>

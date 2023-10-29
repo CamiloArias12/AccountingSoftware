@@ -1,51 +1,64 @@
-import { ObjectType, Field, Float, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Float, Int,DateScalarMode } from '@nestjs/graphql';
 import { Entity, PrimaryGeneratedColumn, OneToMany, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Installment } from './installments/installment.entity';
 import { Affiliate } from 'src/modules/parameterization/thirds/affiliate/affiliate.entity';
 import { TypeCredit } from 'src/modules/parameterization/type-credit/type-credit.entity';
+import { ICredit } from './dto/credit-interface';
+import { StateCredit } from './dto/enum-types';
+import { CreditAccount } from 'src/modules/treasury/credit-account/credit-account.entity';
 
 @ObjectType()
 @Entity()
-export class Credit {
-  @Field(() => Int)
+export class Credit implements ICredit {
+  @Field()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field(() => Float)
-  @Column('decimal', { precision: 12, scale: 2 })
-  loanAmount: number;
+  @Field()
+  @Column('double',{nullable:false})
+  creditValue: number;
 
-  @Field(() => Float)
-  @Column('decimal', { precision: 5, scale: 2 })
-  annualInterest: number;
-
-  @Field(() => Float)
-  @Column('decimal', { precision: 4, scale: 2 })
-  loanPeriod: number;
+  @Field()
+  @Column('double',{nullable:false})
+  interest: number;
 
   @Field()
   @Column('date')
   startDate: Date;
+  
+  @Field()
+  @Column('date',{nullable:false})
+  discountDate: Date;
 
-  @Field(() => Int)
-  @Column()
-  affiliateId: number;
-
-  @Field(() => Int)
-   @Column()
-   typeCreditId: number;
-
-  @ManyToOne(() => Affiliate, affiliate => affiliate.credits)
-  @JoinColumn({ name: 'affiliateId' })
+  @Field()
+  @Column({
+     type:'enum',
+     enum:StateCredit,
+     nullable:false,
+     default:StateCredit.APROBADO
+  })
+  state: string;
+   
+  @Field(() =>Affiliate)
+  @ManyToOne(() => Affiliate, affiliate => affiliate.credits,{nullable:false})
   affiliate: Affiliate;
 
   @Field(() => [Installment])
-  @OneToMany(() => Installment, (installment) => installment.credit)
+  @OneToMany(() => Installment, (installment) => installment.credit,{nullable:false,cascade:['insert','update','remove']})
   installments: Installment[];
 
-   @ManyToOne(() => TypeCredit, typeCredit => typeCredit.credits)
-   @JoinColumn({ name: 'typeCreditId' })
-   typeCredit: TypeCredit;
+  @Field(() => [CreditAccount])
+  @OneToMany(() => CreditAccount, (account) => account.credit,{nullable:false,cascade:['insert','update','remove']})
+  creditAccounts: CreditAccount[];
+  
+  
+  @Field(() => TypeCredit)
+  @ManyToOne(() => TypeCredit, typeCredit => typeCredit.credits,{nullable:false})
+  typeCredit: TypeCredit;
+
+  constructor(params?: ICredit){
+    Object.assign(this, params);
+  }
 }
 
 

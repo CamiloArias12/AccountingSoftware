@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
 import { ParameterizationModule } from './modules/parameterization/parameterization.module';
-import { join } from 'path';
-import { ApolloDriver } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -24,14 +21,32 @@ import { Installment } from './modules/wallet/credit/installments/installment.en
 import { Credit } from './modules/wallet/credit/credit.entity';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { Saving } from './modules/wallet/saving/saving.entity';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver } from '@nestjs/apollo';
+import { join } from 'path';
+import { ViewCredit } from './modules/wallet/credit/credit-view.entity';
+import { ViewSaving } from './modules/wallet/saving/saving-view.entity';
+import { Company } from './modules/parameterization/thirds/company/company.entity';
+import { DateScalar } from './scalar-type';
+import { CreditAccount } from './modules/treasury/credit-account/credit-account.entity';
+import { InstallmentAccount } from './modules/treasury/installment-account/installment-account.entity';
+import { TreasuryModule } from './modules/treasury/treasury.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-	imports: [ParameterizationModule, WalletModule,
-   ConfigModule.forRoot({
+	imports: [ParameterizationModule, WalletModule,TreasuryModule,
+	 GraphQLModule.forRoot(
+	 {
+	    driver: ApolloDriver,
+	    autoSchemaFile: join(process.cwd(), 'src/schema.gql')
+	 }
+	 ),
+      ConfigModule.forRoot({
 	    envFilePath:'.env',
 	    isGlobal:true,
 	 }
       ),
+      MulterModule.register({dest:'./uploads'}),
       TypeOrmModule.forRoot(
 	 {
 	    type: 'mysql',
@@ -42,11 +57,11 @@ import { Saving } from './modules/wallet/saving/saving.entity';
 	    database: process.env.DATABASE_NAME,
 	    keepConnectionAlive: true,
 	    synchronize: true,
-	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving,Provider,Credit,Installment,Saving]
+	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving,Provider,Credit,ViewCredit,Installment,Saving,ViewSaving,CreditAccount,Company,InstallmentAccount]
 	 }
       ),
     ],
-  providers: [AppService ]
+  providers: [AppService,DateScalar]
 
 })
 export class AppModule { }

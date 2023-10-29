@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-export function FormCompanyInformation() {
+export function useCompany() {
 
     const [companyInformation, setCompanyInformation] = useState({
         typeIdentification: '',
-        numberIdentification: '',
-        digitVerification: '',
+        numberIdentification: 0,
+        digitVerification: 0,
         regime: '',
         typePerson: '',
         socialReason: '',
@@ -20,10 +20,24 @@ export function FormCompanyInformation() {
         setCompanyInformation(prevData => ({ ...prevData, [name]: value }));
     };
 
+ const handleCompanyInformation = (name:string ,value:string) => {
+      setCompanyInformation(prevData => ({ ...prevData, [name]: value }));
+   };
+
+const handleChangeCompanyNubmer= (name:string ,value:string) => {
+      if(!(isNaN(Number(value)))){
+      setCompanyInformation(prevData => ({ ...prevData, [name]:Number(value) }));
+	 return true;
+      }
+      return false;
+   };
+
     return {
         companyInformation,
         handleChangeCompanyInformation,
-	setCompanyInformation
+	setCompanyInformation,
+	handleChangeCompanyNubmer,
+        handleCompanyInformation	
     };
 
 }

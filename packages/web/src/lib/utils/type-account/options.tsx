@@ -1,5 +1,5 @@
 
- export enum TypeAccountEnum {
+export enum TypeAccountEnum {
     CLASS= 'Clase',      
     GROUP= 'Grupo',
     ACCOUNT= 'Cuenta',
@@ -31,3 +31,18 @@ export const optionsAccounts = [
 
 
 ]
+
+export enum EnumNature {
+   DEBT="Debito",
+   CREDIT="Credito"
+}
+export const optionsNature= [
+   {
+      id:0,
+      name:EnumNature.DEBT,
+   },
+   {
+      id:1,
+      name:EnumNature.CREDIT,
+   }
+ ]

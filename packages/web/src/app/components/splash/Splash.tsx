@@ -10,7 +10,7 @@ function SplashScreen (){
 
     return (
 	 <motion.div
-	       className="bg-white h-screen flex h-100 w-100 flex-col items-center justify-center ">
+	       className="bg-white h-screen flex flex-col items-center justify-center ">
 	    <Logo/>
 	 {isName &&
 	  <motion.div>

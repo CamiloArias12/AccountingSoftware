@@ -6,10 +6,11 @@ import { Auxiliary } from './auxiliary/auxiliary.entity';
 import { Group } from './group/group.entity';
 import { SubAccount } from './sub-account/sub-account.entity';
 import { NatureEnum } from './dto/enum-type';
+import { ITypeAccount } from './dto/type-account-interface';
 
 @ObjectType()
 @Entity()
-export class TypeAccount {
+export class TypeAccount implements ITypeAccount{
 
     @Field()
     @PrimaryGeneratedColumn()
@@ -27,7 +28,7 @@ export class TypeAccount {
 	 nullable:false
       }
     )
-    nature: string;
+    nature: NatureEnum;
 
     @Field()
     @Column({default:true})

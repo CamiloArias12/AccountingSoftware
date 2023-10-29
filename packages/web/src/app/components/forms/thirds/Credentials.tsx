@@ -1,8 +1,6 @@
-import { FormCredential } from "@/app/hooks/thirds/CredentialInput";
 import InputField from "../../input/InputField";
 
-function CredentialsForm () {
-      const {credential,handleChangeCredential}= FormCredential()
+function CredentialsForm ({credential,handleChangeCredential}:{credential:any,handleChangeCredential:any}) {
   return (
       <div className=" flex-grow grid grid-cols-4 gap-4">
 	        <InputField
@@ -15,17 +13,15 @@ function CredentialsForm () {
 
                 <InputField
                     type="password"
-                    name="passwd"
+                    name="password"
                     label="Contrasena"
-                    value={credential.passwd}
+                    value={credential.password}
                     onChange={handleChangeCredential}
                 />
 	       <InputField
                     type="password"
                     label="Repetir contrasena"
                 />
-
-
       </div>
   ); 
 }

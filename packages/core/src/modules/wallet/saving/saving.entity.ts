@@ -1,5 +1,5 @@
 import { ObjectType, Field, Float, Int } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, OneToMany, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, OneToMany, Column, ManyToOne} from 'typeorm';
 import { Affiliate } from 'src/modules/parameterization/thirds/affiliate/affiliate.entity';
 import { TypeSaving } from 'src/modules/parameterization/type-saving/type-saving.entity';
 
@@ -12,34 +12,19 @@ export class Saving {
 
   @Field(() => Float)
   @Column('decimal', { precision: 12, scale: 2 })
-  loanAmount: number;
-
-  @Field(() => Float)
-  @Column('decimal', { precision: 5, scale: 2 })
-  annualInterest: number;
-
-  @Field(() => Float)
-  @Column('decimal', { precision: 4, scale: 2 })
-  loanPeriod: number;
+  qoutaValue: number;
 
   @Field()
-  @Column('date')
+  @Column()
   startDate: Date;
 
-  @Field(() => Int)
-  @Column()
-  affiliateId: number;
 
-  @Field()
-  @Column()
-  typeSavingId: number;
-
-  @ManyToOne(() => Affiliate, affiliate => affiliate.savings)
-  @JoinColumn({ name: 'affiliateId' })
+  @Field(() => Affiliate)
+  @ManyToOne(() => Affiliate, affiliate => affiliate.savings,{nullable:false})
   affiliate: Affiliate;
 
-  @ManyToOne(() => TypeSaving)
-  @JoinColumn({ name: 'typeSavingId' })
+  @Field(() => TypeSaving)
+  @ManyToOne(() => TypeSaving,{nullable:false})
   typeSaving: TypeSaving;
 
 }

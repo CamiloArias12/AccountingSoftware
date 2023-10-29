@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn} from "typeorm";
 import { IAfiliate } from "./dto/afiliate.interface";
 import { User } from "../user/user.entity";
 import { BeneficiaryAffiliate } from "./beneficiary-affiliate/beneficiary-affiliate.entity";
@@ -43,8 +43,8 @@ export class Affiliate implements IAfiliate {
    phone: number
 
    @Field()
-   @Column()
-   incomeCompany: number
+   @Column('date')
+   incomeCompany:Date 
 
    @Field()
    @Column()
@@ -56,8 +56,8 @@ export class Affiliate implements IAfiliate {
 
 
 
-   @Field()
-   @OneToOne(() => User, user => user.affiliate)
+   @Field(()=> User)
+   @OneToOne(() => User, user => user.affiliate,{onDelete:'CASCADE'})
    @JoinColumn({ name: 'idAffiliate' })
    user: User
 

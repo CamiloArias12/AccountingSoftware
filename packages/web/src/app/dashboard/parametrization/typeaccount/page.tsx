@@ -20,68 +20,58 @@ export default async function Page(){
 
 async  function getTypeAccounts():Promise<GeneralTypeAccount[]>{
  const AFFILIATES=gql`
-query {
+query{
   getClassAccountAll{
-	type
-    typeAccount {
-      code
-      name
-      nature
-      state
-    }
-    
-  }
-  
-  getGroupAll{
     type
-    typeAccount {
+    typeAccount{
       code
       name
       nature
       state
     }
-    
-  }
-  getAccountAll{
-    type
-    typeAccount {
-      code
-      name
-      nature
-      state
+    accounts{
+      type
+      typeAccount{
+        code
+        name
+        nature
+        state
+      }
+      accounts{
+        type
+        typeAccount{
+          code
+          name
+          nature
+          state
+        }
+        accounts{
+          type
+          typeAccount{
+            code
+            name
+            nature
+            state
+          }
+          accounts{
+            type
+            typeAccount{
+              code
+              name
+              nature
+              state
+            }
+          }
+        }
+      }
     }
-    
   }
-  getSubAccountAll{
-    type
-    typeAccount {
-      code
-      name
-      nature
-      state
-    }
-    
-  }
-  
-  getAuxilaryAll{
-    type
-    typeAccount {
-      code
-      name
-      nature
-      state
-    }
-    
-  }
-  
   
 }`
    
    const {data}=await getClient().query({query:AFFILIATES})
-   
-      console.log("Data",data)
-      return data.getClassAccountAll.concat(data.getGroupAll,
-	    data.getAccountAll,data.getSubAccountAll,data.getAuxilaryAll);
+      console.log(data.getClassAccountAll[1].accounts)
+      return data.getClassAccountAll;
 }
 
 

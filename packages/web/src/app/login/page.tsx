@@ -35,7 +35,7 @@ export default  function Login (){
    if(splash){
 
    return (
-      <div className="flex flex-row h-screen w-screen  items-center justify-center">
+      <div className="flex flex-row h-screen w-screen  items-center justify-centerr bg-white">
 	 <div className=" bg-cover flex flex-grow h-screen  bg-img-bg "></div>
 	 <div className="   flex p-10 md:max-w-[400px] lg:max-w-[600px] flex-col items-center justify-center  items-center" > 
 		  <div className="flex flex-row  justify-center items-center pt-8 pb-14 px-10 ">

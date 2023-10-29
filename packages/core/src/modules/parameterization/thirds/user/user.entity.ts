@@ -32,7 +32,7 @@ export class User implements IUser{
    lastName:string
 
    @Field()
-   @Column()
+   @Column('date')
    expeditionDate:Date
    
    @Field()
@@ -40,7 +40,7 @@ export class User implements IUser{
    expeditionCity:string
 
    @Field()
-   @Column()
+   @Column('date')
    birthDate:Date
  
    @Field()
@@ -143,12 +143,12 @@ export class User implements IUser{
 
 
    @Field(() =>Affiliate,{nullable:true})
-   @OneToOne(() => Affiliate ,affiliate =>affiliate.user)
+   @OneToOne(() => Affiliate ,affiliate =>affiliate.user,{cascade:['remove','update']})
    affiliate:Affiliate
     
 
    @Field(() =>Employee,{nullable:true})
-   @OneToOne(() => Employee ,employee =>employee.user)
+   @OneToOne(() => Employee ,employee =>employee.user,{cascade:['remove','update']})
    employee:Employee
    
    @Field(() =>Provider,{nullable:true})

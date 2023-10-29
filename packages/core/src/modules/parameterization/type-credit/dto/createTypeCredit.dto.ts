@@ -1,4 +1,4 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, Float } from '@nestjs/graphql';
 
 @InputType()
 export class CreateTypeCreditDto {
@@ -6,7 +6,7 @@ export class CreateTypeCreditDto {
     @Field()
     name: string;
    
-    @Field()
+    @Field(() =>Float)
     interest: number;
 
     @Field(() => [Int]) 

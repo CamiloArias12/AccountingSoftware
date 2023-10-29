@@ -21,7 +21,7 @@ export class Employee implements IEmployee{
    password:string
 
 
-   @OneToOne(() => User ,user => user.employee)
+   @OneToOne(() => User ,user => user.employee,{onDelete:'CASCADE'})
    @JoinColumn({name: "idEmployee"})
    user:User
 }

@@ -59,16 +59,8 @@ export class AffiliateService {
 
     }
 
-
     async findOne(identification:number):Promise<Affiliate> {
-	 
-      const user= this.affiliateRepository
-        .createQueryBuilder('affiliate')
-        .leftJoinAndSelect('affiliate.user', 'user')
-        .leftJoinAndSelect('affiliate.beneficiaries', 'beneficiaryAffiliate')
-        .leftJoinAndSelect('beneficiaryAffiliate.beneficiary', 'beneficiary')
-        .where('affiliate.idAffiliate = :identification', { identification:identification })
-	return await user.getOne();
+      return await this.affiliateRepository.findOne({where:{idAffiliate:identification}});
     }
 
     async update(numberAccount: number, updateDto: UpdateAfiliateDto): Promise<Affiliate> {

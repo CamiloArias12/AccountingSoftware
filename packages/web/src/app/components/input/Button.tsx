@@ -8,7 +8,7 @@ interface ButtonProps {
 
 function Button ({name,background,onClick}:ButtonProps) {
       return (
-	 <button  className={` ${background}  px-5 py-2  rounded-lg hover:shadow-lg  `} onClick={onClick} >{name}</button> 
+	 <button  className={` ${background} text-input font-bold px-6 py-2  rounded-sm hover:shadow-lg  `} onClick={onClick} >{name}</button> 
 
       );
 }

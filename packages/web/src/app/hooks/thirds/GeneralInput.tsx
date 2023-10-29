@@ -2,29 +2,29 @@ import { GeneralInformationData } from "@/lib/utils/thirds/types";
 import { parse } from "path";
 import { useState } from "react"
 
-export function FormGeneralInformation({data}:{data?:GeneralInformationData}) {
+export function FormGeneralInformation() {
 
    
-   const [generalInformation, setGeneralInformation] = useState <GeneralInformationData>(data ? data :{
+   const [generalInformation, setGeneralInformation] = useState <GeneralInformationData>({
       typeIdentification: "",
-      identification:11,
-      name: "JUan",
-      lastName:"Arias",
+      identification:0,
+      name: "",
+      lastName:"",
       expeditionDate:new Date(),
-      expeditionCity: "Tunja",
+      expeditionCity: "",
       birthDate:new Date(),
       countryBirth:"Colombia",
       stateBirth:"",
       cityBirth:"",
       gender:"",
       statusCivil: "",
-      addressResidence: "sadfdsf",
+      addressResidence: "",
       countryResidence:"Colombia",
       stateResidence:"",
       cityResidence:"",
       phone: '',
       landLine: '',
-      email:  'safsdf@gmail.com',
+      email:  '',
       housingType: '',
       studies: "",
       profession:  '',
@@ -34,7 +34,6 @@ export function FormGeneralInformation({data}:{data?:GeneralInformationData}) {
       publicPower: false
    })
 
-   console.log(generalInformation)
    const handleChangeGeneralInformation = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = event.target;
 	    setGeneralInformation({ ...generalInformation, [name]: value});
@@ -43,20 +42,19 @@ export function FormGeneralInformation({data}:{data?:GeneralInformationData}) {
     const handleGeneralInformation = (name:string ,value:string) => {
       setGeneralInformation(prevData => ({ ...prevData, [name]: value }));
    };
-   
-   const convertNumber =() =>{
-      if(!Number(generalInformation.identification)){
-	 return false;
-      }else{
-	 setGeneralInformation(prevData => ({ ...prevData, identification: parseFloat(generalInformation.identification )}));
+   const handleGeneralNumber = (name:string ,value:string) => {
+      if(!(isNaN(Number(value)))){
+      setGeneralInformation(prevData => ({ ...prevData, [name]:Number(value) }));
 	 return true;
-	 }
-   }
+      }
+      return false;
+   };
+
    
 
    return {
       generalInformation,
-      convertNumber,
+      handleGeneralNumber,
       setGeneralInformation,
       handleChangeGeneralInformation,
       handleGeneralInformation

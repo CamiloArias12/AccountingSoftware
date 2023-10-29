@@ -1,58 +1,65 @@
-import { Field, InputType, ObjectType } from "@nestjs/graphql"
+import { Field, InputType,  ObjectType } from "@nestjs/graphql"
+import { CreateInstallment } from "./create-installment.input"
 
-@ObjectType()
-export class AmortizationTable {
-   @Field()
-   numberInstallment:number
-   @Field()
-   date:Date
-   @Field()
-   loanInitial:number
-   @Field()
-   loanProgramer:number
-   @Field()
-   loanExtra:number
-   @Field()
-   loanTotal:number
-   @Field()
-   capital:number
-   @Field()
-   interest:number
-   @Field()
-   finalBalance:number
-
-
-}
 
 @InputType()
 export class ChangeAmortization{
-  @Field(() =>[AmortizationTableChange])
-   table:AmortizationTableChange[]
+  @Field(() =>[CreateInstallment])
+   tableAmortization:CreateInstallment[]
 
 }
 
+@InputType("InputTypeInstallmentPayment")
+@ObjectType("InstallmentPayment")
+export class InstallmentPayment{
 
-@InputType()
-export class AmortizationTableChange {
    @Field()
-   numberInstallment:number
-   @Field(() =>Date)
-   date:Date
+   installmentNumber:number
+
    @Field()
-   loanInitial:number
+   credit:number
+   
    @Field()
-   loanProgramer:number
+   paymentDate:Date
+   
    @Field()
-   loanExtra:number
-   @Field()
-   loanTotal:number
-   @Field()
-   capital:number
+   scheduledPayment:number
+   
    @Field()
    interest:number
+   
    @Field()
    finalBalance:number
+   
+   @Field()
+   identification:number
+   
+   @Field()
+   name:string
+   
+   @Field()
+   lastName:string
 
+   @Field()
+   typeCredit:string
+
+   @Field()
+   extraPayment:number
+   
+   @Field()
+   totalPayment:number 
+   
+   @Field()
+   capital:number
+
+   @Field()
+   interestPayment:number
+
+   @Field()
+   idTypeCredit:number
+
+   @Field({defaultValue:false})
+   isSelected:boolean
 
 }
 

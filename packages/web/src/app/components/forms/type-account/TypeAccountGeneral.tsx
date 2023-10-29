@@ -1,10 +1,15 @@
 import { useTypeAccount } from "@/app/hooks/type-account/TypeAccountInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../input/Button";
-import { TypeAccountEnum, optionsAccounts } from "@/lib/utils/type-account/options";
+import { TypeAccountEnum, optionsAccounts, optionsNature } from "@/lib/utils/type-account/options";
 import InputField from "../../input/InputField";
 import { gql,useMutation,useQuery } from "@apollo/client";
 import Select from "../../input/Select";
+import AlertModalSucces from "../../modal/AlertModalSucces";
+import AlertModalError from "../../modal/AlertModalError";
+import Modal from "../../modal/Modal";
+import { useRouter } from "next/navigation";
+import SelectField from "../../input/SelectField";
 
 const GET_CLASS= gql `
  query{
@@ -29,7 +34,7 @@ getAccountsByGroup(code:$code){
     name
     
   }
-}  
+} 
 }
 `
 const GET_SUBACCOUNT= gql `
@@ -57,19 +62,12 @@ getGroupByClass(code:$code){
 }
 `
 const CREATE_TYPE_ACCOUNT = gql `
-  mutation ($create:CreateTypeAccount! , $type:String!, $reference:Float){
-  createAccount(createTypeAccount:$create, type:$type, referenceTypeAccount:$reference){
-    
-    code
-    name
-    nature
-    state
-    
-  }
+mutation ($create:TypeAccountInput! , $type:String!, $reference:Float){
+  createAccount(createTypeAccount:$create, type:$type, referenceTypeAccount:$reference)
 }
 
 `
-function TypeAccountGeneral (){
+function TypeAccountGeneral ({setShowModalCreate}:{setShowModalCreate:any}){
     const [indexForm,setIndexForm]=useState("")
     const [type,setType]=useState<TypeAccountEnum>()
     const [typeCode,setTypeCode]=useState<number>(NaN)
@@ -77,10 +75,22 @@ function TypeAccountGeneral (){
     const {data:dataGroup,refetch:queryGroup}=useQuery(GET_GROUP)
     const {data:dataAccount,refetch:queryAccount}=useQuery(GET_ACCOUNT)
     const {data:dataSubAccount,refetch:querySubAccount}=useQuery(GET_SUBACCOUNT)
-    const { typeAccount, handleTypeAccount } = useTypeAccount();
+    const { typeAccount, handleTypeAccount,handleChangeTypeAccount,handleNumber } = useTypeAccount();
     const [values,setValues]= useState<number[]>([NaN,NaN,NaN,NaN,NaN])
     const [createTypeAccount, { data: typeData, loading: loadingType, error: errorType }] = useMutation(CREATE_TYPE_ACCOUNT);
+      const route = useRouter()
+   const [showWarning, setShowWarning] = useState(false);
+   useEffect(() => {
+    if (data) {
+      const timeout = setTimeout(() => {
+	 setShowWarning(false)
+      }, 2000); // 3 seconds in milliseconds
 
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [typeData,errorType]);
    const changeElement =(index:number,value:number) =>{
 	 console.log(index,value)
 	 const updateValues =[...values]
@@ -90,6 +100,7 @@ function TypeAccountGeneral (){
 
    const handleCreate =() =>{
 
+      setShowWarning(true)
       if(typeCode===0){
 
       console.log(type,typeCode)
@@ -117,18 +128,33 @@ function TypeAccountGeneral (){
 	 }
 
    }
+  if(typeData?.createAccount && !showWarning){
+      setShowModalCreate(false)
+      route.push('/dashboard/parametrization/typeaccount')
+      route.refresh()
+   }
+
   return (
+    <Modal 
+	       size="min-w-[550px] w-[600px]"
+	       title="Crear tipo de cuenta"
+	       onClick={() => {
+		  setShowModalCreate(false) 
+		  route.push("/dashboard/parametrization/typeaccount")
+		  }}
+	 >
+
       <div className="flex h-full w-full flex-col  ">
-	    <div className="flex flex-row bg-[#F2F6F8] mt-3 p-4  rounded-[30px] ">
+	    <div className="flex flex-row bg-[#F2F6F8] mt-3 p-4  rounded-lg ">
 	       {optionsAccounts.map((option) =>(
-	       <div key={option.id} className="flex flex-row w-full items-center justify-center " 
+	       <div key={option.id} className="flex flex-row w-full items-center justify-center text-sm " 
 		  onClick={() => {
 		  setIndexForm(option.name)
 		  setType(option.name)
 		  setTypeCode(option.id)
 		  }}>
 		  <div className={`h-5 w-5  rounded-[50%] border-2 border-[#10417B] ${option.name===indexForm ? "bg-[#10417B]" : "bg-white"}`} />
-		  <label className="mr-4">{option.name}</label>
+		  <label className="ml-2 mr-4">{option.name}</label>
 	       </div>
 	       ))}
 	    </div> 
@@ -166,6 +192,7 @@ function TypeAccountGeneral (){
                         label="Código"
                         value={typeAccount.code || ''}
                         onChange={handleTypeAccount}
+			onBlur={handleNumber}
                     />
 
                     <InputField
@@ -175,11 +202,12 @@ function TypeAccountGeneral (){
                         onChange={handleTypeAccount}
                     />
 
-                    <InputField
+                    <SelectField
                         name="nature"
+			options={optionsNature}	
                         label="Naturaleza"
-                        value={typeAccount.nature}
-                        onChange={handleTypeAccount}
+                        value={String(typeAccount.nature)}
+                        handleGeneralInformation={handleChangeTypeAccount}
                     />
 		   </div>
 		  </div>
@@ -192,7 +220,16 @@ function TypeAccountGeneral (){
 	        <Button name="Aceptar" background="bg-[#10417B] text-white" onClick={handleCreate}/>
 	    </div>
 
+	  {(typeData?.createAccount && showWarning) ?
+	    <AlertModalSucces value={`la ${type} ha sido creada`}/>
+	    : (typeData?.createAccount===false && showWarning) ?
+	    <AlertModalError value={`El codigo  ya existe con otra cuenta`}/>
+	    : (errorType && showWarning) &&
+	    <AlertModalError value="Error"/>
+	    }
+	 
       </div>
+   </Modal>
 
   ) 
 

@@ -6,6 +6,7 @@ import { TypeCredit } from "@/lib/utils/type-credit/types";
 import { useRouter, useSearchParams } from "next/navigation"; 
 import { useEffect, useState } from "react";
 
+export const revalidate=0
 function TypeCredits({typeCredits}:{typeCredits:TypeCredit[]}) {
 
       const searchParams = useSearchParams()
@@ -21,19 +22,9 @@ function TypeCredits({typeCredits}:{typeCredits:TypeCredit[]}) {
 
         <div className="flex-grow flex h-full">
 	 {showModalCreate &&
-	    <Modal 
-	       size="min-w-[550px] w-[600px]"
-	       title="Crear tipo de credito"
-	       onClick={() => {
-		  setShowModalCreate(false) 
-		  route.push("/dashboard/parametrization/typecredit")
-		  }}
-	    >
-
-	       <TypeCreditForm / >
-	    </Modal>
+	       <TypeCreditForm setShowModalCreate={setShowModalCreate} / >
 	 }
-	    <TableTypeCredit typeCredits={typeCredits}  setShowModalCreate={setShowModalCreate} setSelected={true}/>
+	    <TableTypeCredit typeCredits={typeCredits}  setShowModalCreate={setShowModalCreate}/>
 	 </div>
 	 )
 

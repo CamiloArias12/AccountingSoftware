@@ -21,6 +21,10 @@ module.exports = {
        backgroundImage:{
 	 'img-bg':"url('/bglogin.png')",
       },
+
+      fontSize:{
+	 'input':'13.6px'
+      }
    }
 
   },

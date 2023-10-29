@@ -1,13 +1,54 @@
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+.table thead{
+	background: #10417B;
+	color: #ffffff;
+       position: sticky;
+}
+.table-amortization thead{
+	background: #3C7ac2;
+	color: #ffffff;
+}
 
-table tbody tr:nth-child(odd) {
+
+.table tbody tr:nth-child(odd) {
 	background: #ffffff;
 }
-table tbody tr:nth-child(even) {
+.table tbody tr:nth-child(even) {
 	background: #F2F5FA;
 }
+
+body {
+   height: 100vh;
+   background-color: rgb(248 250 251 /1);
+}
+
+.account-table tbody tr:nth-child(odd) {
+	background: #ffffff ;
+}
+.account-table tbody tr:nth-child(even) {
+	background: #F2F5FA ;
+}
+
+
+.selected {
+  background-color: #FFF9F5 !important;
+}
+
+.account-table table {
+  border-spacing: 0;
+  font-family: arial, sans-serif;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.account-table thead {
+   background: #10417B;
+   color: #ffffff;
+   margin: 0;
+   position: sticky;
+   top: 0;
+}
+

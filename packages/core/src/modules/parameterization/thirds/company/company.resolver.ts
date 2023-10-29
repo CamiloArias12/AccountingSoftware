@@ -8,8 +8,8 @@ import { UpdateCompanyDto } from './dto/input/updateCompany.dto';
 export class CompanyResolver {
     constructor(private readonly companyService: CompanyService) {}
 
-    @Mutation(() => Company)
-    async createCompany(@Args('input') input: CreateCompanyDto): Promise<Company> {
+    @Mutation(() => Boolean)
+    async createCompany(@Args('input') input: CreateCompanyDto): Promise<Boolean> {
         return await this.companyService.create(input);
     }
 
@@ -23,14 +23,7 @@ export class CompanyResolver {
         return await this.companyService.findOne(numberIdentification);
     }
 
-    @Mutation(() => Company)
-    async updateCompany(
-        @Args('numberIdentification') numberIdentification: number,
-        @Args('input') input: UpdateCompanyDto,
-    ): Promise<Company> {
-        return await this.companyService.update(numberIdentification, input);
-    }
-
+  
     @Mutation(() => Boolean)
     async deleteCompany(@Args('numberIdentification') numberIdentification: number): Promise<boolean> {
         await this.companyService.remove(numberIdentification);

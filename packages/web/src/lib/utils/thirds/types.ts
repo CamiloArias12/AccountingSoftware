@@ -1,3 +1,4 @@
+import { Regime, TypePerson } from "./enumThirds";
 
 export type GeneralInformationData = {
 
@@ -46,7 +47,7 @@ export interface IAfiliate{
 
    phone:any
 
-   incomeCompany:string
+   incomeCompany:Date
 
    typeAccount:string
 
@@ -64,9 +65,9 @@ export type Affiliate ={
       name:string
       lastName:string
       phone:number
-      city:string
       salary:string
       status:boolean
+      cityResidence:string
 }
 export type TypeAccountFormData = {
     code: number | null;
@@ -102,4 +103,26 @@ export interface Beneficiaries{
    percentage:any
 
 }
+export type Company= {
 
+
+    typeIdentification: string;
+
+    numberIdentification: number;
+
+    digitVerification: number;
+
+    regime: string;
+
+    typePerson: string;
+
+    socialReason: string;
+
+    legalRepresentativeTypeIdentificatio: string;
+
+    legalRepresentativeName: string;
+
+    legalRepresentativeDocument: string;
+
+    natureCompany: string;
+}

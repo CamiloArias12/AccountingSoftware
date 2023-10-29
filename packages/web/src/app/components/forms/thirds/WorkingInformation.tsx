@@ -4,10 +4,11 @@ import {AccountTypeOptions } from '@/lib/utils/thirds/selectForm';
 import { IAfiliate } from '@/lib/utils/thirds/types';
 import InputCalendar from '../../input/Calendar';
 
-function WorkingInformtaion({ workingInformation, handleChangeWorkingInformation }: { workingInformation: IAfiliate, handleChangeWorkingInformation: any }) {
+function WorkingInformtaion({ workingInformation, handleChangeWorkingInformation,handleNumber,handleWorkingInformation }: {handleWorkingInformation:any, handleNumber:any,workingInformation: IAfiliate, handleChangeWorkingInformation: any }) {
 
+   console.log(workingInformation)
     return (
-            <div className="flex-grow grid grid-cols-2 gap-4 lg:grid-cols-3">
+            <div className="flex-grow grid grid-cols-2 gap-4 lg:grid-cols-4">
 
                 <InputField
                     type="text"
@@ -39,19 +40,27 @@ function WorkingInformtaion({ workingInformation, handleChangeWorkingInformation
                     value={workingInformation.emailJob}
                     onChange={handleChangeWorkingInformation}
                 />
-	      
-		  <InputField
+	       <InputField
                     type="text"
-                    name="incomeCompany"
-                    label="Ingreso"
-                    value={workingInformation.incomeCompany}
+                    name="phone"
+                    label="Telefono"
+		     onBlur={handleNumber}
+                    value={workingInformation.phone}
                     onChange={handleChangeWorkingInformation}
                 />
+		  
+	       <InputCalendar
+		  name="incomeCompany"
+		  label="Fecha de ingreso"
+		  value={workingInformation.incomeCompany}
+		  onChange={handleWorkingInformation}
+	       />
 
                 <InputField
                     type="text"
                     name="salary"
                     label="Sueldo"
+		     onBlur={handleNumber}
                     value={workingInformation.salary}
                     onChange={handleChangeWorkingInformation}
                 />
@@ -67,8 +76,8 @@ function WorkingInformtaion({ workingInformation, handleChangeWorkingInformation
                
 	        <SelectField
 		     name="typeAccount"
-		     value={"Ahorro"}
-		     handleGeneralInformation={handleChangeWorkingInformation}
+		     value={workingInformation.typeAccount}
+		     handleGeneralInformation={handleWorkingInformation}
 		     options={AccountTypeOptions}
 		     label="Tipo decuenta"
 		     image={false}
@@ -78,6 +87,7 @@ function WorkingInformtaion({ workingInformation, handleChangeWorkingInformation
                     name="numberAccount"
                     label="Número de Cuenta"
                     value={workingInformation.numberAccount}
+		     onBlur={handleNumber}
                     onChange={handleChangeWorkingInformation}
                 />
             </div>

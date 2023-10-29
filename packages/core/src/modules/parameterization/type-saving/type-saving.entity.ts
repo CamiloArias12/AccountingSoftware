@@ -15,14 +15,12 @@ export class TypeSaving {
    @Column()
    name: string;
 
- 
-
    @Field(() => [Auxiliary])
-   @ManyToMany(() => Auxiliary)
+   @ManyToMany(() => Auxiliary,{nullable:false,onDelete:'CASCADE',onUpdate:'CASCADE'})
    @JoinTable()
    auxiliarys: Auxiliary[];
 
-  @Field(() => [Saving])
+   @Field(() => [Saving])
    @OneToMany(() => Saving, saving => saving.typeSaving)
    savings: Saving[];
 

@@ -3,8 +3,7 @@ import { useState } from "react";
 export function FormCredential() {
     const [credential, setCredential] = useState({
         username: '',
-        passwd: '',
-        passwdVerify: '',
+        password: '',
     });
 
     const handleChangeCredential= (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -14,6 +13,7 @@ export function FormCredential() {
 
     return {
         credential,
+	setCredential,
        handleChangeCredential 
     };
 }

@@ -9,7 +9,7 @@ export default async function Page(){
    
    const typeCredits:TypeCredit[]= await getTypeCredits()
 
-   
+   console.log(typeCredits) 
    return (
       <>
 	 <TypeCredits typeCredits={typeCredits} />

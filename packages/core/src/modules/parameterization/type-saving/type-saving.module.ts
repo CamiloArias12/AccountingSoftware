@@ -13,6 +13,7 @@ import { TypeAccountModule } from '../type-account/type-account.module';
     TypeAccountModule  
   ],
   providers: [TypeSavingResolver, TypeSavingService],
+  exports :[TypeSavingService]
 })
 export class TypeSavingModule {}
 

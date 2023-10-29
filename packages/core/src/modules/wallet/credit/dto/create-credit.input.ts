@@ -1,24 +1,32 @@
-import { InputType, Float, Field, Int } from '@nestjs/graphql';
+import { InputType,Field} from '@nestjs/graphql';
+import { ICredit } from './credit-interface';
+import { CreateInstallment} from '../installments/dto/create-installment.input';
 
 @InputType()
-export class CreateCreditInput {
-  @Field(() => Float)
-  loanAmount: number;
+export class CreateCreditInput  implements ICredit{
+  @Field()
+  creditValue: number;
 
-  @Field(() => Float)
-  annualInterest: number;
-
-  @Field(() => Float)
-  loanPeriod: number;
+  @Field()
+  interest: number;
 
   @Field()
   startDate: Date;
 
   @Field()
+  discountDate: Date;
+
+  @Field()
   affiliateId: number;
 
-  @Field(() => Int)
-  typeCreditId: number;
+  @Field()
+  idTypeCredit: number;
+
+  @Field(()=>[CreateInstallment])
+  installments:CreateInstallment[]
+
+  @Field()
+  concept:string
 
 }
 

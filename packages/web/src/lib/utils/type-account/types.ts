@@ -7,10 +7,9 @@ export type TypeAccounnt = {
 
 }
 
-
 export  type GeneralTypeAccount={
-   
    typeAccount:TypeAccounnt
    type:string
+   accounts:GeneralTypeAccount[]
 
 }

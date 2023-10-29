@@ -24,7 +24,7 @@ export class CreateAfiliateDto {
     phone: number;
 
     @Field()
-    incomeCompany: number;
+    incomeCompany: Date;
 
     @Field()
     typeAccount: string;

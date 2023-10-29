@@ -3,20 +3,14 @@ import { InputType, Float, Field, Int } from '@nestjs/graphql';
 @InputType()
 export class CreateSavingInput {
   @Field(() => Float)
-  loanAmount: number;
-
-  @Field(() => Float)
-  annualInterest: number;
-
-  @Field(() => Float)
-  loanPeriod: number;
+  qoutaValue: number;
 
   @Field()
   startDate: Date;
 
-  @Field()
+  @Field(() => Int)
   affiliateId: number;
 
   @Field(() => Int)
-   typeSavingId: number;
+  typeSavingId: number;
 }

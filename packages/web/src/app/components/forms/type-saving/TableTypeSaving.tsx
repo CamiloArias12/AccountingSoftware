@@ -1,19 +1,30 @@
 import { ColumnDef, Row, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { GeneralTypeAccount, TypeAccounnt } from "@/lib/utils/type-account/types";
-import { useMemo, useReducer, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AddSvg } from "../../logo/Add";
 import { useRouter } from "next/navigation";
 import { useVirtual } from "react-virtual";
 import { motion} from "framer-motion"
-import { Auxiliary, TypeSaving } from "@/lib/utils/type-saving/types";
-import TypeSavings from "@/app/dashboard/parametrization/typesaving/TypeSaving";
+import {  TypeSaving } from "@/lib/utils/type-saving/types";
+import { gql,useMutation } from "@apollo/client";
+import { useTypeSaving } from "@/app/hooks/type-saving/TypeSavingInput";
+import InputField from "../../input/InputField";
+import AlertModalSucces from "../../modal/AlertModalSucces";
+import AlertModalError from "../../modal/AlertModalError";
 
 
-function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavings:TypeSaving[],setShowModalCreate:any,setSelected:any}){
-   
+const DELETE_TYPE_SAVING=gql `
+mutation ($id:Int!){
+  deleteTypeSaving(id:$id)
+}
+`
+const UPDATE_TYPE_SAVING=gql `
+mutation($data:UpdateTypeSavingInput!,$id:Float!){
+  updateTypeSaving(data:$data,id:$id)
+  
+}
+`
 
-   console.log("Types accounts",typeSavings)
-
+function TableTypeSaving({typeSavings ,setShowModalCreate}:{typeSavings:TypeSaving[],setShowModalCreate:any}){
    
   const columns = useMemo<ColumnDef<TypeSaving>[]>(
     () => [
@@ -32,11 +43,14 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
     []
   )
 
-  const [data ] = useState<TypeSaving[]>(typeSavings)
+  const [data,setData ] = useState<TypeSaving[]>(typeSavings)
    const [showOptions,setShowOptions]=useState(false)
    const route =useRouter()
    const [sorting, setSorting] = useState<SortingState>([])
 
+   useEffect(() =>{
+      setData(typeSavings)
+   },[typeSavings])
    const table = useReactTable({
     data,
     columns,
@@ -67,6 +81,77 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
    const [expanded,setExpanded]=useState<boolean>(false)
    const [value,setValue]= useState<any>()
    const [update,setUpdate]=useState<boolean>(false)
+   const [deleteTypeCredit, {data:deleteData,loading:loadingDelete,error:errorDelete}] = useMutation(DELETE_TYPE_SAVING);
+   const {typeSaving,handleTypeSaving,setTypeSaving} = useTypeSaving() 
+   const [selected,setSelected]=useState<number>(0)
+   const [updateTypeSaving, {data:updateData,loading:loadingUpdate,error:errorUpdate}] = useMutation(UPDATE_TYPE_SAVING);
+   const [showWarning, setShowWarning] = useState(false);
+   const [showWarningUpdate, setShowWarningUpdate] = useState(false);
+   useEffect (() => {
+      if(deleteData?.deleteTypeSaving){
+	 route.refresh()
+      }
+
+   },[deleteData])
+
+
+    const deleteTypeSavingHandle=() =>{
+      setShowWarning(true)
+      deleteTypeCredit(
+	 {
+	    variables:{
+		  id:selected
+	    }
+	 }
+      )
+   
+   }
+   const updateTypeSavingHandle=() =>{
+      setShowWarningUpdate(true)
+      updateTypeSaving(
+	 {
+	    variables:{
+		  data:typeSaving, 
+		  id:selected
+	    }
+	 }
+      )
+   
+   }
+useEffect(() => {
+    if (updateData) {
+      if(updateData?.updateTypeSaving){
+	 setUpdate(false)
+	 route.refresh()
+      }
+
+      console.log("update")
+      const timeout = setTimeout(() => {
+	 setShowWarningUpdate(false)
+      }, 3000); // 3 seconds in milliseconds
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [updateData,errorUpdate]);
+
+useEffect(() => {
+    if (deleteData) {
+      if(deleteData?.deleteTypeSaving){
+	 route.refresh()
+      }
+
+      console.log("delete")
+      const timeout = setTimeout(() => {
+	 setShowWarning(false)
+      }, 5000); // 3 seconds in milliseconds
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [deleteData,errorDelete]);
 
   return (
       <>
@@ -82,7 +167,10 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
 			   <img  src="/edit.svg"/>
 			   <label className="font-sans px-6 text-sm">Editar</label>
 			</button>
-			<button className="flex flex-row">
+			<button className="flex flex-row" onClick={() =>{
+			      deleteTypeSavingHandle()
+			   }}>
+
 			   <img  src="/delete.svg"/>
 			   <label className="font-sans px-6 text-sm">Eliminar</label>
 			</button>
@@ -105,14 +193,14 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
 	 </div>
        
       <div className="mx-4 my-2 flex-grow text-sm">
-        <table className="h-full w-full table-fixed  ">
-          <thead className="font-medium border-b-4 bg-[#F2F5FA] border-b-[#3C7AC2]" >
+        <table className="w-full table-fixed table ">
+          <thead className="font-medium border-b-2 bg-[#F2F5FA] border-b-[#3C7AC2]" >
             {table.getHeaderGroups().map(headerGroup => (
               <tr  className="rounded-lg" key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
                   return (
                     <th
-		     className="text-start font-light pl-3 font-medium "
+		     className="text-start font-light pl-3 p-2 font-medium "
                       key={header.id}
                       colSpan={header.colSpan}
                       style={{ width: header.getSize() }}
@@ -150,20 +238,21 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
 	      {(row.id==idrow && update )?
 		  <tr className=" h-24 border-b-2 border-[#8C4708] px-2 ">
 		     <td className="px-2 bg-white">
-		     <label>{value.type}</label>
+		     <label>{selected}</label>
 		     </td>
-		     <td className="bg-white">
-		     <label>{value.code}</label>
-		     </td>
-		     <td className="px-2 bg-white">
-		     <input className="w-full border " value={value.name}/>
-		     </td>
-		     <td className="px-2 bg-white">
-		     <input className="w-full border" value={value.nature}/>
-		     </td>
-		     <td className="flex flex-col h-24 justify-center items-center bg-white">
+		     <td className="px-2 bg-white flex flex-row h-full items-center  ">
+			<InputField
+			   name="name"
+			   label=""
+			   value={typeSaving.name}
+			   onChange={(e) =>{handleTypeSaving(e)}}
+			/>
+		     <div className="ml-4 flex flex-col">
+			<button className="h-[20px] w-[20px] mb-2"
+			   onClick={() =>{
+			     updateTypeSavingHandle() 
+			   }}>
 
-			<button className="h-[20px] w-[20px] mb-2">
 			   <img src="/accept.png" className="w-full h-full "/>
 			</button>
 			<button className="h-[20px] w-[20px]" onClick={() => {
@@ -171,7 +260,7 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
 			}}>
 			   <img src="/cancel.png" className="w-full h-full "/>
 			</button>
-
+			</div>
 		     </td>
 		  </tr>
 	       :
@@ -180,13 +269,11 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
                     return (
 		    <>
                       <td  onClick={() =>{ 
-			   console.log("asdfsad",row._valuesCache)
 			   setShowOptions(true)
 			   if(!update){
-			      setValue({type:row._valuesCache.type,code:row._valuesCache.typeAccount_code,name:row._valuesCache.typeAccount_name,nature:row._valuesCache.typeAccount_nature})
+			     setTypeSaving({name:String(row._valuesCache.name)}) 
+			      setSelected(Number(row._valuesCache.id))
 			      }
-			   if(row._valuesCache.code){  
-			   setSelected(row._valuesCache.code)}
 			 if(update===false){  
 			   if(idrow==row.id){
 			      setIdRow(row.id)
@@ -198,9 +285,8 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
 			      setExpanded(!true)
 			   }
 			   }
-			   console.log("Flex render",row._valuesCache)
 
-			   }} className="font-light px-2"key={cell.id} >
+			   }} className="font-light px-2 py-2"key={cell.id} >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -220,6 +306,21 @@ function TableTypeSaving({typeSavings ,setSelected,setShowModalCreate}:{typeSavi
     </div>
 
 	 </div>
+      {(updateData?.updateTypeSaving&& showWarningUpdate) ?
+	    <AlertModalSucces value="Se han actualizado los datos"/>
+	    : (updateData?.updateTypeSaving===false && showWarningUpdate) ?
+	    <AlertModalError value="Los datos no se pueden actualizar"/>
+	    : (errorUpdate&& showWarningUpdate) &&
+	    <AlertModalError value="Error"/>
+	    }
+	 {(deleteData?.deleteTypeSaving&& showWarning) ?
+	    <AlertModalSucces value="Se han eliminado el tipo de ahorro"/>
+	    : (deleteData?.deleteTypeSaving===false && showWarning) ?
+	    <AlertModalError value="El tipo de ahorro no se puede eliminar"/>
+	    : (errorDelete&& showWarning) &&
+	    <AlertModalError value="Error"/>
+	    }
+
       </>
 
   );
