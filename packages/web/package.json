@@ -7,20 +7,25 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint --ext .ts,.tsx .",
+    "prettier": "prettier -write ."
   },
   "dependencies": {
     "@apollo/client": "3.8.0",
     "@apollo/experimental-nextjs-app-support": "^0.4.2",
     "@faker-js/faker": "^8.0.2",
+    "@react-pdf/renderer": "^3.1.13",
     "@tanstack/react-table": "^8.9.7",
     "@types/node": "20.5.6",
     "@types/react-dom": "18.2.7",
     "animejs": "^3.2.1",
     "autoprefixer": "^10.4.15",
+    "axios": "^1.6.0",
     "chart.js": "^4.0.0",
+    "date-fns": "^2.30.0",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
+    "form-data": "^4.0.0",
     "framer-motion": "^10.16.4",
     "graphql": "^15.0.0",
     "graphql-loader": "^1.2.1",
@@ -28,10 +33,16 @@
     "next": "13.4.19",
     "postcss": "^8.4.28",
     "react": "^18.2.0",
+    "react-calendar": "^4.6.0",
     "react-chartjs-2": "^5.0.0",
+    "react-date-picker": "link:../react-date-picker",
+    "react-datepicker": "^4.18.0",
     "react-dom": "18.2.0",
     "react-virtual": "^2.10.4",
     "tailwindcss": "^3.3.3",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3"
   }
 }

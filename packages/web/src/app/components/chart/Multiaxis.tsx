@@ -1,4 +1,4 @@
-;import React from 'react';
+import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,7 +18,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export const options = {
@@ -76,4 +76,3 @@ export const data = {
 export function ChartLine() {
   return <Line options={options} data={data} />;
 }
-

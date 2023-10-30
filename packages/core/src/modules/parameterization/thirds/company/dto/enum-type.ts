@@ -1,5 +1,6 @@
+
 export enum Regime {
-    NO_RESPONSABLE_IUVA = "No Responsable del IUVA",
+    NO_RESPONSABLE_IVA = "No Responsable del IUVA",
     RESPONSABLE_IVA = "Responsable del Impuesto sobre las Ventas-IVA",
     SIMPLIFICADO = "Simplificado",
     SUBSIDIADO = "Subsidiado"

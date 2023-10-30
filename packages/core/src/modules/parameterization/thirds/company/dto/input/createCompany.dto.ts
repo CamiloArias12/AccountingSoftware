@@ -13,10 +13,10 @@ export class CreateCompanyDto {
     @Field()
     digitVerification: number;
 
-    @Field(() => Regime)
+    @Field()
     regime: Regime;
 
-    @Field(() => TypePerson)
+    @Field()
     typePerson: TypePerson;
 
     @Field()

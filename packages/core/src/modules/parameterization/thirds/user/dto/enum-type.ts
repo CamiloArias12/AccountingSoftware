@@ -1,32 +1,32 @@
 export enum TypeIdentification {
-    CEDULA_DE_CIUDADANIA = 'cedula de ciudadania',
-    TARJETA_DE_EXTRANJERIA = 'cedula de extranjeria',
+    CEDULA_DE_CIUDADANIA = 'Cédula de ciudadania',
+    TARJETA_DE_EXTRANJERIA = 'Cédula de extranjeria',
  }
  
  export enum CivilStatus {
-    SOLTERO_A = 'soltero(a)',
-    CASADO_A = 'casado(a)',
-    LIBRE = 'libre',
-    OTRO = 'otro',
-    MUJER_CABEZA_FAMILIA = 'mujer cabeza familia'
+    SOLTERO_A = 'Soltero(a)',
+    CASADO_A = 'Casado(a)',
+    LIBRE = 'Libre',
+    OTRO = 'Otro',
+    MUJER_CABEZA_FAMILIA = 'Mujer cabeza familia'
  }
  
  export enum Gender {
-    MASCULINO = 'masculino',
-    FEMENINO = 'femenino',
+    MASCULINO = 'Masculino',
+    FEMENINO = 'Femenino',
  }
  
  export enum HousingType {
-    PROPIA = 'propia',      
-    ARRENDADA = 'arrendada',
-    FAMILIAR = 'familiar',
-    OTRO = 'otro'     
+    PROPIA = 'Propia',      
+    ARRENDADA = 'Arrendada',
+    FAMILIAR = 'Familiar',
+    OTRO = 'Otro'     
  }
  
  export enum Studies {
-    PRIMARIA = 'primaria',      
-    SECUNDARIA = 'secundaria',
-    TECNOLOGIA = 'tecnologia',
-    UNIVESITARIA = 'universitaria',
-    POSGRADO = 'posgrado'     
+    PRIMARIA = 'Primaria',      
+    SECUNDARIA = 'Secundaria',
+    TECNOLOGIA = 'Tecnologia',
+    UNIVESITARIA = 'Universitaria',
+    POSGRADO = 'Posgrado'     
  }

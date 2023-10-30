@@ -13,12 +13,17 @@ export class Account {
 
     @ManyToOne(() => Group, group => group.accounts,{onUpdate:'CASCADE'})
     group: Group;
+    
+    @Field({defaultValue:"Cuenta"})
+    type:string
+  
 
+    @Field(() => [SubAccount],{name:"accounts"})
     @OneToMany(() => SubAccount, subAccount => subAccount.account)
     subAccounts: SubAccount[];
 
     @Field(() => TypeAccount)
-    @OneToOne(() => TypeAccount, typeAccount => typeAccount.account,{onUpdate:'CASCADE'})
+    @OneToOne(() => TypeAccount, typeAccount => typeAccount.account,{onUpdate:'CASCADE',onDelete:'CASCADE'})
     @JoinColumn({ name: "code" })
     typeAccount: TypeAccount
 

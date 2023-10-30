@@ -1,29 +1,31 @@
-import React from 'react';
-
-type CheckboxFieldProps = {
-    name: string;
-    label: string;
-    checked: boolean;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+type CheckBoxThirdsProps = {
+  isChecked: boolean;
+  onChange: any;
+  name: string;
+  label: string;
 };
 
-function CheckboxField ({ name, label, checked, onChange } : CheckboxFieldProps)  {
-    return (
-        <div>
-            <input 
-                type="checkbox" 
-                name={name} 
-                id={name}
-                checked={checked} 
-                onChange={onChange} 
-            />
-            <label htmlFor={name} className="text-xs">
-                {label}
-            </label>
-        </div>
-    );
-};
+function CheckBoxField({
+  label,
+  isChecked,
+  onChange,
+  name,
+}: CheckBoxThirdsProps) {
+  return (
+    <>
+      <div className="flex flex-row items-center pl-4">
+        <div
+          className={`h-4 w-4  rounded-[50%] border border-[#10417B] ${
+            isChecked ? 'bg-[#10417B]' : 'bg-white'
+          }`}
+          onClick={() => {
+            onChange(name, !isChecked);
+          }}
+        />
+        <label className="pl-3 text-input">{label}</label>
+      </div>
+    </>
+  );
+}
 
-export default CheckboxField;
-
-
+export default CheckBoxField;

@@ -17,7 +17,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export const options = {
@@ -54,4 +54,3 @@ export const data = {
 export function BarChart() {
   return <Bar options={options} data={data} />;
 }
-

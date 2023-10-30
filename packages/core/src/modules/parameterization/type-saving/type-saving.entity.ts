@@ -1,32 +1,24 @@
-import { Field, ObjectType, Int } from "@nestjs/graphql";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { SubAccount } from "../type-account/sub-account/sub-account.entity";
+import { Field, ObjectType} from "@nestjs/graphql";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Auxiliary } from "../type-account/auxiliary/auxiliary.entity";
-import { Account } from "../type-account/account/account.entity";
 import { Saving } from "src/modules/wallet/saving/saving.entity";
+
 @ObjectType()
 @Entity()
 export class TypeSaving {
 
    @Field()
-   @PrimaryColumn()
-   idTypeSaving: number;
+   @PrimaryGeneratedColumn()
+   id: number;
 
    @Field()
    @Column()
-   nombre: string;
+   name: string;
 
-   @ManyToMany(() => SubAccount)
+   @Field(() => [Auxiliary])
+   @ManyToMany(() => Auxiliary,{nullable:false,onDelete:'CASCADE',onUpdate:'CASCADE'})
    @JoinTable()
-   subAccounts: SubAccount[] | null;
-
-   @ManyToMany(() => Auxiliary)
-   @JoinTable()
-   auxiliarys: Auxiliary[] | null;
-
-   @ManyToMany(() => Account)
-   @JoinTable()
-   accounts: Account[] | null;
+   auxiliarys: Auxiliary[];
 
    @Field(() => [Saving])
    @OneToMany(() => Saving, saving => saving.typeSaving)

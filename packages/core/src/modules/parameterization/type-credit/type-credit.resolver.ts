@@ -1,9 +1,9 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query ,Int} from '@nestjs/graphql';
 import { TypeCreditService } from './type-credit.service';
 import { TypeCredit } from './type-credit.entity';
 import { CreateTypeCreditDto } from './dto/createTypeCredit.dto';
 import { ClassAccountService } from '../type-account/class-account/class-account.service';
-import { UpdateTypeCreditDto } from './dto/updateTypeCredit.dto';
+import { UpdateTypeCreditInput } from './dto/updateTypeCredit.dto';
 
 @Resolver(() => TypeCredit)
 export class TypeCreditResolver {
@@ -11,15 +11,31 @@ export class TypeCreditResolver {
         private readonly typeCreditService: TypeCreditService
     ) { }
 
-    @Mutation(() => TypeCredit)
-    async createTypeCredit(@Args('data') createTypeCreditDto: CreateTypeCreditDto): Promise<TypeCredit> {
+    @Mutation(() => Boolean)
+    async createTypeCredit(@Args('data') createTypeCreditDto: CreateTypeCreditDto): Promise<Boolean> {
         return await this.typeCreditService.createTypeCredit(createTypeCreditDto);
     }
 
-    @Mutation(() => TypeCredit)
-    async updateTypeCredit(@Args('data') updateTypeCreditDto: UpdateTypeCreditDto): Promise<TypeCredit> {
-        return await this.typeCreditService.updateOrCreateTypeCredit(updateTypeCreditDto);
+    @Mutation(() => Boolean)
+    async updateTypeCredit(@Args('data') updateData: UpdateTypeCreditInput,
+			   @Args('id') id:number
+			): Promise<Boolean> {
+        return await this.typeCreditService.update(updateData,id);
     }
+   @Query(() => TypeCredit)
+    async getTypeCredit(@Args('id') id:number): Promise<TypeCredit> {
+        return await this.typeCreditService.findOne(id);
+    }
+
+   @Query(() => [TypeCredit])
+      async getTypeCreditAll(): Promise<TypeCredit[]> {
+        return await this.typeCreditService.findAll();
+    }
+
+   @Mutation(()=>Boolean)
+   async deleteTypeCredit(@Args('id', { type: () => Int }) id: number) {
+      return this.typeCreditService.delete(id)
+  }
 
 }
 

@@ -11,7 +11,7 @@ export class BeneficiaryAffiliateService {
       ){}
 
 
-      async create(beneficiaryAffiliate:BeneficiaryAffiliate,queryRunner:QueryRunner | null){
+      async create(beneficiaryAffiliate:BeneficiaryAffiliate,queryRunner?:QueryRunner){
 	 
 	 if(queryRunner){
 	    return queryRunner.manager.save(BeneficiaryAffiliate,beneficiaryAffiliate)

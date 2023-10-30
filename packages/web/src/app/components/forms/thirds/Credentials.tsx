@@ -1,36 +1,32 @@
-import { FormCredential } from "@/app/hooks/thirds/CredentialInput";
-import InputField from "../../input/InputField";
+import InputField from '../../input/InputField';
 
-function CredentialsForm () {
-      const {credential,handleChangeCredential}= FormCredential()
+function CredentialsForm({
+  credential,
+  handleChangeCredential,
+}: {
+  credential: any;
+  handleChangeCredential: any;
+}) {
   return (
-      <>
-	        <InputField
-                    type="tel"
-                    name="telefono"
-                    label="Teléfono"
-                    value={credential.username}
-                    onChange={handleChangeCredential}
-                />
+    <div className=" flex-grow grid grid-cols-4 gap-4">
+      <InputField
+        type="text"
+        name="username"
+        label="Usuario"
+        value={credential.username}
+        onChange={handleChangeCredential}
+      />
 
-                <InputField
-                    type="email"
-                    name="correoLaboral"
-                    label="Correo Laboral"
-                    value={credential.passwd}
-                    onChange={handleChangeCredential}
-                />
-
-                <InputField
-                    type="number"
-                    name="sueldo"
-                    label="Sueldo"
-                    value={credential.passwdVerify}
-                    onChange={handleChangeCredential}
-                />
-      </>
-  ); 
+      <InputField
+        type="password"
+        name="password"
+        label="Contrasena"
+        value={credential.password}
+        onChange={handleChangeCredential}
+      />
+      <InputField type="password" label="Repetir contrasena" />
+    </div>
+  );
 }
-
 
 export default CredentialsForm;

@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  foncastel:
+    build: .
+    ports:
+      - "3001:3001"
+      - "4000:4000"
+    volumes:
+      - ./:/app
+    networks:
+      foncastel-net:
+        ipv4_address: 10.6.0.3
+
+
+networks:
+  foncastel-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.6.0.0/16
+          gateway: 10.6.0.1
+

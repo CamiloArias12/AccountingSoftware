@@ -1,27 +1,35 @@
-import { useState } from "react";
+import { TypeAccounnt } from '@/lib/utils/type-account/types';
+import { useState } from 'react';
 
 export function useTypeAccount() {
+  const [typeAccount, setTypeAccount] = useState<TypeAccounnt>({
+    code: NaN,
+    name: '',
+    nature: '',
+  });
 
-    const [typeAccount, setTypeAccount] = useState({
-        code: null,
-        name: '',
-        nature: '',
-        account: null,
-        auxiliary: null,
-        group: null,
-        classAccount: null,
-        subAccount: null
-    });
+  const handleTypeAccount = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = event.target;
+    setTypeAccount((prevData) => ({ ...prevData, [name]: value }));
+  };
+  const handleChangeTypeAccount = (name: string, value: any) => {
+    setTypeAccount((prevData) => ({ ...prevData, [name]: value }));
+  };
+  const handleNumber = (name: string, value: string) => {
+    if (!isNaN(Number(value))) {
+      setTypeAccount((prevData) => ({ ...prevData, [name]: Number(value) }));
+      return true;
+    }
+    return false;
+  };
 
-    const handleTypeAccount = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = event.target;
-        setTypeAccount(prevData => ({ ...prevData, [name]: value }));
-    };
-
-    return {
-        typeAccount,
-        handleTypeAccount
-    };
+  return {
+    typeAccount,
+    setTypeAccount,
+    handleTypeAccount,
+    handleChangeTypeAccount,
+    handleNumber,
+  };
 }
-
-

@@ -1,15 +1,37 @@
-"use client"
-import { useRouter } from "next/navigation"; 
+import { getClient } from '@/lib/graphql/apollo-client-server';
+import { TypeSaving } from '@/lib/utils/type-saving/types';
+import { gql } from '@apollo/client';
+import TypeSavings from './TypeSaving';
 
-function TypeSaving() {
-    const route = useRouter();
+export const revalidate = 0;
 
-    return (
-        <div>
-            <button onClick={() => { route.push("/dashboard/parametrization/typesaving/create") }} className="bg-[#123344] text-[#ffffff]">Crear</button>
-        </div>
-    );
+export default async function Page() {
+  const typeSavings: TypeSaving[] = await getTypeSavings();
+
+  return (
+    <>
+      <TypeSavings typeSavings={typeSavings} />
+    </>
+  );
 }
 
-export default TypeSaving;
+async function getTypeSavings(): Promise<TypeSaving[]> {
+  const TYPE_SAVINGS = gql`
+    query {
+      getTypeSavingAll {
+        id
+        name
+        auxiliarys {
+          typeAccount {
+            code
+            name
+          }
+        }
+      }
+    }
+  `;
 
+  const { data } = await getClient().query({ query: TYPE_SAVINGS });
+
+  return data.getTypeSavingAll;
+}

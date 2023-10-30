@@ -1,90 +1,104 @@
 import InputField from '@/app/components/input/InputField';
 import SelectField from '@/app/components/input/SelectField';
-import { AccountTypeForm } from '@/lib/utils/thirds/selectForm';
+import { AccountTypeOptions } from '@/lib/utils/thirds/selectForm';
+import { IAfiliate } from '@/lib/utils/thirds/types';
+import InputCalendar from '../../input/Calendar';
 
-function WorkingInformtaion({ workingInformation, handleChangeWorkingInformation }: { workingInformation: any, handleChangeWorkingInformation: any }) {
+function WorkingInformtaion({
+  workingInformation,
+  handleChangeWorkingInformation,
+  handleNumber,
+  handleWorkingInformation,
+}: {
+  handleWorkingInformation: any;
+  handleNumber: any;
+  workingInformation: IAfiliate;
+  handleChangeWorkingInformation: any;
+}) {
+  console.log(workingInformation);
+  return (
+    <div className="flex-grow grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <InputField
+        type="text"
+        name="company"
+        label="Empresa"
+        value={workingInformation.company}
+        onChange={handleChangeWorkingInformation}
+      />
+      <InputField
+        type="text"
+        name="jobTitle"
+        label="Cargo"
+        value={workingInformation.jobTitle}
+        onChange={handleChangeWorkingInformation}
+      />
 
-    return (
-        <div className="flex flex-col items-center justify-center ">
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 w-full p-4">
-                <InputField
-                    name="empresa"
-                    label="Empresa"
-                    value={workingInformation.empresa}
-                    onChange={handleChangeWorkingInformation}
-                />
+      <InputField
+        type="text"
+        name="addreesCompany"
+        label="Dirección"
+        value={workingInformation.addreesCompany}
+        onChange={handleChangeWorkingInformation}
+      />
 
-                <InputField
-                    name="cargo"
-                    label="Cargo"
-                    value={workingInformation.cargo}
-                    onChange={handleChangeWorkingInformation}
-                />
+      <InputField
+        type="email"
+        name="emailJob"
+        label="Correo laboral"
+        value={workingInformation.emailJob}
+        onChange={handleChangeWorkingInformation}
+      />
+      <InputField
+        type="text"
+        name="phone"
+        label="Telefono"
+        onBlur={handleNumber}
+        value={workingInformation.phone}
+        onChange={handleChangeWorkingInformation}
+      />
 
-                <InputField
-                    name="direccion"
-                    label="Dirección"
-                    value={workingInformation.direccion}
-                    onChange={handleChangeWorkingInformation}
-                />
+      <InputCalendar
+        name="incomeCompany"
+        label="Fecha de ingreso"
+        value={workingInformation.incomeCompany}
+        onChange={handleWorkingInformation}
+      />
 
-                <InputField
-                    type="tel"
-                    name="telefono"
-                    label="Teléfono"
-                    value={workingInformation.telefono}
-                    onChange={handleChangeWorkingInformation}
-                />
+      <InputField
+        type="text"
+        name="salary"
+        label="Sueldo"
+        onBlur={handleNumber}
+        value={workingInformation.salary}
+        onChange={handleChangeWorkingInformation}
+      />
 
-                <InputField
-                    type="email"
-                    name="correoLaboral"
-                    label="Correo Laboral"
-                    value={workingInformation.correoLaboral}
-                    onChange={handleChangeWorkingInformation}
-                />
+      <InputField
+        type="text"
+        name="bank"
+        label="Banco"
+        value={workingInformation.bank}
+        onChange={handleChangeWorkingInformation}
+      />
 
-                <InputField
-                    type="number"
-                    name="sueldo"
-                    label="Sueldo"
-                    value={workingInformation.sueldo}
-                    onChange={handleChangeWorkingInformation}
-                />
+      <SelectField
+        name="typeAccount"
+        value={workingInformation.typeAccount}
+        handleGeneralInformation={handleWorkingInformation}
+        options={AccountTypeOptions}
+        label="Tipo decuenta"
+        image={false}
+      />
 
-                <InputField
-                    type="date"
-                    name="ingresoEmpresa"
-                    label="Ingreso a la Empresa"
-                    value={workingInformation.ingresoEmpresa?.toISOString().substr(0, 10) || ''}
-                    onChange={handleChangeWorkingInformation}
-                />
-
-                <InputField
-                    name="banco"
-                    label="Banco"
-                    value={workingInformation.banco}
-                    onChange={handleChangeWorkingInformation}
-                />
-
-                <SelectField
-                    name="tipoCuenta"
-                    label="Tipo de Cuenta"
-                    value={workingInformation.tipoCuenta}
-                    options={AccountTypeForm}
-                    onChange={handleChangeWorkingInformation}
-                />
-
-                <InputField
-                    name="numero"
-                    label="Número de Cuenta"
-                    value={workingInformation.numero}
-                    onChange={handleChangeWorkingInformation}
-                />
-            </div>
-        </div>
-    );
+      <InputField
+        name="numberAccount"
+        label="Número de Cuenta"
+        value={workingInformation.numberAccount}
+        onBlur={handleNumber}
+        onChange={handleChangeWorkingInformation}
+      />
+    </div>
+  );
 }
 
 export default WorkingInformtaion;
-

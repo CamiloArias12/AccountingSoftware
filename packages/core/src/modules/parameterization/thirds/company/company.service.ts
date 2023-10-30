@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Company } from './company.entity';
 import { CreateCompanyDto } from './dto/input/createCompany.dto';
-import { UpdateCompanyDto } from './dto/input/updateCompany.dto';
 
 
 @Injectable()
@@ -13,9 +12,17 @@ export class CompanyService {
         private readonly companyRepository: Repository<Company>,
     ) {}
 
-    async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
-        const company = this.companyRepository.create(createCompanyDto);
-        return await this.companyRepository.save(company);
+    async create(createCompanyDto: CreateCompanyDto): Promise<Boolean> {
+      try {
+         const company = this.companyRepository.create(createCompanyDto as Company);
+	 await this.companyRepository.save(company);
+	 return true; 
+      } catch (e) {
+	 console.log(e)
+	 return false;
+      }
+            
+
     }
 
     async findAll(): Promise<Company[]> {
@@ -34,17 +41,7 @@ export class CompanyService {
         return company;
     }    
 
-    async update(numberIdentification: number, updateCompanyDto: UpdateCompanyDto): Promise<Company> {
-        const company = await this.companyRepository.preload({
-            numberIdentification: numberIdentification,
-            ...updateCompanyDto,
-        });
-        if (!company) {
-            throw new NotFoundException(`Company with ID ${numberIdentification} not found`);
-        }
-        return await this.companyRepository.save(company);
-    }
-
+   
     async remove(numberIdentification: number): Promise<void> {
         const company = await this.findOne(numberIdentification);
         await this.companyRepository.remove(company);

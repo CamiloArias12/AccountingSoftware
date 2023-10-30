@@ -11,15 +11,18 @@ export class Group {
     @Field()
     @PrimaryColumn()
     code: number;
+   
+    @Field({defaultValue:"Grupo"})
+    type:string
 
     @ManyToOne(() => ClassAccount, classAccount => classAccount.groups,{onUpdate:'CASCADE'})
     classAccount: ClassAccount;
-
+    @Field(() => [Account],{name:"accounts"})
     @OneToMany(() => Account, account => account.group)
     accounts: Account[];
 
     @Field(() => TypeAccount)
-    @OneToOne(() => TypeAccount, typeAccount => typeAccount.group,{onUpdate:'CASCADE'})
+    @OneToOne(() => TypeAccount, typeAccount => typeAccount.group,{onUpdate:'CASCADE',onDelete:'CASCADE'})
     @JoinColumn({ name: "code" })
     typeAccount: TypeAccount
 

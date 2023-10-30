@@ -1,59 +1,70 @@
-import { Field, ObjectType, Int } from "@nestjs/graphql";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { IInstallment } from "./dto/installment-interface";
 import { Credit } from "../credit.entity";
+import { InstallmentAccount } from "src/modules/treasury/installment-account/installment-account.entity";
+import { StateInstallment } from "./dto/enum-types";
 
 @ObjectType()
 @Entity()
-export class Installment {
-
-    @Field(() => Int)
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Field(() => Int, { nullable: true })
-    @Column({ nullable: true })
-    number?: number;
-
+export class Installment implements IInstallment{
+   
     @Field()
+    @PrimaryColumn()
+    installmentNumber: number;
+    
+    @Field()
+    @PrimaryColumn()
+    id_credit:number
+
+    @Field(() =>Date)
     @Column('date')
     paymentDate: Date;
 
     @Field()
-    @Column('decimal')
+    @Column()
     initialBalance: number;
 
     @Field()
-    @Column('decimal')
+    @Column()
     scheduledPayment: number;
 
     @Field()
-    @Column('decimal')
+    @Column()
     extraPayment: number;
 
     @Field()
-    @Column('decimal')
+    @Column()
     totalPayment: number;
 
     @Field()
-    @Column('decimal')
+    @Column()
     capital: number;
 
     @Field()
-    @Column('decimal')
+    @Column()
     interest: number;
 
     @Field()
-    @Column('decimal')
+    @Column()
     finalBalance: number;
 
-    @Column()
-    credit_id: number;
+    @Field()
+  @Column({
+     type:'enum',
+     enum:StateInstallment,
+     nullable:false,
+     default:StateInstallment.PENDIENTE
+  })
+    state:StateInstallment
 
-    @Field(() => Credit)
-    @ManyToOne(() => Credit, credit => credit.installments)
-    @JoinColumn({ name: 'credit_id' })
-    credit: Credit;
+    @Field(() =>Credit)
+    @ManyToOne(() => Credit, credit=> credit.installments,{nullable:false,onDelete:'CASCADE'})
+    @JoinColumn({name:'id_credit'})
+    credit:Credit ;
+   
+    @Field(() => [InstallmentAccount])
+    @OneToMany(() => InstallmentAccount, (installmentAccount) => installmentAccount.installment)
+    interestAccount: InstallmentAccount[];
+
 }
-
-
-

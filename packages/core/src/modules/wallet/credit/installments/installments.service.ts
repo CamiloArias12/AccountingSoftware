@@ -1,56 +1,93 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateInstallmentInput } from './dto/create-installment.input';
-import { UpdateInstallmentInput } from './dto/update-installment.input';
+import { DataSource, Repository } from 'typeorm';
+import { } from './dto/update-installment.input';
 import { Installment } from './installment.entity';
 import { Credit } from '../credit.entity';
+import { CreateInstallment } from './dto/create-installment.input';
+import { Affiliate } from 'src/modules/parameterization/thirds/affiliate/affiliate.entity';
+import { User } from 'src/modules/parameterization/thirds/user/user.entity';
+import { TypeCredit } from 'src/modules/parameterization/type-credit/type-credit.entity';
+import { InstallmentPayment } from './dto/types';
+import { StateInstallment } from './dto/enum-types';
 
 @Injectable()
 export class InstallmentsService {
   constructor(
-    @InjectRepository(Credit)
-    private creditRepository: Repository<Credit>,
-
-    @InjectRepository(Installment)
+   @InjectRepository(Installment)
     private installmentRepository: Repository<Installment>,
+    private dataSource:DataSource
   ) { }
 
-  async create(createInstallmentInput: CreateInstallmentInput): Promise<Installment> {
-    const newInstallment = this.installmentRepository.create(createInstallmentInput);
-    newInstallment.credit = await this.creditRepository.findOne({
-      where: { id: createInstallmentInput.creditId }
-    });
+  async findAll(date:Date): Promise<InstallmentPayment[]> {
+   const query:InstallmentPayment[] = await this.dataSource.createQueryBuilder()
+	       .addSelect("user.identification","identification")
+	       .addSelect("user.name ","name")
+	       .addSelect("user.lastName","lastName")
+	       .addSelect("typeCredit.name","typeCredit")
+	       .addSelect("typeCredit.id","idTypeCredit")
+	       .addSelect("installments.paymentDate","paymentDate")
+	       .addSelect("installments.finalBalance","finalBalance")
+	       .addSelect("credit.interest","interest")
+	       .addSelect("installments.installmentNumber","installmentNumber")
+	       .addSelect("installments.scheduledPayment","scheduledPayment")
+	       .addSelect("installments.id_credit","credit")
+	       .addSelect("installments.extraPayment","extraPayment")
+	       .addSelect("installments.totalPayment","totalPayment")
+	       .addSelect("installments.capital","capital")
+	       .addSelect("installments.interest","interestPayment")
+	       .from(Installment,"installments")
+	       .leftJoin(Credit,"credit","installments.id_credit=credit.id")
+	       .leftJoin(Affiliate, "affiliate", "credit.affiliateIdAffiliate= affiliate.idAffiliate")
+	       .leftJoin(User, "user", "affiliate.idAffiliate= user.identification")
+	       .leftJoin(TypeCredit, "typeCredit", "credit.typeCreditId=typeCredit.id ")
+	       .where("installments.paymentDate= :paymentDate",{paymentDate:date.toISOString().split("T",1)[0]})
+	       .andWhere("installments.state=:state",{state:StateInstallment.PENDIENTE})
+	       .orderBy("installments.installmentNumber","DESC")
+	       .getRawMany()
+     return query; 
+  }
 
-    return this.installmentRepository.save(newInstallment);
+   async findAllIsntallmentByCredit(id:number){
+   const query:InstallmentPayment[] = await this.dataSource.createQueryBuilder()
+	       .addSelect("user.identification","identification")
+	       .addSelect("user.name ","name")
+	       .addSelect("user.lastName","lastName")
+	       .addSelect("typeCredit.name","typeCredit")
+	       .addSelect("installments.paymentDate","paymentDate")
+	       .addSelect("installments.finalBalance","finalBalance")
+	       .addSelect("credit.interest","interest")
+	       .addSelect("installments.installmentNumber","installmentNumber")
+	       .addSelect("installments.scheduledPayment","scheduledPayment")
+	       .addSelect("installments.id_credit","credit")
+	       .addSelect("installments.extraPayment","extraPayment")
+	       .addSelect("installments.totalPayment","totalPayment")
+	       .addSelect("installments.capital","capital")
+	       .addSelect("installments.interest","interestPayment")
+	       .from(Installment,"installments")
+	       .leftJoin(Credit,"credit","installments.id_credit=credit.id")
+	       .leftJoin(Affiliate, "affiliate", "credit.affiliateIdAffiliate= affiliate.idAffiliate")
+	       .leftJoin(User, "user", "affiliate.idAffiliate= user.identification")
+	       .leftJoin(TypeCredit, "typeCredit", "credit.typeCreditId=typeCredit.id ")
+	       .orderBy("installments.installmentNumber","DESC")
+	       .getRawMany()
+     return query; 
   }
 
 
-  async findAll(): Promise<Installment[]> {
-    return this.installmentRepository.find();
-  }
+  async finOneByCreditAndNumberInstallment(idCredit:number,numberInstallment:number):Promise<Installment>{
+     return await this.installmentRepository.findOne(
+	{where :{ id_credit:idCredit ,
+		  installmentNumber:numberInstallment
+	}})
 
-  async findOne(id: number): Promise<Installment> {
-    return this.installmentRepository.findOne({ where: { id: id } });
   }
+  
+  async updateState(installmentNumber:number,state:StateInstallment):Promise<Installment>{
+      console.log(await this.installmentRepository.update({installmentNumber:installmentNumber},{state:state}));
+      return new Installment()
+   }
 
-  async update(id: number, updateInstallmentInput: UpdateInstallmentInput): Promise<Installment> {
-    await this.installmentRepository.update(id, updateInstallmentInput);
-    const updatedInstallment = await this.installmentRepository.findOne({ where: { id: id } });
-    if (!updatedInstallment) {
-      throw new Error('Installment not found');
-    }
-    return updatedInstallment;
-  }
-
-  async remove(id: number): Promise<Installment> {
-    const installmentToRemove = await this.installmentRepository.findOne({ where: { id: id } });
-    if (!installmentToRemove) {
-      throw new Error('Installment not found');
-    }
-    await this.installmentRepository.delete(id);
-    return installmentToRemove;
-  }
 
 }
 

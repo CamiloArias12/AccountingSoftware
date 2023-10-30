@@ -12,15 +12,16 @@ export class BeneficiaryInput {
 
 
 @InputType()
-export class BeneficiariesInput {
+export class BeneficiaryInputGeneral {
    
-   @Field(() =>[BeneficiaryInput])
-   beneficiaries:[BeneficiaryInput]
+   @Field(() =>BeneficiaryInput)
+   beneficiary:BeneficiaryInput
 
-   @Field(() =>[Number])
-   percentage:number[]
+   @Field()
+   percentage:number
 
 
 }
+
 
 

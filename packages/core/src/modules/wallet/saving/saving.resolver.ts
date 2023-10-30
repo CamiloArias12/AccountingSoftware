@@ -3,23 +3,25 @@ import { SavingService } from './saving.service';
 import { CreateSavingInput } from './dto/create-saving.input';
 import { UpdateSavingInput } from './dto/update-saving.input';
 import { Saving } from './saving.entity';
+import { ViewSaving } from './saving-view.entity';
 
 @Resolver(() => Saving)
 export class SavingResolver {
   constructor(private readonly savingService: SavingService) { }
 
-  @Mutation(() => Saving)
-  createSaving(@Args('createSavingInput') createSavingInput: CreateSavingInput) {
+  @Mutation(() => Boolean)
+  createSaving(@Args('createSavingInput') createSavingInput: CreateSavingInput):Promise<Boolean> {
     return this.savingService.create(createSavingInput);
   }
 
-  @Query(() => [Saving], { name: 'saving' })
-  findAll() {
+  @Query(() => [ViewSaving])
+  async getAllSaving() {
+     console.log(await this.savingService.findAll())
     return this.savingService.findAll();
   }
 
-  @Query(() => Saving, { name: 'saving' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  @Query(() => Saving)
+  async getSaving(@Args('id', { type: () => Int }) id: number) {
     return this.savingService.findOne(id);
   }
 
@@ -31,7 +33,7 @@ export class SavingResolver {
   }
 
   @Mutation(() => Saving)
-  removeSaving(@Args('id', { type: () => Int }) id: number) {
+  async removeSaving(@Args('id', { type: () => Int }) id: number) {
     return this.savingService.remove(id);
   }
 }

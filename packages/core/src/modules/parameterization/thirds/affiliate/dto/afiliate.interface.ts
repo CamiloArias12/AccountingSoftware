@@ -13,7 +13,7 @@ export interface IAfiliate{
 
    phone:number
 
-   incomeCompany:number
+   incomeCompany:Date
 
    typeAccount:string
 

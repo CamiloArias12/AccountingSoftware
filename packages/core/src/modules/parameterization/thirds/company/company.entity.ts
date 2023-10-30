@@ -1,8 +1,10 @@
-import { Field } from "@nestjs/graphql";
-import { Column, Entity } from "typeorm";
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 import { Regime, TypePerson } from "./dto/enum-type";
+import { TypeIdentification } from "../user/dto/enum-type";
 
 
+@ObjectType()
 @Entity()
 export class Company {
    
@@ -12,7 +14,7 @@ export class Company {
 
 
    @Field()
-   @Column()
+   @PrimaryColumn()
    numberIdentification:number 
 
    @Field()
@@ -23,14 +25,13 @@ export class Company {
    @Column({
       type: "enum",
       enum: Regime,
-      default: Regime.NO_RESPONSABLE_IUVA 
   })
   regime: Regime;
  
-  @Column({
+   @Field()
+   @Column({
    type: "enum",
       enum: TypePerson,
-      default: TypePerson.SOCIEDAD_COMANDITA_ACCIONES 
    })
    typePerson: TypePerson;
 
@@ -39,8 +40,11 @@ export class Company {
    socialReason:string
 
    @Field()
-   @Column()
-   legalRepresentativeTypeIdentificatio:string
+   @Column({
+   type: "enum",
+      enum: TypeIdentification,
+   })
+   legalRepresentativeTypeIdentificatio:TypeIdentification
 
    @Field()
    @Column()

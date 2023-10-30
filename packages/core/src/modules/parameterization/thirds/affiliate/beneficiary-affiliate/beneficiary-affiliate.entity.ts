@@ -24,7 +24,7 @@ export class BeneficiaryAffiliate{
    beneficiary:Beneficiary 
 
    @Field(() =>Affiliate)
-   @ManyToOne(() =>Affiliate , affiliate => affiliate.beneficiaries)
+   @ManyToOne(() =>Affiliate , affiliate => affiliate.beneficiaries,{onDelete:'CASCADE'})
    @JoinColumn({name:"idAffiliate"})   
    affiliate: Affiliate
 

@@ -13,7 +13,8 @@ import { TypeAccountModule } from '../type-account/type-account.module';
     TypeOrmModule.forFeature([TypeCredit]),
     TypeAccountModule  
   ],
-  providers: [TypeCreditResolver, TypeCreditService]
+  providers: [TypeCreditResolver, TypeCreditService],
+  exports:[TypeCreditService]
 })
 export class TypeCreditModule {}
 

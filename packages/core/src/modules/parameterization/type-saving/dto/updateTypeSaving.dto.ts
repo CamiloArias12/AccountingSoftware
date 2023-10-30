@@ -1,19 +1,8 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field} from '@nestjs/graphql';
 
 @InputType()
-export class UpdateTypeSavingDto {
+export class UpdateTypeSavingInput {
     @Field()
-    idTypeSaving: number;
-
-    @Field()
-    nombre?: string;
-
-    @Field(() => [Int], { nullable: true }) 
-    subAccount?: number[];
-
-    @Field(() => [Int], { nullable: true }) 
-    account?: number[];
-
-    @Field(() => [Int], { nullable: true }) 
-    auxiliary?: number[];
+    name: string;
+   
 }

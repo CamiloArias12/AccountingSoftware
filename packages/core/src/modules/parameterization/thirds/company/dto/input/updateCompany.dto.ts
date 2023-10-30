@@ -12,13 +12,9 @@ export class UpdateCompanyDto {
     @Field({ nullable: true })
     digitVerification?: number;
 
-    @Field(() => Regime, { nullable: true })
-    regime?: Regime;
+    
 
-    @Field(() => TypePerson, { nullable: true })
-    typePerson?: TypePerson;
-
-    @Field({ nullable: true })
+        @Field({ nullable: true })
     socialReason?: string;
 
     @Field({ nullable: true })
