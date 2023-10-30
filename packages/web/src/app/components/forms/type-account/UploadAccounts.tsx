@@ -1,42 +1,46 @@
-import { useState } from "react";
-import Modal from "../../modal/Modal"
-import Button from "../../input/Button";
+import { useState } from 'react';
+import Modal from '../../modal/Modal';
+import Button from '../../input/Button';
 import axios from 'axios';
-import { uploadFileAccounts } from "@/lib/axios/uploadFiles";
-import { useRouter } from "next/navigation";
+import { uploadFileAccounts } from '@/lib/axios/uploadFiles';
+import { useRouter } from 'next/navigation';
 
-function UploadAccounts({setShowModal}:{setShowModal:any}){
+function UploadAccounts({ setShowModal }: { setShowModal: any }) {
+  const [file, setFile] = useState(null);
+  const route = useRouter();
+  const fileHandle = (event: any) => {
+    setFile(event.target.files[0]);
+  };
 
-   const [file,setFile]=useState(null)
-   const route=useRouter()
-   const fileHandle = (event:any) => {
-      setFile(event.target.files[0]);
-   }
+  const uploadFile = async () => {
+    const formData = new FormData();
+    //@ts-ignore
+    formData.append('file', file);
+    const response: Boolean = await uploadFileAccounts(formData);
+    console.log(response);
+    route.refresh();
+  };
 
-   const uploadFile = async() =>{
-       const formData = new FormData();
-      formData.append('file',file);
-      const response:Boolean=await uploadFileAccounts(formData)
-      console.log(response)
-      route.refresh()
-      
-   }
-
-
-
-   return (
-      <Modal 
-	 size="h-[500px] w-[500px]"
-	 title="Cargar plan de cuentas"
-	 onClick={() =>{setShowModal(false)}}>
+  return (
+    <Modal
+      size="h-[500px] w-[500px]"
+      title="Cargar plan de cuentas"
+      onClick={() => {
+        setShowModal(false);
+      }}
+    >
       <div>
-	 <input type="file" onChange={fileHandle}/>
-	 <Button name="Cargar" background="" onClick={() =>{ uploadFile()}}/>
+        <input type="file" onChange={fileHandle} />
+        <Button
+          name="Cargar"
+          background=""
+          onClick={() => {
+            uploadFile();
+          }}
+        />
       </div>
-      </Modal>
-   )
-
+    </Modal>
+  );
 }
-
 
 export default UploadAccounts;

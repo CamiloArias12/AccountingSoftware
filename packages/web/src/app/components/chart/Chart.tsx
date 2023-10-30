@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Chart as ChartJS,
@@ -18,7 +17,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export const options = {

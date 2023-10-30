@@ -1,128 +1,118 @@
-import { Regime, TypePerson } from "./enumThirds";
+import { Regime, TypePerson } from './enumThirds';
 
 export type GeneralInformationData = {
-
-   typeIdentification: string
-   identification:any
-   name:string
-   lastName:string
-   expeditionDate:Date
-   expeditionCity:string
-   birthDate:Date
-   countryBirth: string;
-   stateBirth: string
-   cityBirth: string
-   gender: string;
-   statusCivil: string;
-   addressResidence: string
-   countryResidence: string;
-   stateResidence: string
-   cityResidence: string
-   phone: string 
-   landLine:string 
-   email: string
-   housingType: string;
-   studies: string;
-   profession: string
-   foreignOperations: boolean
-   publicResources: boolean
-   publicRecognition: boolean
-   publicPower: boolean
-
+  typeIdentification: string;
+  identification: any;
+  name: string;
+  lastName: string;
+  expeditionDate: Date;
+  expeditionCity: string;
+  birthDate: Date;
+  countryBirth: string;
+  stateBirth: string;
+  cityBirth: string;
+  gender: string;
+  statusCivil: string;
+  addressResidence: string;
+  countryResidence: string;
+  stateResidence: string;
+  cityResidence: string;
+  phone: string;
+  landLine: string;
+  email: string;
+  housingType: string;
+  studies: string;
+  profession: string;
+  foreignOperations: boolean;
+  publicResources: boolean;
+  publicRecognition: boolean;
+  publicPower: boolean;
 };
 
+export interface IAfiliate {
+  company: string;
 
-export interface IAfiliate{
-   company:string
+  addreesCompany: string;
 
-   addreesCompany:string
+  emailJob: string;
 
-   emailJob:string
+  salary: any;
 
-   salary:any
+  bank: string;
 
-   bank:string
+  jobTitle: string;
 
-   jobTitle:string
+  phone: any;
 
-   phone:any
+  incomeCompany: Date;
 
-   incomeCompany:Date
+  typeAccount: string;
 
-   typeAccount:string
-
-   numberAccount:any
-
+  numberAccount: any;
 }
-export type country ={
-   id:number
-   name:string
-   iso:string
-}
+export type country = {
+  id: number;
+  name: string;
+  iso: string;
+};
 
-export type Affiliate ={
-      identification:number
-      name:string
-      lastName:string
-      phone:number
-      salary:string
-      status:boolean
-      cityResidence:string
-}
+export type Affiliate = {
+  identification: number;
+  name: string;
+  lastName: string;
+  phone: number;
+  salary: string;
+  status: boolean;
+  cityResidence: string;
+};
 export type TypeAccountFormData = {
-    code: number | null;
-    name: string;
-    nature: string;
-    account: any; 
-    auxiliary: any;
-    group: any; 
-    classAccount: any; 
-    subAccount: any;
+  code: number | null;
+  name: string;
+  nature: string;
+  account: any;
+  auxiliary: any;
+  group: any;
+  classAccount: any;
+  subAccount: any;
 };
 
 export type TypeCreditFormData = {
-    idTypeCredit: number | null;
-    nombre: string;
+  idTypeCredit: number | null;
+  nombre: string;
 };
 
 export type TypeSavingFormData = {
-    idTypeSaving: number | null;
-    nombre: string;
+  idTypeSaving: number | null;
+  nombre: string;
 };
 
 interface BeneficiaryInput {
-    name: string;
-    idDocument: any;
-
+  name: string;
+  idDocument: any;
 }
 
-
-export interface Beneficiaries{
-
-   beneficiary:BeneficiaryInput
-   percentage:any
-
+export interface Beneficiaries {
+  beneficiary: BeneficiaryInput;
+  percentage: any;
 }
-export type Company= {
+export type Company = {
+  typeIdentification: string;
 
+  numberIdentification: number;
 
-    typeIdentification: string;
+  digitVerification: number;
 
-    numberIdentification: number;
+  regime: string;
 
-    digitVerification: number;
+  typePerson: string;
 
-    regime: string;
+  socialReason: string;
 
-    typePerson: string;
+  legalRepresentativeTypeIdentificatio: string;
 
-    socialReason: string;
+  legalRepresentativeName: string;
 
-    legalRepresentativeTypeIdentificatio: string;
+  legalRepresentativeDocument: string;
 
-    legalRepresentativeName: string;
-
-    legalRepresentativeDocument: string;
-
-    natureCompany: string;
-}
+  natureCompany: string;
+};

@@ -1,22 +1,18 @@
+const route: string = '/dashboard/wallet/';
 
-const route:string= "/dashboard/wallet/"
-
-export enum  LogoModuleParametrization {
-   savings="/sav.svg",
-   credits="/credit.svg",
+export enum LogoModuleParametrization {
+  savings = '/sav.svg',
+  credits = '/credit.svg',
 }
 export const WalletSideBar = [
   {
-      name:'Ahorros',
-      href:`${route}saving`,
-      icon:LogoModuleParametrization.savings,
-   },
-   {
-      name:'Creditos',
-      href:`${route}credit`,
-      icon:LogoModuleParametrization.credits,
-   },
-  
-
-]
-
+    name: 'Ahorros',
+    href: `${route}saving`,
+    icon: LogoModuleParametrization.savings,
+  },
+  {
+    name: 'Creditos',
+    href: `${route}credit`,
+    icon: LogoModuleParametrization.credits,
+  },
+];

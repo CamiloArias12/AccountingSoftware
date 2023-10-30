@@ -1,13 +1,11 @@
 'use client';
-
 import InputField from '@/app/components/input/InputField';
-import SelectAffiliate from '@/app/components/input/SelectAffiliate';
 import { useEffect, useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import Button from '@/app/components/input/Button';
 import Logo from '@/app/components/logo/Logo';
 import TableAmortization from '@/app/components/forms/credit/TableAmortization';
-import { AmortizationTable } from '@/lib/utils/credit/types';
+import { AmortizationTable, RefinanceCredit } from '@/lib/utils/credit/types';
 import { optionsCredit } from '@/lib/utils/credit/options';
 import { useCredit } from '@/app/hooks/credit/CreditInput';
 import { useRouter } from 'next/navigation';
@@ -40,32 +38,6 @@ const GENERATE_TABLE_AMORTIZATION = gql`
     }
   }
 `;
-const GENERATE_TABLE_AMORTIZATION_TWO = gql`
-  mutation (
-    $date: Date!
-    $interest: Float!
-    $installments: Int!
-    $scheduledPayment: Float!
-  ) {
-    amortizationTableGenerateTwo(
-      Date: $date
-      scheduledPayment: $scheduledPayment
-      interest: $interest
-      installments: $installments
-    ) {
-      installmentNumber
-      paymentDate
-      initialBalance
-      scheduledPayment
-      extraPayment
-      totalPayment
-      capital
-      interest
-      finalBalance
-    }
-  }
-`;
-
 const GENERATE_TABLE_AMORTIZATION_THREE = gql`
   mutation (
     $date: Date!
@@ -97,7 +69,6 @@ const CREATE_CREDIT = gql`
       id
       startDate
       discountDate
-      state
       installments {
         installmentNumber
       }
@@ -107,18 +78,16 @@ const CREATE_CREDIT = gql`
     }
   }
 `;
+
 export const revalidate = 0;
-function FormCredit({
-  affiliates,
-  creditType,
-  accounts,
-}: {
-  affiliates: any;
-  creditType: any;
-  accounts?: any;
-}) {
-  const { credit, handleCreditNumber, handleCreditSelect, handleCredit } =
-    useCredit();
+function RefinanceCreditForm({ dataCredit }: { dataCredit: RefinanceCredit }) {
+  const {
+    credit,
+    setCredit,
+    handleCreditNumber,
+    handleCreditSelect,
+    handleCredit,
+  } = useCredit();
 
   const [data, setData] = useState<AmortizationTable[]>([]);
   const [option, setOption] = useState<number>(0);
@@ -130,14 +99,6 @@ function FormCredit({
       error: errorAmortization,
     },
   ] = useMutation(GENERATE_TABLE_AMORTIZATION);
-  const [
-    generateAmortizationTableTwo,
-    {
-      data: dataAmortizationTwo,
-      loading: loadingAmortizationTwo,
-      error: errorAmortizationTwo,
-    },
-  ] = useMutation(GENERATE_TABLE_AMORTIZATION_TWO);
   const [
     generateAmortizationTableThree,
     {
@@ -153,7 +114,27 @@ function FormCredit({
   const [showWarning, setShowWarning] = useState(false);
   const route = useRouter();
 
+  useEffect(() => {
+    setCredit({
+      nameAffiliate: dataCredit.nameAffiliate,
+      identification: dataCredit.identification,
+      creditValue: dataCredit.previewBalance,
+      typeCredit: dataCredit.typeCredit,
+      startDate: new Date(),
+      discountDate: new Date(),
+      interest: dataCredit.interest,
+      interestAnual: '',
+      installments: 0,
+      scheduledPayment: '',
+      idTypeCredit: dataCredit.idTypeCredit,
+      previewBalance: dataCredit.previewBalance,
+      newBalance: '',
+      concept: '',
+    });
+  }, []);
+
   const handleCreateCredit = () => {
+    setShowWarning(true);
     const create = {
       creditValue: credit.creditValue,
       interest: credit.interest,
@@ -172,7 +153,6 @@ function FormCredit({
   };
 
   const handleGenerateTable = () => {
-    setShowWarning(true);
     if (option === 0) {
       generateAmortizationTable({
         variables: {
@@ -185,23 +165,11 @@ function FormCredit({
         setData(response.data.amortizationTableGenerate);
       });
     }
-    if (option === 1) {
-      generateAmortizationTableTwo({
-        variables: {
-          date: new Date(),
-          scheduledPayment: credit.scheduledPayment,
-          interest: credit.interest,
-          installments: credit.installments,
-        },
-      }).then((response: any) => {
-        setData(response.data.amortizationTableGenerateTwo);
-      });
-    }
 
     if (option === 2) {
       generateAmortizationTableThree({
         variables: {
-          date: new Date(),
+          date: credit.discountDate,
           creditValue: Number(credit.creditValue),
           interest: Number(credit.interest),
           scheduledPayment: Number(credit.scheduledPayment),
@@ -236,44 +204,45 @@ function FormCredit({
     <div className=" flex-grow flex flex-col  ">
       <div className="flex justify-between ">
         <label className="font-bold px-4 item-center  bg-white pt-2">
-          Crear credito
+          Refinaciar credito
         </label>
         <div className="flex  flex-row bg-white mt-3 pl-4  pt-2">
           {optionsCredit.map((opt) => (
-            <div
-              key={opt.id}
-              className="flex flex-grow flex-row  items-center justify-center text-sm "
-              onClick={() => {
-                setOption(opt.id);
-                setData([]);
-                console.log('option', option);
-              }}
-            >
-              <div
-                className={`h-5 w-5  rounded-[50%] border-2 border-[#10417B] ${
-                  opt.id === option ? 'bg-[#10417B]' : 'bg-white'
-                }`}
-              />
-              <label className="ml-2 mr-4">{opt.name}</label>
-            </div>
+            <>
+              {opt.id !== 1 && (
+                <div
+                  key={opt.id}
+                  className="flex flex-grow flex-row  items-center justify-center text-sm "
+                  onClick={() => {
+                    setOption(opt.id);
+                    setData([]);
+                  }}
+                >
+                  <div
+                    className={`h-5 w-5  rounded-[50%] border-2 border-[#10417B] ${
+                      opt.id === option ? 'bg-[#10417B]' : 'bg-white'
+                    }`}
+                  />
+                  <label className="ml-2 mr-4">{opt.name}</label>
+                </div>
+              )}
+            </>
           ))}
         </div>
       </div>
-
-      <div className="  flex flex-col bg-white p-4">
-        <div className="flex flex-grow  flex-col  rounded-sm ">
+      <div className=" flex-grow flex flex-col bg-white p-4">
+        <div className="flex flex-grow  flex-col   rounded-sm ">
           <div className=" flex-grow flex flex-row">
             <div className="flex-grow flex flex-col pr-2 ">
               <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
                 Afliliado
               </label>
               <div className=" flex flex-grow  flex-row">
-                <SelectAffiliate
+                <InputField
                   label="Identificacion"
                   name="identification"
                   value={credit.identification}
-                  options={affiliates}
-                  setValue={handleCreditSelect}
+                  onlyRead={true}
                 />
                 <InputField
                   label="Nombres"
@@ -286,14 +255,11 @@ function FormCredit({
               <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
                 Tipo de credito
               </label>
-
               <div className="flex flex-grow  flex-row">
-                <SelectAffiliate
+                <InputField
                   label="Nombre"
                   name="typeCredit"
                   value={credit.typeCredit}
-                  options={creditType}
-                  setValue={handleCreditSelect}
                 />
                 <div className="flex flex-grow flex-row items-end">
                   <label className="text-input pr-6">
@@ -327,6 +293,23 @@ function FormCredit({
                 value={credit.creditValue}
                 name="creditValue"
                 onBlur={handleCreditNumber}
+                onlyRead={true}
+                onChange={handleCredit}
+              />
+              <InputField
+                label="Saldo anterior"
+                value={credit.previewBalance}
+                name="previewBalance"
+                onBlur={handleCreditNumber}
+                onlyRead={option !== 1 ? false : true}
+                onChange={handleCredit}
+              />
+
+              <InputField
+                label="Nuevo credito"
+                value={credit.newBalance}
+                name="newBalance"
+                onBlur={handleCreditNumber}
                 onlyRead={option !== 1 ? false : true}
                 onChange={handleCredit}
               />
@@ -357,28 +340,27 @@ function FormCredit({
             value={credit.concept}
             onChange={handleCredit}
           />
+
           <button
-            className="flex flex-row rounded-sm bg-[#F2FFA5] p-2 "
+            className="flex flex-row rounded-sm bg-[#F2F5FA] p-2 "
             onClick={handleGenerateTable}
           >
             <img src="/generate.svg" height={20} width={20} />
             <label className="font-sans px-6 text-sm">Generar tabla</label>
           </button>
         </div>
-        <>
-          {(loadingAmortization ||
-            loadingAmortizationTwo ||
-            loadingAmortizationThree) && <Logo />}
+        <div className="flex-grow h-full">
+          {(loadingAmortization || loadingAmortizationThree) && <Logo />}
 
           {data.length > 0 && (
-            <div className="flex-grow flex-col">
+            <>
               <TableAmortization
                 data={data}
                 setData={setData}
                 setSelected={true}
               />
 
-              <div className="py-4  flex flex-end">
+              <div className="py-4 ">
                 <Button
                   name="Aceptar"
                   background="bg-[#10417B] 
@@ -386,19 +368,19 @@ function FormCredit({
                   onClick={handleCreateCredit}
                 />
               </div>
-            </div>
+            </>
           )}
-        </>
-        {dataCreate?.createCredit && showWarning ? (
-          <AlertModalSucces value="El  credito ha sido registrado" />
-        ) : dataCreate?.createCredit === false && showWarning ? (
-          <AlertModalError value="El credit ya existe" />
-        ) : (
-          errorCreate && showWarning && <AlertModalError value="Error" />
-        )}
+        </div>
       </div>
+      {dataCreate?.createCredit && showWarning ? (
+        <AlertModalSucces value="El  credito ha sido registrado" />
+      ) : dataCreate?.createCredit === false && showWarning ? (
+        <AlertModalError value="El credit ya existe" />
+      ) : (
+        errorCreate && showWarning && <AlertModalError value="Error" />
+      )}
     </div>
   );
 }
 
-export default FormCredit;
+export default RefinanceCreditForm;
