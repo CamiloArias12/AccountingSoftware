@@ -32,7 +32,7 @@ import { CreditAccount } from './modules/treasury/credit-account/credit-account.
 import { InstallmentAccount } from './modules/treasury/installment-account/installment-account.entity';
 import { TreasuryModule } from './modules/treasury/treasury.module';
 import { MulterModule } from '@nestjs/platform-express';
-
+import * as path from "path";
 @Module({
 	imports: [ParameterizationModule, WalletModule,TreasuryModule,
 	 GraphQLModule.forRoot(
@@ -41,20 +41,22 @@ import { MulterModule } from '@nestjs/platform-express';
 	    autoSchemaFile: join(process.cwd(), 'src/schema.gql')
 	 }
 	 ),
+
       ConfigModule.forRoot({
-	    envFilePath:'.env',
+	    envFilePath: path.join(__dirname, '..', '..', '..','.env'),
 	    isGlobal:true,
 	 }
-      ),
+
+           ),
       MulterModule.register({dest:'./uploads'}),
       TypeOrmModule.forRoot(
 	 {
 	    type: 'mysql',
-	    host: process.env.HOST,
-	    port: parseInt(process.env.PORT),
-	    username: process.env.DATABASE_USER,
-	    password: process.env.DATABASE_PASSWORD,
-	    database: process.env.DATABASE_NAME,
+	    host: process.env.DB_HOST,
+	    port: parseInt(process.env.DB_PORT),
+	    username: process.env.DB_USER,
+	    password: process.env.DB_PASSWORD,
+	    database: process.env.DB_NAME,
 	    keepConnectionAlive: true,
 	    synchronize: true,
 	    entities:[Affiliate,Beneficiary,BeneficiaryAffiliate,User,Employee,TypeAccount,Account,SubAccount,ClassAccount,Auxiliary,Group,TypeCredit,TypeSaving,Provider,Credit,ViewCredit,Installment,Saving,ViewSaving,CreditAccount,Company,InstallmentAccount]
