@@ -134,7 +134,7 @@ export class TypeAccountService {
    }
 
   async loadTypeAccounts(pathname:string,filename:string){
-      const filePath =path.join(pathname,filename)
+      const filePath =path.join('./uploads',filename)
   
 
       const workbook = new Excel.Workbook();

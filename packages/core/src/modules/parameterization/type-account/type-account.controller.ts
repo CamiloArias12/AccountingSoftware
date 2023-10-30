@@ -21,7 +21,8 @@ export class TypeAccountController {
    )
 
   async  uploadFile(@UploadedFile() file:Express.Multer.File){
-     return  await this.typeAccountService.loadTypeAccounts(file.destination,file.originalname) 
+     console.log(file)
+     return  await this.typeAccountService.loadTypeAccounts('./uploads',file.originalname) 
    }
    
 }
