@@ -1,6 +1,6 @@
 export enum TypeIdentification {
   CEDULA_DE_CIUDADANIA = 'Cédula de ciudadania',
-  TARJETA_DE_EXTRANJERIA = 'Cédula de extranjeria',
+  TARJETA_DE_EXTRANJERIA = 'Cédula de extranjeria'
 }
 
 export enum CivilStatus {
@@ -8,19 +8,19 @@ export enum CivilStatus {
   CASADO_A = 'Casado(a)',
   LIBRE = 'Libre',
   OTRO = 'Otro',
-  MUJER_CABEZA_FAMILIA = 'Mujer cabeza familia',
+  MUJER_CABEZA_FAMILIA = 'Mujer cabeza familia'
 }
 
 export enum Gender {
   MASCULINO = 'Masculino',
-  FEMENINO = 'Femenino',
+  FEMENINO = 'Femenino'
 }
 
 export enum HousingType {
   PROPIA = 'Propia',
   ARRENDADA = 'Arrendada',
   FAMILIAR = 'Familiar',
-  OTRO = 'Otro',
+  OTRO = 'Otro'
 }
 
 export enum Studies {
@@ -28,13 +28,13 @@ export enum Studies {
   SECUNDARIA = 'Secundaria',
   TECNOLOGIA = 'Tecnologia',
   UNIVESITARIA = 'Universitaria',
-  POSGRADO = 'Posgrado',
+  POSGRADO = 'Posgrado'
 }
 export enum Regime {
   NO_RESPONSABLE_IVA = 'No Responsable del IVA',
   RESPONSABLE_IVA = 'Responsable del Impuesto sobre las Ventas-IVA',
   SIMPLIFICADO = 'Simplificado',
-  SUBSIDIADO = 'Subsidiado',
+  SUBSIDIADO = 'Subsidiado'
 }
 
 export enum TypePerson {
@@ -49,10 +49,10 @@ export enum TypePerson {
   SOCIEDAD_ANONIMA = 'Sociedad Anónima',
   EMPRESA_UNIPERSONAL = 'Empresa Unipersonal',
   SOCIEDAD_HECHO = 'Sociedad de Hecho',
-  ENTIDAD_SIN_LUCRO = 'Entidad Sin Ánimo de Lucro',
+  ENTIDAD_SIN_LUCRO = 'Entidad Sin Ánimo de Lucro'
 }
 
 export enum AccountType {
   AHORRO = 'Ahorro',
-  CORRIENTE = 'Corriente',
+  CORRIENTE = 'Corriente'
 }

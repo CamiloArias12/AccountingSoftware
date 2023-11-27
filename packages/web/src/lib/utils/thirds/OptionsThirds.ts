@@ -2,32 +2,32 @@ export const OptionsThirds = [
   {
     id: 1,
     name: 'Datos generales',
-    visible: true,
+    visible: true
   },
   {
     id: 2,
     name: 'Datos de contacto',
-    visible: true,
+    visible: true
   },
   {
     id: 3,
-    name: 'Datos de afiliacion',
-    visible: false,
+    name: 'Datos de afiliación',
+    visible: false
   },
   {
     id: 4,
     name: 'Credenciales',
-    visible: false,
-  },
-];
+    visible: false
+  }
+]
 
 export const ThirdsType = [
   {
     id: 1,
-    name: 'Persona natural',
+    name: 'Persona natural'
   },
   {
     id: 2,
-    name: 'Persona juridica',
-  },
-];
+    name: 'Persona jurídica'
+  }
+]
