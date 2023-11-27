@@ -6,6 +6,8 @@ export enum LogoModuleParametrization {
   typeSavings = '/savings.svg',
   typeCredits = '/typecredit.svg',
 }
+
+
 export const ParametrizationSideBar = [
   {
     name: 'Terceros',
@@ -13,7 +15,7 @@ export const ParametrizationSideBar = [
     icon: LogoModuleParametrization.thirds,
   },
   {
-    name: 'Cuentas',
+    name: 'Plan de cuentas',
     href: `${route}typeaccount`,
     icon: LogoModuleParametrization.typeAccounts,
   },
@@ -23,7 +25,7 @@ export const ParametrizationSideBar = [
     icon: LogoModuleParametrization.typeSavings,
   },
   {
-    name: 'Tipos de credito',
+    name: 'Tipos de crédito',
     href: `${route}typecredit`,
     icon: LogoModuleParametrization.typeCredits,
   },
