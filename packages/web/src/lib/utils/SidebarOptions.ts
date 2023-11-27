@@ -6,6 +6,17 @@ export enum MenuSidebar {
   treasury = 'treasury',
 }
 
+
+export const  Modules ={
+  "thirds":"Terceros", 
+  "dashboard":"Inicio" ,
+  "typeaccount":"Plan de cuentas",
+  "typesaving":"Tipos de ahorro" ,
+  "typecredit":"Tipos de crédito" ,
+  "saving":"Ahorros",
+  "credit":"Créditos",
+  "movements":"Movimientos"
+}
 export const SideBarModules = [
   {
     name: 'Inicio',
@@ -14,7 +25,7 @@ export const SideBarModules = [
   },
 
   {
-    name: 'Parametrizacion',
+    name: 'Parametrización',
     href: '/dashboard/parametrization',
     menu: MenuSidebar.parametrization,
   },
@@ -29,7 +40,7 @@ export const SideBarModules = [
     menu: MenuSidebar.accounting,
   },
   {
-    name: 'Tesoreria',
+    name: 'Tesorería',
     href: 'treasury',
     menu: MenuSidebar.treasury,
   },
