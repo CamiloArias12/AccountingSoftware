@@ -31,7 +31,7 @@ export const optionsAccounts = [
 
 export enum EnumNature {
   DEBT = 'Debito',
-  CREDIT = 'Credito',
+  CREDIT = 'Crédito',
 }
 export const optionsNature = [
   {

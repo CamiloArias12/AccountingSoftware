@@ -9,3 +9,10 @@ export type TypeSaving = {
 export type Auxiliary = {
   typeAccount: TypeAccounnt;
 };
+
+
+export type TypeSavingAcounts ={
+   account:any
+   percentage:any
+   nature:any
+};

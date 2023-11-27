@@ -6,13 +6,13 @@ export enum LogoTreasury {
 }
 export const TreasurySideBar = [
   {
-    name: 'Pagos',
-    href: `${route}payment`,
+    name: 'Recibos de caja',
+    href: `${route}cashreceipt`,
     icon: LogoTreasury.payments,
   },
   {
-    name: 'Diferido intereses',
-    href: `${route}interest`,
+    name: 'Comprobantes de egreso',
+    href: `${route}disbursementvoucher`,
     icon: LogoTreasury.interest,
   },
 ];
