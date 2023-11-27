@@ -99,7 +99,7 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
     >
       <>
         <div className=" flex-grow flex flex-col bg-white h-full m-2 ">
-          <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
+          <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
             {' '}
             Información afiliado
           </label>
@@ -116,7 +116,7 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
             onlyRead={true}
           />
 
-          <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold my-2">
+          <label className="text-center text-white  bg-[#10417B] text-input font-bold my-2">
             {' '}
             Información ahorro
           </label>
@@ -134,7 +134,7 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
             onChange={handleSavingSelect}
           />
           <InputField
-            label="Valor cota"
+            label="Valor couta"
             value={saving.qoutaValue}
             name="qoutaValue"
             onBlur={handleSavingNumber}

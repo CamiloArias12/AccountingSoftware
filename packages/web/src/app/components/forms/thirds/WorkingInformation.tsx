@@ -3,6 +3,8 @@ import SelectField from '@/app/components/input/SelectField';
 import { AccountTypeOptions } from '@/lib/utils/thirds/selectForm';
 import { IAfiliate } from '@/lib/utils/thirds/types';
 import InputCalendar from '../../input/Calendar';
+import InputNumber from '../../input/InputNumber';
+import { NumberFormatValues } from 'react-number-format';
 
 function WorkingInformtaion({
   workingInformation,
@@ -48,13 +50,15 @@ function WorkingInformtaion({
         value={workingInformation.emailJob}
         onChange={handleChangeWorkingInformation}
       />
-      <InputField
-        type="text"
+      <InputNumber
         name="phone"
         label="Telefono"
-        onBlur={handleNumber}
         value={workingInformation.phone}
-        onChange={handleChangeWorkingInformation}
+	onChange={true}
+	handleChange={(values:NumberFormatValues) =>{
+	    handleWorkingInformation('phone',values.value)
+	}}
+
       />
 
       <InputCalendar
@@ -64,13 +68,13 @@ function WorkingInformtaion({
         onChange={handleWorkingInformation}
       />
 
-      <InputField
-        type="text"
+      <InputNumber
         name="salary"
         label="Sueldo"
-        onBlur={handleNumber}
         value={workingInformation.salary}
-        onChange={handleChangeWorkingInformation}
+        handleChange={handleWorkingInformation}
+	prefix="$ "
+	thousandSeparator=","
       />
 
       <InputField
@@ -86,7 +90,7 @@ function WorkingInformtaion({
         value={workingInformation.typeAccount}
         handleGeneralInformation={handleWorkingInformation}
         options={AccountTypeOptions}
-        label="Tipo decuenta"
+        label="Tipo de cuenta"
         image={false}
       />
 

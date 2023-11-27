@@ -1,13 +1,13 @@
-import { useQuery, gql } from '@apollo/client';
-import Modal from '../../modal/Modal';
-import SplashScreen from '../../splash/Splash';
-import { useEffect, useState } from 'react';
-import { AmortizationTable } from '@/lib/utils/credit/types';
-import UpdateTableAmortization from './UpdateTableAmortization';
-import { useCredit } from '@/app/hooks/credit/CreditInput';
-import InputField from '../../input/InputField';
-import InputCalendar from '../../input/Calendar';
-import Button from '../../input/Button';
+import { useQuery, gql } from '@apollo/client'
+import Modal from '../../modal/Modal'
+import SplashScreen from '../../splash/Splash'
+import { useEffect, useState } from 'react'
+import { AmortizationTable } from '@/lib/utils/credit/types'
+import UpdateTableAmortization from './UpdateTableAmortization'
+import { useCredit } from '@/app/hooks/credit/CreditInput'
+import InputField from '../../input/InputField'
+import InputCalendar from '../../input/Calendar'
+import Button from '../../input/Button'
 
 const GET_CREDIT = gql`
   query getCredit($id: Int!) {
@@ -43,35 +43,35 @@ const GET_CREDIT = gql`
       }
     }
   }
-`;
+`
 
 function UpdateCredit({
   idCredit,
-  setShow,
+  setShow
 }: {
-  idCredit: number;
-  setShow: any;
+  idCredit: number
+  setShow: any
 }) {
   const {
     credit,
     setCredit,
     handleCreditNumber,
     handleCreditSelect,
-    handleCredit,
-  } = useCredit();
+    handleCredit
+  } = useCredit()
   const {
     data: dataUser,
     loading,
-    error,
+    error
   } = useQuery(GET_CREDIT, {
-    variables: { id: idCredit },
-  });
+    variables: { id: idCredit }
+  })
 
-  const [data, setData] = useState<AmortizationTable[]>([]);
+  const [data, setData] = useState<AmortizationTable[]>([])
 
   useEffect(() => {
     if (dataUser) {
-      setData(dataUser?.findOneCredit?.installments);
+      setData(dataUser?.findOneCredit?.installments)
       setCredit({
         identification:
           dataUser?.findOneCredit?.affiliate?.user?.identification,
@@ -80,7 +80,7 @@ function UpdateCredit({
         startDate: new Date(dataUser?.findOneCredit?.startDate),
         installments: (dataUser?.findOneCredit?.installments).length,
         interestAnual: String(
-          dataUser?.findOneCredit?.interest * (12 / 100) * 100,
+          dataUser?.findOneCredit?.interest * (12 / 100) * 100
         ),
         nameAffiliate: `${dataUser?.findOneCredit?.affiliate?.user?.name} ${dataUser?.findOneCredit?.affiliate?.user?.lastName}`,
         typeCredit: dataUser?.findOneCredit?.typeCredit?.name,
@@ -89,11 +89,11 @@ function UpdateCredit({
         idTypeCredit: dataUser?.findOneCredit?.typeCredit?.id,
         interest: dataUser?.findOneCredit?.interest,
         newBalance: '',
-        previewBalance: 0,
-        concept: '',
-      });
+        previewBalance: '',
+        concept: ''
+      })
     }
-  }, [dataUser]);
+  }, [dataUser])
 
   if (error) {
     return (
@@ -101,8 +101,10 @@ function UpdateCredit({
         size="h-[100px] w-[300px]"
         title="Error"
         onClick={() => setShow(false)}
-      >asd</Modal>
-    );
+      >
+        asd
+      </Modal>
+    )
   }
   return (
     <Modal
@@ -116,12 +118,12 @@ function UpdateCredit({
           <div className="flex flex-grow  flex-col   rounded-sm my-10 ">
             <div className=" flex-grow flex flex-row">
               <div className="flex-grow flex flex-col pr-2 ">
-                <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
+                <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
                   Afliliado
                 </label>
                 <div className=" flex flex-grow  flex-row">
                   <InputField
-                    label="Identificacion"
+                    label="Identificación"
                     name="identification"
                     value={credit.identification}
                     onlyRead={true}
@@ -134,7 +136,7 @@ function UpdateCredit({
                 </div>
               </div>
               <div className="flex-grow flex flex-col px-2  ">
-                <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
+                <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
                   Tipo de credito
                 </label>
                 <div className="flex flex-grow  flex-row">
@@ -148,19 +150,19 @@ function UpdateCredit({
                       {' '}
                       Interes {credit.interest}%
                     </label>
-                    <label className="text-input">Interes anual: 16.56% </label>
+                    <label className="text-input">Interés anual: 16.56% </label>
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex-grow flex flex-col mt-2  ">
-              <label className="text-center text-white  bg-[#3C7ac2]   text-input font-bold mb-2">
+              <label className="text-center text-white  bg-[#10417B]   text-input font-bold mb-2">
                 Datos credito
               </label>
               <div className="flex-grow flex flex-row">
                 <InputCalendar
                   name="startDate"
-                  label="Fecha de creacion"
+                  label="Fecha de creación"
                   value={credit.startDate}
                   onChange={handleCreditSelect}
                 />
@@ -176,7 +178,7 @@ function UpdateCredit({
                   onlyRead={true}
                 />
                 <InputField
-                  label="Numero de coutas"
+                  label="Número de coutas"
                   value={credit.installments}
                   onBlur={handleCreditNumber}
                   onlyRead={true}
@@ -211,7 +213,7 @@ function UpdateCredit({
         </>
       )}
     </Modal>
-  );
+  )
 }
 
-export default UpdateCredit;
+export default UpdateCredit

@@ -1,7 +1,6 @@
 'use client';
 
-import { gql, useQuery, useSuspenseQuery } from '@apollo/client';
-import { Suspense, useState } from 'react';
+import { gql, useQuery} from '@apollo/client';
 import Modal from '../../modal/Modal';
 import SplashScreen from '../../splash/Splash';
 import GeneralInformationView from './GeneralInformationView';

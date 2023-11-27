@@ -20,7 +20,7 @@ export function FormCompany({
 }) {
   return (
     <div className="flex flex-col m-3">
-      <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
+      <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
         Datos empresa
       </label>
       <InputField
@@ -76,7 +76,7 @@ export function FormCompany({
           onChange={handleChangeCompanyInformation}
         />
       </div>
-      <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
+      <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
         Datos representante legal
       </label>
       <SelectField

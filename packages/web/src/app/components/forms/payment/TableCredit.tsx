@@ -8,16 +8,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { AddSvg } from '../../logo/Add';
 import { useRouter } from 'next/navigation';
 import { useVirtual } from 'react-virtual';
 import { motion } from 'framer-motion';
 import { Credit } from '@/lib/utils/credit/types';
-import UpdateCredit from './UpdateCredit';
 import { gql, useMutation } from '@apollo/client';
 import AlertModalError from '../../modal/AlertModalError';
 import AlertModalSucces from '../../modal/AlertModalSucces';
-import OptionsTable from '../../options-table/OptionsTable';
-import { downloadCreditPdf, downloadCreditXlsx } from '@/lib/axios/uploadFiles';
 
 const REFINANCE = gql`
   mutation ($id: Int!) {
@@ -51,7 +49,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
           <div className="py-1">
             <label className={` py-1 px-4 rounded-[30px] bg-[#FFF1CD] `}>
               {' '}
-              $ {row.getValue().toLocaleString()}
+              $ {row.getValue()}
             </label>
           </div>
         ),
@@ -61,7 +59,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
       {
         accessorKey: 'nameCredit',
         cell: (info) => info.getValue(),
-        header: () => <span>Tipo de crédito</span>,
+        header: () => <span>Tipo de credito</span>,
       },
       {
         accessorKey: 'discountDate',
@@ -78,7 +76,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
       {
         accessorKey: 'interest',
         cell: (info) => info.getValue(),
-        header: () => <span>Interés</span>,
+        header: () => <span>Interes</span>,
       },
       {
         accessorKey: 'state',
@@ -138,7 +136,6 @@ function TableCredits({ credits }: { credits: Credit[] }) {
   const [id, setId] = useState<number>(0);
   const [update, setUpdate] = useState<boolean>(false);
   const [showView, setShowView] = useState<boolean>(false);
-  const [showDownload, setShowDownload] = useState<boolean>(false);
 
   const [showWarning, setShowWarning] = useState(false);
   const [showWarningDelete, setShowWarningDelete] = useState(false);
@@ -199,32 +196,66 @@ function TableCredits({ credits }: { credits: Credit[] }) {
 
   return (
     <>
-      {update && <UpdateCredit idCredit={Number(id)} setShow={setUpdate} />}
-      <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] pt-8">
-        <OptionsTable
-	    showOptions={showOptions}
-	    deleteHandle={()=>{deleteCreditHandle()}}
-	    setUpdate={setUpdate}
-	    setCreate={()=>{route.push("/dashboard/wallet/credit/create")}}
-	    setView={setShowView}
-	    setDownloadCredit={()=>{
-	    setShowDownload(!showDownload)}}
-	    handleRefinance={()=>{handleRefinance()}}
-	    downloadCredit={showDownload}
-	    handleDownloadPdf={
-	       async() =>{
-		  await downloadCreditPdf(id)
-		  setShowDownload(false)
-		  }}
-	    handleDownloadXlsx={
-	       async() =>{
-		  await downloadCreditXlsx(id)
-		  setShowDownload(false)
-		  }}
-	    toggleSelect={() =>{
-	       setShowDownload(false)
-	    }}
-	 />
+      <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
+        <div className="flex items-center justify-between m-3  ">
+          <div>
+            {showOptions && (
+              <div className="flex flex-row p-2 rounded-lg bg-[#F2F5FA] ">
+                <button
+                  className="flex flex-row"
+                  onClick={() => {
+                    setShowView(true);
+                  }}
+                >
+                  <img src="/view.svg" />
+                  <label className="font-sans px-6 text-sm">Ver</label>
+                </button>
+
+                <button
+                  className="flex flex-row"
+                  onClick={() => {
+                    setUpdate(true);
+                  }}
+                >
+                  <img src="/edit.svg" />
+                  <label className="font-sans px-6 text-sm">Editar</label>
+                </button>
+                <button
+                  className="flex flex-row"
+                  onClick={() => {
+                    deleteCreditHandle();
+                  }}
+                >
+                  <img src="/delete.svg" />
+                  <label className="font-sans px-6 text-sm">Eliminar</label>
+                </button>
+                <button
+                  className="flex flex-row"
+                  onClick={() => {
+                    handleRefinance();
+                  }}
+                >
+                  <img src="/refinance.svg" />
+                  <label className="font-sans px-6 text-sm">Refinanciar</label>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div
+            className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
+            onClick={() => {
+              route.push('/dashboard/wallet/credit/create');
+            }}
+          >
+            <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-8 w-8 bg-[#10417B] ">
+              <AddSvg color="#ffffff" />
+            </div>
+            <label className="pl-2 hidden group-hover:block text-[12px]">
+              Crear
+            </label>
+          </div>
+        </div>
 
         <div className="mx-4 my-2 flex-grow text-sm">
           <table className="h-full w-full table-fixed table ">

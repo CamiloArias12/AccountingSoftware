@@ -17,24 +17,23 @@ import {
 import { useRouter } from 'next/navigation';
 import { useVirtual } from 'react-virtual';
 import { motion } from 'framer-motion';
-import { InstallmentPayment } from '@/lib/utils/credit/types';
+import { Credit } from '@/lib/utils/credit/types';
 import { gql, useMutation } from '@apollo/client';
-import AlertModalError from '../../modal/AlertModalError';
-import Button from '../../input/Button';
+import Button from '@/app/components/input/Button';
 
-const PAYMENT_CREDIT_INSTALLMENT = gql`
+const PAYMENT_CREDIT_DISBURSEMENT = gql`
   mutation ($data: InputCreateInstallmentAccount!) {
     createInstallmentAccount(data: $data)
   }
 `;
-function TableCreditsPayment({
-  installmentPayment,
+function TableCreditsDisbursement({
+  credits,
   dateStart,
 }: {
-  installmentPayment: InstallmentPayment[];
+  credits: Credit[];
   dateStart: Date;
 }) {
-  const [data, setData] = useState<InstallmentPayment[]>(installmentPayment);
+  const [data, setData] = useState<Credit[]>(credits);
   const [rowSelection, setRowSelection] = useState({});
   const [concept, setConcept] = useState('');
   useEffect(() => {
@@ -49,7 +48,7 @@ function TableCreditsPayment({
     );
   }, [rowSelection]);
 
-  const columns = useMemo<ColumnDef<InstallmentPayment>[]>(
+  const columns = useMemo<ColumnDef<Credit>[]>(
     () => [
       {
         id: 'select',
@@ -77,7 +76,7 @@ function TableCreditsPayment({
         ),
       },
       {
-        accessorKey: 'credit',
+        accessorKey: 'id',
         cell: (info) => info.getValue(),
         header: () => <span>Crédito</span>,
         size: 50,
@@ -89,9 +88,9 @@ function TableCreditsPayment({
         header: () => 'Afiliado',
       },
       {
-        accessorKey: 'installmentNumber',
+        accessorKey: 'creditValue',
         cell: (info) => info.getValue(),
-        header: () => <span>Número couta</span>,
+        header: () => <span>Valor</span>,
         size: 50,
       },
       {
@@ -101,36 +100,20 @@ function TableCreditsPayment({
         size: 50,
       },
       {
-        accessorKey: 'paymentDate',
+        accessorKey: 'discountDate',
         cell: (info) => info.getValue(),
-        header: () => <span>Fecha de pago</span>,
+        header: () => <span>Fecha de descuento</span>,
       },
-      {
-        accessorKey: 'capital',
-        cell: (info) => info.getValue(),
-        header: () => <span>Capital</span>,
-      },
-      {
-        accessorKey: 'interestPayment',
-        cell: (info) => info.getValue(),
-        header: () => <span>Interes</span>,
-      },
-      {
-        accessorKey: 'totalPayment',
-        cell: (info) => info.getValue(),
-        header: () => <span>Total pago</span>,
-      },
-    ],
+      ],
     [],
   );
 
-  const [showOptions, setShowOptions] = useState(false);
   const route = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [
     paymentCreditInstallments,
     { data: dataPayment, loading: loadingPayment, error: errorPayment },
-  ] = useMutation(PAYMENT_CREDIT_INSTALLMENT);
+  ] = useMutation(PAYMENT_CREDIT_DISBURSEMENT);
   const table = useReactTable({
     data,
     columns,
@@ -175,20 +158,8 @@ function TableCreditsPayment({
   return (
     <div className="m-4">
       <div className="flex  flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
-        <div className={`flex pr-2 flex-grow flex-col text-input `}>
-          <label className={`pb-2 `}>Concepto</label>
-          <input
-            type="text"
-            value={concept}
-            className={`bg-white  rounded-sm border h-[30px] `}
-            onChange={(e) => {
-              setConcept(e.target.value);
-            }}
-          />
-        </div>
-
         <div className="mx-4 my-2 flex-grow text-sm">
-          <table className="h-full w-full table-fixed  ">
+          <table className="h-full w-full table-fixed table ">
             <thead className="font-medium border-b-4 bg-[#F2F5FA] border-b-[#3C7AC2]">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr className="rounded-lg" key={headerGroup.id}>
@@ -249,12 +220,7 @@ function TableCreditsPayment({
             </tbody>
           </table>
         </div>
-        {dataPayment?.createInstallmentAccount === false && showWarning ? (
-          <AlertModalError value={`El crédito no se puede refinanciar`} />
-        ) : (
-          errorPayment && showWarning && <AlertModalError value="Error" />
-        )}
-        <div className="pt-10 m-4 flex justify-end">
+               <div className="pt-10 m-4 flex justify-end">
           <div className="pr-4">
             <Button
               name="Cancelar"
@@ -296,4 +262,4 @@ function IndeterminateCheckbox({
     />
   );
 }
-export default TableCreditsPayment;
+export default TableCreditsDisbursement;

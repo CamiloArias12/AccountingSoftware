@@ -9,6 +9,7 @@ import { gql, useMutation } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import Modal from '../../modal/Modal';
 import Button from '../../input/Button';
+import { useRouter } from 'next/navigation';
 
 const CREATE_COMPANY = gql`
   mutation ($create: CreateCompanyDto!) {
@@ -39,6 +40,7 @@ function CreateThirdCompany({ setCreate }: { setCreate: any }) {
     });
   };
 
+  const route = useRouter();
   useEffect(() => {
     if (data) {
       const timeout = setTimeout(() => {
@@ -54,8 +56,8 @@ function CreateThirdCompany({ setCreate }: { setCreate: any }) {
   console.log(companyData?.createCompany);
 
   if (companyData?.createCompany && !showWarning) {
-    // route.push('/dashboard/parametrization/thirds')
-    // route.refresh()
+    route.refresh()
+    setCreate(false)
   }
 
   return (

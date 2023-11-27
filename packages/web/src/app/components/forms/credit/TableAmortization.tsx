@@ -13,7 +13,8 @@ import { useVirtual } from 'react-virtual';
 import { motion } from 'framer-motion';
 import { AmortizationTable } from '@/lib/utils/credit/types';
 import { gql, useMutation } from '@apollo/client';
-
+import SplashScreen from '../../splash/Splash';
+import { NumericFormat } from 'react-number-format';
 const GENERATE_TABLE_AMORTIZATION_CHANGE = gql`
   mutation ($table: ChangeAmortization!) {
     amortizationTableChange(tableAmortization: $table) {
@@ -61,11 +62,14 @@ function TableAmortization({
       variables: {
         table: table,
       },
-    }).then((response: any) => {
-      console.log(response);
-      setData(response.data.amortizationTableChange);
-    });
+    })
   };
+
+   useEffect(()=>{
+      if(dataAmortizationChange){
+	 setData(dataAmortizationChange.amortizationTableChange)
+      }
+   },[dataAmortizationChange])
 
   const columns = useMemo<ColumnDef<AmortizationTable>[]>(
     () => [
@@ -89,18 +93,28 @@ function TableAmortization({
       },
       {
         accessorKey: 'initialBalance',
-        cell: (info) => info.getValue(),
+        cell: (info:any) => ( <label>$ {info.getValue().toLocaleString()}</label>),
         header: () => 'Balance inicial',
       },
       {
         accessorKey: 'scheduledPayment',
-        cell: (info) => info.getValue(),
+        cell: (info:any) => ( <label>$ {info.getValue().toLocaleString()}</label>),
         header: () => <span>Pago programado</span>,
       },
       {
         accessorKey: 'extraPayment',
         cell: (row: any) => (
-          <div className="py-1">
+          <div className="py-1 flex  ">
+	    <NumericFormat value={row.getValue()} thousandSeparator=","
+	       renderText={(value) => <b> $ {value}</b>}
+
+	         onValueChange={(values) => {
+		  handleLoanExtra(row.row.id,(values.floatValue).toString())
+		  }}
+
+	    />
+
+	   {/* 
             <input
               className="bg-transparent text-center"
               value={row.getValue()}
@@ -108,6 +122,7 @@ function TableAmortization({
                 handleLoanExtra(row.row.id, e.target.value);
               }}
             />
+	    */}
           </div>
         ),
         header: () => <span>Pago extra</span>,
@@ -118,7 +133,7 @@ function TableAmortization({
         cell: (row: any) => (
           <div className="py-1">
             <label className={` py-1 px-4 rounded-[30px] bg-[#DDFFBB] `}>
-              {row.getValue()}
+              $ {row.getValue().toLocaleString()}
             </label>
           </div>
         ),
@@ -127,19 +142,19 @@ function TableAmortization({
       {
         accessorKey: 'capital',
 
-        cell: (info) => info.getValue(),
+        cell: (info:any) => ( <label>$ {info.getValue().toLocaleString()}</label>),
         header: () => <span>Capital</span>,
       },
       {
         accessorKey: 'interest',
 
-        cell: (info) => info.getValue(),
-        header: () => <span>Interes</span>,
+        cell: (info:any) => ( <label>$ {info.getValue().toLocaleString()}</label>),
+        header: () => <span>Interés</span>,
       },
       {
         accessorKey: 'finalBalance',
 
-        cell: (info) => info.getValue(),
+        cell: (info:any) => ( <label>$ {info.getValue().toLocaleString()}</label>),
         header: () => <span>Balance final</span>,
       },
     ],
@@ -175,6 +190,8 @@ function TableAmortization({
     virtualRows.length > 0
       ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
+
+  if( loadingAmortizationChange)  return <SplashScreen/>;
 
   return (
     <>

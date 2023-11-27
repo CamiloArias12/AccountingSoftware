@@ -1,24 +1,29 @@
-import InputField from '@/app/components/input/InputField';
-import CheckboxField from '@/app/components/input/CheckboxField';
+import InputField from '@/app/components/input/InputField'
+import CheckboxField from '@/app/components/input/CheckboxField'
 import {
   CivilStatusForm,
   GenderForm,
   HousingTypeForm,
   IdentificationForm,
-  StudiesForm,
-} from '@/lib/utils/thirds/selectForm';
-import { GeneralInformationData } from '@/lib/utils/thirds/types';
-import SelectField from '../../input/SelectField';
-import { gql, useQuery } from '@apollo/client';
-import { useEffect, useState } from 'react';
-import InputCalendar from '../../input/Calendar';
+  StudiesForm
+} from '@/lib/utils/thirds/selectForm'
+import { GeneralInformationData } from '@/lib/utils/thirds/types'
+import SelectField from '../../input/SelectField'
+import { gql, useQuery } from '@apollo/client'
+import { useEffect, useState } from 'react'
+import InputCalendar from '../../input/Calendar'
+import InputNumber from '../../input/InputNumber'
 
 interface GeneralInformationProps {
-  generalInformation: GeneralInformationData;
-  handleChangeGeneralInformation: any;
-  countries: any;
-  handleGeneralInformation: any;
-  handleNumber: any;
+  generalInformation: GeneralInformationData
+  handleChangeGeneralInformation: any
+  countries: any
+  handleGeneralInformation: any
+  handleNumber: any
+  country: any
+  state: any
+  setState: any
+  setCountry: any
 }
 
 const STATES = gql`
@@ -29,7 +34,7 @@ const STATES = gql`
       iso2
     }
   }
-`;
+`
 
 const TOWN = gql`
   query ($isoCode: String!, $isoCodeState: String!) {
@@ -38,7 +43,7 @@ const TOWN = gql`
       name
     }
   }
-`;
+`
 
 export function GeneralInformation({
   generalInformation,
@@ -46,36 +51,29 @@ export function GeneralInformation({
   handleChangeGeneralInformation,
   handleNumber,
   countries,
+  setCountry,
+  setState,
+  state,
+  country
 }: GeneralInformationProps) {
-  const [country, setCountry] = useState('CO');
-  const [state, setState] = useState('');
   const { data } = useQuery(STATES, {
-    variables: { isoCode: country },
-  });
+    variables: { isoCode: country }
+  })
   const { data: dataTown } = useQuery(TOWN, {
-    variables: { isoCode: country, isoCodeState: state },
-  });
+    variables: { isoCode: country, isoCodeState: state }
+  })
 
   useEffect(() => {
     countries.find((country: any) => {
-      console.log(country, generalInformation.countryBirth);
+      console.log(country, generalInformation.countryBirth)
       if (country.name === generalInformation.countryBirth) {
-        console.log(country.name, generalInformation.countryBirth);
-        setCountry(country.iso2);
+        console.log(country.name, generalInformation.countryBirth)
+        setCountry(country.iso2)
       }
-    });
-  }, []);
+    })
+  }, [])
 
-  useEffect(() => {
-    handleGeneralInformation('stateBirth', '');
-    handleGeneralInformation('cityBirth', '');
-  }, [country]);
-
-  useEffect(() => {
-    handleGeneralInformation('cityBirth', '');
-  }, [state]);
-
-  console.log(generalInformation);
+  console.log(generalInformation)
   return (
     <div className=" flex-grow grid grid-cols-2  gap-4 lg:grid-cols-4  ">
       <div className="row-start-1 ">
@@ -106,13 +104,11 @@ export function GeneralInformation({
         />
       </div>
       <div className="row-start-2">
-        <InputField
-          type="number"
+        <InputNumber
           name="identification"
           label="Numero de Identificación"
           value={generalInformation.identification}
-          onBlur={handleNumber}
-          onChange={handleChangeGeneralInformation}
+          handleChange={handleGeneralInformation}
         />
       </div>
       <div className="row-start-3">
@@ -144,8 +140,10 @@ export function GeneralInformation({
       <div className="row-start-4">
         <SelectField
           name="countryBirth"
-          label="Pais"
-          handleGeneralInformation={handleGeneralInformation}
+          label="País"
+          handleGeneralInformation={(data: any) => {
+            console.log(data)
+          }}
           image={true}
           value={generalInformation.countryBirth}
           options={countries}
@@ -194,7 +192,7 @@ export function GeneralInformation({
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default GeneralInformation;
+export default GeneralInformation

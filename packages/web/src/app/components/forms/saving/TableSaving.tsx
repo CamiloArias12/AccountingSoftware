@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useMemo, useReducer, useRef, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { AddSvg } from '../../logo/Add';
 import { useRouter } from 'next/navigation';
 import { useVirtual } from 'react-virtual';
@@ -33,7 +33,7 @@ function TableSavings({
       {
         accessorKey: 'identification',
         cell: (info) => info.getValue(),
-        header: () => 'Identificacion',
+        header: () => 'Identificación',
       },
 
       {
@@ -65,7 +65,7 @@ function TableSavings({
         cell: (row: any) => (
           <div className="py-1">
             <label className={` py-1 px-4 rounded-[30px] bg-[#F2FFA5] `}>
-              {row.getValue()}
+               $ {row.getValue().toLocaleString()}
             </label>
           </div>
         ),
@@ -75,9 +75,8 @@ function TableSavings({
     [],
   );
 
-  const [data] = useState<Saving[]>(savings);
+  const [data,setData] = useState<Saving[]>(savings);
   const [showOptions, setShowOptions] = useState(false);
-  const route = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
@@ -105,6 +104,10 @@ function TableSavings({
 
   const [update, setUpdate] = useState<boolean>(false);
   const [selected, setSelected] = useState<number>(0);
+   useEffect(() => {
+    setData(savings);
+  }, [savings]);
+
 
   return (
     <>

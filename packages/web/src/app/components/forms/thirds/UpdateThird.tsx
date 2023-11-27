@@ -1,13 +1,12 @@
 'use client';
 
 import { gql, useQuery, useSuspenseQuery } from '@apollo/client';
-import { Suspense, useState } from 'react';
 import Modal from '../../modal/Modal';
 import SplashScreen from '../../splash/Splash';
 import FormThirdNatural from '@/app/dashboard/parametrization/thirds/create/CreateThird';
 
 const GET_USER = gql`
-  query ($id: Int!) {
+  query ($id: Float!) {
     getUser(id: $id) {
       typeIdentification
       identification

@@ -10,6 +10,11 @@ import AlertModalSucces from '../../modal/AlertModalSucces';
 import AlertModalError from '../../modal/AlertModalError';
 import Modal from '../../modal/Modal';
 import { useTypeSaving } from '@/app/hooks/type-saving/TypeSavingInput';
+import { TypeSavingAcounts } from '@/lib/utils/type-saving/types';
+import SelectOptions from '../../input/SelectOptions';
+import { optionsNature } from '@/lib/utils/type-account/options';
+import InputNumber from '../../input/InputNumber';
+import { NumberFormatValues } from 'react-number-format';
 
 const AUXLILIARIES = gql`
   query {
@@ -43,7 +48,7 @@ export function TypeSavingForm({
   setShowModalCreate: any;
 }) {
   const { data, loading, error } = useQuery(AUXLILIARIES);
-  const [accounts, setAccounts] = useState<number[]>([]);
+  const [accounts,setAccounts]=useState<TypeSavingAcounts[]>([])
   const [
     createTypeSaving,
     { data: dataCreate, loading: loadingCreate, error: errorCreate },
@@ -76,29 +81,49 @@ export function TypeSavingForm({
 
   const handleCreateTypeSaving = () => {
     setShowWarning(true);
-    const inputCreate = {
-      name: typeSaving.name,
-      auxiliary: accounts,
-    };
     createTypeSaving({
       variables: {
-        data: inputCreate,
+        data:{
+	name: typeSaving.name,
+	 accounts: accounts,
+	 }
       },
     });
   };
 
-  const handleValueAccounts = (index: number, value: number) => {
-    console.log('index', index);
-    const array = [...accounts];
-    array[index] = value;
-    setAccounts(array);
+ const handleChangeTodo = (id:number,account: TypeSavingAcounts) => {
+    setAccounts(
+      accounts.map((t, index) => {
+        if (index === id) {
+          return account;
+        } else {
+          return t;
+        }
+      }),
+    );
   };
-  const addAccount = () => {
-    setAccounts([...accounts, 0]);
+  
+   const handleDelete = (id: number) => {
+    setAccounts(
+      accounts.filter((t, index) => index !== id),
+    );
   };
-  return (
+
+   const addAccount = () => {
+    const account: TypeSavingAcounts= {
+      percentage:'',
+      account:'',
+      nature: '',
+    };
+    setAccounts([...accounts, account]);
+  };
+
+
+
+
+   return (
     <Modal
-      size="min-w-[550px] w-[600px]"
+      size="min-w-[850px] w-[850px]"
       title="Crear tipo de ahorro"
       onClick={() => {
         setShowModalCreate(false);
@@ -120,7 +145,7 @@ export function TypeSavingForm({
           </div>
           <div className="flex flex-col">
             <div className="flex flex-row justify-between mb-4">
-              <label>Cuentas</label>
+              <label className="font-bold">Cuentas</label>
               <div
                 className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
                 onClick={addAccount}
@@ -133,19 +158,43 @@ export function TypeSavingForm({
                 </label>
               </div>
             </div>
-            {accounts.map((value, index) => (
-              <div key={index} className="flex  flex-row">
-                <div className="flex-grow mb-2">
+           {accounts.map((value:TypeSavingAcounts, index) => (
+              <div key={index} className=" gap-2 flex flex-grow w-full my-2  flex-row">
                   <Select
+		    label={index===0 &&"Cuenta"}
                     options={data.getAuxilaryAll}
                     index={index}
-                    setValue={handleValueAccounts}
+                    setValue={handleChangeTodo}
+		    account={value}
                   />
-                </div>
-                <button className="flex items-center justify-center h-8 w-8">
+		   <SelectOptions
+		    label={index ===0 &&"Naturaleza"}
+                    options={optionsNature}
+                    index={index}
+                    setValue={handleChangeTodo}
+		    account={value}
+                  />
+		     <InputNumber
+			label={index===0 &&"Porcentaje"}
+			name="percentage"
+			value={value.percentage}
+			className="w-[100px]"
+			onChange={true}
+			handleChange={(values:NumberFormatValues) => {
+			   console.log(value)
+			   handleChangeTodo(index,{...value,percentage:values.floatValue})
+			}}
+		     />
+	       <div className="flex items-end">
+                <button className="flex flex-col items-center justify-center h-8 w-8"
+		     onClick={() =>{ handleDelete(index)}}
+		>
                   <img src="/delete.svg" />
+		   
                 </button>
-              </div>
+
+		  </div>
+		</div>
             ))}
           </div>
         </div>

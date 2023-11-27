@@ -1,19 +1,17 @@
 import { useTypeAccount } from '@/app/hooks/type-account/TypeAccountInput';
 import { useEffect, useState } from 'react';
-import Button from '../../input/Button';
 import {
   TypeAccountEnum,
   optionsAccounts,
   optionsNature,
 } from '@/lib/utils/type-account/options';
-import InputField from '../../input/InputField';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import Select from '../../input/Select';
 import AlertModalSucces from '../../modal/AlertModalSucces';
 import AlertModalError from '../../modal/AlertModalError';
 import Modal from '../../modal/Modal';
 import { useRouter } from 'next/navigation';
-import SelectField from '../../input/SelectField';
+import TypeAccountForm from './TypeAccountInformation';
 
 const GET_CLASS = gql`
   query {
@@ -141,7 +139,7 @@ function TypeAccountGeneral({
 
   return (
     <Modal
-      size="min-w-[550px] w-[600px]"
+      size="md:min-w-[550px]  md:w-[600px]"
       title="Crear tipo de cuenta"
       onClick={() => {
         setShowModalCreate(false);
@@ -149,7 +147,7 @@ function TypeAccountGeneral({
       }}
     >
       <div className="flex h-full w-full flex-col  ">
-        <div className="flex flex-row bg-[#F2F6F8] mt-3 p-4  rounded-lg ">
+        <div className="flex flex-row bg-[#F2F6F8] mt-3 p-2 rounded-lg ">
           {optionsAccounts.map((option) => (
             <div
               key={option.id}
@@ -169,8 +167,7 @@ function TypeAccountGeneral({
             </div>
           ))}
         </div>
-        <div className="flex flex-col items-center justify-center w-full h-full">
-          <div className="flex flex-col space-y-4 w-full max-w-3xl p-4">
+        <div className="flex flex-col mt-4">
             {(indexForm === TypeAccountEnum.GROUP ||
               indexForm === TypeAccountEnum.ACCOUNT ||
               indexForm === TypeAccountEnum.SUBACCOUNT ||
@@ -225,56 +222,27 @@ function TypeAccountGeneral({
               />
             )}
 
-            <div className="grid grid-cols-2 gap-4 mt-8">
-              <InputField
-                name="code"
-                label="Código"
-                value={typeAccount.code || ''}
-                onChange={handleTypeAccount}
-                onBlur={handleNumber}
-              />
-
-              <InputField
-                name="name"
-                label="Nombre"
-                value={typeAccount.name}
-                onChange={handleTypeAccount}
-              />
-
-              <SelectField
-                name="nature"
-                options={optionsNature}
-                label="Naturaleza"
-                value={String(typeAccount.nature)}
-                handleGeneralInformation={handleChangeTypeAccount}
-              />
             </div>
-          </div>
         </div>
+        
+	 <TypeAccountForm 
+	       handleNumber={handleNumber} 
+	       handleClicckCancel={() =>{setShowModalCreate(false)}}
+	       handleClicckAccept={handleCreate}
+	       typeAccount={typeAccount}
+	       handleTypeAccount={handleTypeAccount}
+	       handleChangeTypeAccount={handleChangeTypeAccount}
+	       />
+	 
 
-        <div className="pt-10 flex justify-end">
-          <div className="pr-4">
-            <Button
-              name="Cancelar"
-              background="border border-[#10417B] text-[#10417B]"
-            />
-          </div>
-          <Button
-            name="Aceptar"
-            background="bg-[#10417B] text-white"
-            onClick={handleCreate}
-          />
-        </div>
-
-        {typeData?.createAccount && showWarning ? (
+	 {typeData?.createAccount && showWarning ? (
           <AlertModalSucces value={`la ${type} ha sido creada`} />
         ) : typeData?.createAccount === false && showWarning ? (
           <AlertModalError value={`El codigo  ya existe con otra cuenta`} />
         ) : (
           errorType && showWarning && <AlertModalError value="Error" />
         )}
-      </div>
-    </Modal>
+      </Modal>
   );
 }
 

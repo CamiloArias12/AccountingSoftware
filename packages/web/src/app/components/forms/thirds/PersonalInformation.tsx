@@ -1,23 +1,29 @@
-import InputField from '@/app/components/input/InputField';
-import CheckboxField from '@/app/components/input/CheckboxField';
+import InputField from '@/app/components/input/InputField'
+import CheckboxField from '@/app/components/input/CheckboxField'
 import {
   CivilStatusForm,
   GenderForm,
   HousingTypeForm,
   IdentificationForm,
-  StudiesForm,
-} from '@/lib/utils/thirds/selectForm';
-import { GeneralInformationData } from '@/lib/utils/thirds/types';
-import SelectField from '../../input/SelectField';
-import { gql, useQuery } from '@apollo/client';
-import { useEffect, useState } from 'react';
+  StudiesForm
+} from '@/lib/utils/thirds/selectForm'
+import { GeneralInformationData } from '@/lib/utils/thirds/types'
+import SelectField from '../../input/SelectField'
+import { gql, useQuery } from '@apollo/client'
+import { useEffect, useState } from 'react'
+import InputNumber from '../../input/InputNumber'
+import { NumberFormatValues } from 'react-number-format'
 
 interface GeneralInformationProps {
-  generalInformation: GeneralInformationData;
-  handleChangeGeneralInformation: any;
-  countries: any;
-  handleGeneralInformation: any;
-  handleNumber: any;
+  generalInformation: GeneralInformationData
+  handleChangeGeneralInformation: any
+  countries: any
+  handleGeneralInformation: any
+  handleNumber: any
+  country: any
+  state: any
+  setState: any
+  setCountry: any
 }
 
 const STATES = gql`
@@ -28,7 +34,7 @@ const STATES = gql`
       iso2
     }
   }
-`;
+`
 
 const TOWN = gql`
   query ($isoCode: String!, $isoCodeState: String!) {
@@ -37,43 +43,35 @@ const TOWN = gql`
       name
     }
   }
-`;
+`
 
 export function PersonalInformation({
   generalInformation,
   handleGeneralInformation,
   handleChangeGeneralInformation,
   countries,
+  setCountry,
+  setState,
+  state,
+  country
 }: GeneralInformationProps) {
-  const [country, setCountry] = useState('CO');
-  const [state, setState] = useState('');
   const { data } = useQuery(STATES, {
-    variables: { isoCode: country },
-  });
+    variables: { isoCode: country }
+  })
   const { data: dataTown } = useQuery(TOWN, {
-    variables: { isoCode: country, isoCodeState: state },
-  });
+    variables: { isoCode: country, isoCodeState: state }
+  })
 
   useEffect(() => {
     countries.find((country: any) => {
-      console.log(country, generalInformation.countryBirth);
-      if (country.name === generalInformation.countryBirth) {
-        console.log(country.name, generalInformation.countryBirth);
-        setCountry(country.iso2);
+      console.log(country, generalInformation.countryResidence)
+      if (country.name === generalInformation.countryResidence) {
+        console.log(country.name, generalInformation.countryResidence)
+        setCountry(country.iso2)
       }
-    });
-  }, []);
+    })
+  }, [])
 
-  useEffect(() => {
-    handleGeneralInformation('stateBirth', '');
-    handleGeneralInformation('cityBirth', '');
-  }, [country]);
-
-  useEffect(() => {
-    handleGeneralInformation('cityBirth', '');
-  }, [state]);
-
-  console.log(generalInformation);
   return (
     <div className=" flex-grow grid grid-cols-2  gap-4 lg:grid-cols-4  ">
       <div className="row-start-1">
@@ -89,7 +87,7 @@ export function PersonalInformation({
       <div className="row-start-1">
         <SelectField
           name="countryResidence"
-          label="Pais"
+          label="País"
           handleGeneralInformation={handleGeneralInformation}
           image={true}
           value={generalInformation.countryResidence}
@@ -104,7 +102,6 @@ export function PersonalInformation({
           name="stateResidence"
           label="Estado/Departamento"
           handleGeneralInformation={handleGeneralInformation}
-          image={false}
           value={generalInformation.stateResidence}
           options={data?.getState}
           setState={setState}
@@ -115,7 +112,6 @@ export function PersonalInformation({
           name="cityResidence"
           label="Municipio/Ciudad"
           handleGeneralInformation={handleGeneralInformation}
-          image={false}
           value={generalInformation.cityResidence}
           options={dataTown?.getTown}
         />
@@ -131,17 +127,19 @@ export function PersonalInformation({
         />
       </div>
       <div className="row-start-2">
-        <InputField
-          type="number"
+        <InputNumber
           name="phone"
           label="Celular"
           value={generalInformation.phone}
-          onChange={handleChangeGeneralInformation}
+          onChange={true}
+          handleChange={values => {
+            console.log('value', values)
+            handleGeneralInformation('phone', values.value)
+          }}
         />
       </div>
       <div className="row-start-2">
         <InputField
-          type="number"
           name="landLine"
           label="Teléfono Fijo"
           value={generalInformation.landLine}
@@ -212,7 +210,7 @@ export function PersonalInformation({
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default PersonalInformation;
+export default PersonalInformation

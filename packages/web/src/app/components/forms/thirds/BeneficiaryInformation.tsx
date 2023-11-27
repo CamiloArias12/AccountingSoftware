@@ -3,6 +3,7 @@ import InputField from '../../input/InputField';
 import { Beneficiaries } from '@/lib/utils/thirds/types';
 import InputFieldBeneficiary from '../../input/InputBeneficiary';
 import { AddSvg } from '../../logo/Add';
+import InputNumberBeneficiary from '../../input/InputNumberBeneficiary';
 
 export function BeneficiaryInformation({
   beneficiaryInformation,
@@ -59,6 +60,7 @@ export function BeneficiaryInformation({
           <InputFieldBeneficiary
             label="Nombre"
             name="name"
+	    className=" pr-2"
             value={beneficiary.beneficiary.name}
             onChange={(e) => {
               handleChangeTodo(
@@ -73,16 +75,16 @@ export function BeneficiaryInformation({
               );
             }}
           />
-          <InputFieldBeneficiary
-            label="Identificacion"
-            name="idDocument"
+          <InputNumberBeneficiary
+            label="Identificación"
             value={beneficiary.beneficiary.idDocument}
-            onChange={(e) => {
+            handleChange={(e:any) => {
+	       console.log(e)
               handleChangeTodo(
                 {
                   ...beneficiary,
                   beneficiary: {
-                    idDocument: e.target.value,
+                    idDocument: e.floatValue,
                     name: beneficiary.beneficiary.name,
                   },
                 },
@@ -106,6 +108,7 @@ export function BeneficiaryInformation({
             label="Porcentage"
             name="name"
             value={beneficiary.percentage}
+	    className=" pr-2"
             onChange={(e) => {
               handleChangeTodo(
                 { ...beneficiary, percentage: e.target.value },
