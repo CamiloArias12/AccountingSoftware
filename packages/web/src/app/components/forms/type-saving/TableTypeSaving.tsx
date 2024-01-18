@@ -4,21 +4,23 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AddSvg } from '../../logo/Add'
 import { useRouter } from 'next/navigation'
 import { useVirtual } from 'react-virtual'
 import { motion } from 'framer-motion'
 import { TypeSaving } from '@/lib/utils/type-saving/types'
 import { gql, useMutation } from '@apollo/client'
 import { useTypeSaving } from '@/app/hooks/type-saving/TypeSavingInput'
-import InputField from '../../input/InputField'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
 import OptionsTable from '../../options-table/OptionsTable'
+import ViewTypeSaving from './ViewTypeSaving'
+import TypeSavingUpdate from './TypeSavingUpdate'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
 
 const DELETE_TYPE_SAVING = gql`
   mutation ($id: Int!) {
@@ -58,6 +60,7 @@ function TableTypeSaving({
   const [showOptions, setShowOptions] = useState(false)
   const route = useRouter()
   const [sorting, setSorting] = useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = useState('')
 
   useEffect(() => {
     setData(typeSavings)
@@ -65,15 +68,22 @@ function TableTypeSaving({
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting
+    filterFns: {
+      fuzzy: fuzzyFilter
     },
+
+    state: {
+      sorting,
+      globalFilter
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     debugTable: true
   })
-
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
   const { rows } = table.getRowModel()
@@ -87,10 +97,10 @@ function TableTypeSaving({
 
   const [idrow, setIdRow] = useState<string>('')
   const [expanded, setExpanded] = useState<boolean>(false)
-  const [value, setValue] = useState<any>()
   const [update, setUpdate] = useState<boolean>(false)
+  const [showView, setShowView] = useState(false)
   const [
-    deleteTypeCredit,
+    deleteTypeSaving,
     { data: deleteData, loading: loadingDelete, error: errorDelete }
   ] = useMutation(DELETE_TYPE_SAVING)
   const { typeSaving, handleTypeSaving, setTypeSaving } = useTypeSaving()
@@ -109,7 +119,7 @@ function TableTypeSaving({
 
   const deleteTypeSavingHandle = () => {
     setShowWarning(true)
-    deleteTypeCredit({
+    deleteTypeSaving({
       variables: {
         id: selected
       }
@@ -146,6 +156,7 @@ function TableTypeSaving({
     if (deleteData) {
       if (deleteData?.deleteTypeSaving) {
         route.refresh()
+        setShowOptions(false)
       }
 
       console.log('delete')
@@ -161,6 +172,10 @@ function TableTypeSaving({
 
   return (
     <>
+      {showView && <ViewTypeSaving id={selected} setShow={setShowView} />}
+      {update && (
+        <TypeSavingUpdate idTypeSaving={selected} setShow={setUpdate} />
+      )}
       <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] pt-8 ">
         <OptionsTable
           showOptions={showOptions}
@@ -171,17 +186,20 @@ function TableTypeSaving({
           setCreate={() => {
             setShowModalCreate(true)
           }}
+          setView={setShowView}
+          search={globalFilter}
+          setSearch={setGlobalFilter}
         />
 
         <div className="mx-4 my-2 flex-grow text-sm">
-          <table className="w-full table-fixed table ">
+          <table className="w-full table-fixed table  ">
             <thead className="font-medium border-b-2 bg-[#F2F5FA] border-b-[#3C7AC2]">
               {table.getHeaderGroups().map(headerGroup => (
                 <tr className="rounded-lg" key={headerGroup.id}>
                   {headerGroup.headers.map(header => {
                     return (
                       <th
-                        className="text-start font-light pl-3 p-2 font-medium "
+                        className="text-start font-light pl-3 py-2 font-medium "
                         key={header.id}
                         colSpan={header.colSpan}
                         style={{ width: header.getSize() }}
@@ -216,87 +234,32 @@ function TableTypeSaving({
                 const row = rows[virtualRow.index] as Row<any>
                 return (
                   <>
-                    {row.id == idrow && update ? (
-                      <tr className=" h-24 border-b-2 border-[#8C4708] px-2 ">
-                        <td className="px-2 bg-white">
-                          <label>{selected}</label>
-                        </td>
-                        <td className="px-2 bg-white flex flex-row h-full items-center  ">
-                          <InputField
-                            name="name"
-                            label=""
-                            value={typeSaving.name}
-                            onChange={e => {
-                              handleTypeSaving(e)
-                            }}
-                          />
-                          <div className="ml-4 flex flex-col">
-                            <button
-                              className="h-[20px] w-[20px] mb-2"
+                    <motion.tr
+                      key={row.id}
+                      className={`${
+                        selected === row._valuesCache.id && ' selected '
+                      }  hover:border-l-4  hover:border-l-[#3C7AC2] `}
+                    >
+                      {row.getVisibleCells().map(cell => {
+                        return (
+                          <>
+                            <td
                               onClick={() => {
-                                updateTypeSavingHandle()
+                                setShowOptions(true)
+                                setSelected(Number(row._valuesCache.id))
                               }}
+                              className=" px-2 py-2"
+                              key={cell.id}
                             >
-                              <img
-                                src="/accept.png"
-                                className="w-full h-full "
-                              />
-                            </button>
-                            <button
-                              className="h-[20px] w-[20px]"
-                              onClick={() => {
-                                setUpdate(false)
-                              }}
-                            >
-                              <img
-                                src="/cancel.png"
-                                className="w-full h-full "
-                              />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      <motion.tr
-                        key={row.id}
-                        className=" hover:border-l-4  hover:border-l-[#3C7AC2] "
-                      >
-                        {row.getVisibleCells().map(cell => {
-                          return (
-                            <>
-                              <td
-                                onClick={() => {
-                                  setShowOptions(true)
-                                  if (!update) {
-                                    setTypeSaving({
-                                      name: String(row._valuesCache.name)
-                                    })
-                                    setSelected(Number(row._valuesCache.id))
-                                  }
-                                  if (update === false) {
-                                    if (idrow == row.id) {
-                                      setIdRow(row.id)
-                                      setExpanded(!expanded)
-                                    } else {
-                                      setExpanded(false)
-                                      setIdRow(row.id)
-                                      setExpanded(!true)
-                                    }
-                                  }
-                                }}
-                                className="font-light px-2 py-2"
-                                key={cell.id}
-                              >
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </td>
-                            </>
-                          )
-                        })}
-                      </motion.tr>
-                    )}
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          </>
+                        )
+                      })}
+                    </motion.tr>
                   </>
                 )
               })}
@@ -304,15 +267,8 @@ function TableTypeSaving({
           </table>
         </div>
       </div>
-      {updateData?.updateTypeSaving && showWarningUpdate ? (
-        <AlertModalSucces value="Se han actualizado los datos" />
-      ) : updateData?.updateTypeSaving === false && showWarningUpdate ? (
-        <AlertModalError value="Los datos no se pueden actualizar" />
-      ) : (
-        errorUpdate && showWarningUpdate && <AlertModalError value="Error" />
-      )}
       {deleteData?.deleteTypeSaving && showWarning ? (
-        <AlertModalSucces value="Se han eliminado el tipo de ahorro" />
+        <AlertModalSucces value="Se ha eliminado el tipo de ahorro" />
       ) : deleteData?.deleteTypeSaving === false && showWarning ? (
         <AlertModalError value="El tipo de ahorro no se puede eliminar" />
       ) : (

@@ -5,6 +5,7 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
@@ -28,6 +29,9 @@ import ViewThird from './ViewThird'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
 import CreateThirdCompany from './CreateCompany'
+import OptionsTable from '../../options-table/OptionsTable'
+import UpdateThirdCompany from './UpdateCompany'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
 
 export const revalidate = 0
 const UPDATE_STATUS = gql`
@@ -38,9 +42,9 @@ const UPDATE_STATUS = gql`
   }
 `
 
-const DELETE_USER = gql`
-  mutation ($identification: Int!) {
-    deleteCompany(identification: $identification)
+const DELETE_COMPANY = gql`
+  mutation ($id: Float!) {
+    deleteCompany(identification: $id)
   }
 `
 
@@ -49,7 +53,7 @@ function TableCompany({ companies }: { companies: Company[] }) {
   const [showUpdate, setShowUpdate] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
-  const [userSelected, setCompanySelected] = useState<number>(0)
+  const [companySelected, setCompanySelected] = useState<number>(0)
   const [data, setData] = useState<Company[]>(companies)
 
   const [updateStatus, { data: statusData, loading, error }] =
@@ -57,22 +61,14 @@ function TableCompany({ companies }: { companies: Company[] }) {
   const [
     deleteCompany,
     { data: deleteData, loading: loadingDelete, error: errorDelete }
-  ] = useMutation(DELETE_USER)
+  ] = useMutation(DELETE_COMPANY)
   const route = useRouter()
 
   const deleteCompanyHandle = () => {
     setShowWarning(true)
     deleteCompany({
       variables: {
-        identification: userSelected
-      }
-    })
-  }
-  const updateCompany = (identification: number, status: boolean) => {
-    updateStatus({
-      variables: {
-        identification: identification,
-        status: status
+        id: companySelected
       }
     })
   }
@@ -95,7 +91,7 @@ function TableCompany({ companies }: { companies: Company[] }) {
   const columns = useMemo<ColumnDef<Company>[]>(
     () => [
       {
-        accessorKey: 'socialReason',
+        accessorKey: 'name',
         header: 'Razón social'
       },
       {
@@ -109,7 +105,7 @@ function TableCompany({ companies }: { companies: Company[] }) {
         header: () => 'Tipo de identificación'
       },
       {
-        accessorKey: 'numberIdentification',
+        accessorKey: 'identification',
         header: () => <span>Numero de identificación</span>
       },
       {
@@ -126,22 +122,30 @@ function TableCompany({ companies }: { companies: Company[] }) {
 
   const [sorting, setSorting] = useState<SortingState>([])
 
+  const [globalFilter, setGlobalFilter] = useState('')
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting
+    filterFns: {
+      fuzzy: fuzzyFilter
     },
+
+    state: {
+      sorting,
+      globalFilter
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     debugTable: true
   })
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
   const { rows } = table.getRowModel()
-  const [idrow, setIdRow] = useState<string>('')
   const [showWarning, setShowWarning] = useState(false)
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
@@ -169,65 +173,27 @@ function TableCompany({ companies }: { companies: Company[] }) {
   return (
     <>
       {showCreate && <CreateThirdCompany setCreate={setShowCreate} />}
-      <div className="flex flex-grow flex-col bg-white rounded-tr-sm rounded-b-sm ">
-        <div className="flex items-center justify-between m-3  ">
-          <div>
-            {showOptions && (
-              <div className="flex flex-row p-2 rounded-sm bg-[#F2F5FA] ">
-                <button
-                  className="flex flex-row"
-                  onClick={() => {
-                    setShowView(true)
-                  }}
-                >
-                  <img src="/view.svg" />
-                  <label className="font-sans px-6 text-sm">Ver</label>
-                </button>
-                <button
-                  className="flex flex-row"
-                  onClick={() => {
-                    setShowUpdate(true)
-                  }}
-                >
-                  <img src="/edit.svg" />
-                  <label className="font-sans px-6 text-sm">Editar</label>
-                </button>
-                <button
-                  className="flex flex-row"
-                  onClick={() => {
-                    deleteCompanyHandle()
-                  }}
-                >
-                  <img src="/delete.svg" />
-                  <label className="font-sans px-6 text-sm">Eliminar</label>
-                </button>
-              </div>
-            )}
-          </div>
-          <div
-            className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
-            onClick={() => {
-              setShowCreate(true)
-            }}
-          >
-            <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-8 w-8 bg-[#10417B] ">
-              <AddSvg color="#ffffff" />
-            </div>
-            <label className="pl-2 hidden group-hover:block text-[12px]">
-              Crear
-            </label>
-          </div>
-        </div>
+      {showUpdate && (
+        <UpdateThirdCompany
+          identification={companySelected}
+          setUpdate={setShowUpdate}
+        />
+      )}
 
-        {showUpdate && (
-          <UpdateThird
-            thirdIdentification={userSelected}
-            setShow={setShowUpdate}
-          />
-        )}
-        {showView && (
-          <ViewThird thirdIdentification={userSelected} setShow={setShowView} />
-        )}
+      <div className="flex flex-grow flex-col bg-white rounded-tr-sm rounded-b-sm py-8 px-4  gap-4">
+        <OptionsTable
+          showOptions={showOptions}
+          setView={setShowView}
+          setUpdate={() => {
+            setShowUpdate(true)
+          }}
+          setCreate={() => {
+            setShowCreate(true)
+          }}
+          deleteHandle={deleteCompanyHandle}
+          search={globalFilter}
+          setSearch={setGlobalFilter}
+        />
 
         <div className=" text-sm mx-4  flex-grow">
           <table className=" w-full table-fixed  table ">
@@ -237,7 +203,7 @@ function TableCompany({ companies }: { companies: Company[] }) {
                   {headerGroup.headers.map(header => {
                     return (
                       <th
-                        className="text-start font-light pl-3 p-2 font-medium "
+                        className="text-start   p-2 font-medium "
                         key={header.id}
                         colSpan={header.colSpan}
                         style={{ width: header.getSize() }}
@@ -275,7 +241,7 @@ function TableCompany({ companies }: { companies: Company[] }) {
                     <motion.tr
                       key={row.id}
                       className={`${
-                        userSelected === row._valuesCache.identification &&
+                        companySelected === row._valuesCache.identification &&
                         ' selected '
                       } hover:border-l-4  hover:border-l-[#3C7AC2] `}
                     >
@@ -290,7 +256,7 @@ function TableCompany({ companies }: { companies: Company[] }) {
                                 )
                                 cell.column.columnDef.cell, cell.getContext()
                               }}
-                              className="font-light px-2"
+                              className=" p-2"
                               key={cell.id}
                             >
                               {flexRender(

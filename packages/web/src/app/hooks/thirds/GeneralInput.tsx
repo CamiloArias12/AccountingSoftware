@@ -1,64 +1,61 @@
-import { GeneralInformationData } from '@/lib/utils/thirds/types';
-import { parse } from 'path';
-import { useState } from 'react';
+import { GeneralInformationData } from '@/lib/utils/thirds/types'
+import { parse } from 'path'
+import { useState } from 'react'
 
 export function FormGeneralInformation() {
-  const [generalInformation, setGeneralInformation] =
-    useState<GeneralInformationData>({
-      typeIdentification: '',
-      identification: 0,
-      name: '',
-      lastName: '',
-      expeditionDate: new Date(),
-      expeditionCity: '',
-      birthDate: new Date(),
-      countryBirth: 'Colombia',
-      stateBirth: '',
-      cityBirth: '',
-      gender: '',
-      statusCivil: '',
-      addressResidence: '',
-      countryResidence: 'Colombia',
-      stateResidence: '',
-      cityResidence: '',
-      phone: '',
-      landLine: '',
-      email: '',
-      housingType: '',
-      studies: '',
-      profession: '',
-      foreignOperations: false,
-      publicResources: false,
-      publicRecognition: false,
-      publicPower: false,
-    });
+  //@ts-ignore
+  const [generalInformation, setGeneralInformation] = useState({
+    typeIdentification: null,
+    identification: null,
+    name: null,
+    lastName: null,
+    expeditionDate: new Date(),
+    expeditionCity: null,
+    birthDate: new Date(),
+    countryBirth: null,
+    stateBirth: null,
+    cityBirth: null,
+    gender: null,
+    statusCivil: null,
+    addressResidence: null,
+    countryResidence: null,
+    stateResidence: null,
+    cityResidence: null,
+    phone: null,
+    landLine: null,
+    email: null,
+    housingType: null,
+    studies: null,
+    profession: null,
+    foreignOperations: false,
+    publicResources: false,
+    publicRecognition: false,
+    publicPower: false
+  })
 
   const handleChangeGeneralInformation = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = event.target;
-    setGeneralInformation({ ...generalInformation, [name]: value });
-  };
+    const { name, value } = event.target
+    if (value === '') {
+      setGeneralInformation({ ...generalInformation, [name]: null })
+    } else {
+      setGeneralInformation({ ...generalInformation, [name]: value })
+    }
+  }
 
   const handleGeneralInformation = (name: string, value: string) => {
-    setGeneralInformation((prevData) => ({ ...prevData, [name]: value }));
-  };
-  const handleGeneralNumber = (name: string, value: string) => {
-    if (!isNaN(Number(value))) {
-      setGeneralInformation((prevData) => ({
-        ...prevData,
-        [name]: Number(value),
-      }));
-      return true;
+    if (value === '') {
+      setGeneralInformation({ ...generalInformation, [name]: null })
+    } else {
+      setGeneralInformation({ ...generalInformation, [name]: value })
     }
-    return false;
-  };
+  }
 
   return {
     generalInformation,
-    handleGeneralNumber,
     setGeneralInformation,
     handleChangeGeneralInformation,
-    handleGeneralInformation,
-  };
+    handleGeneralInformation
+  }
 }

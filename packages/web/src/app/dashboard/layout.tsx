@@ -1,28 +1,32 @@
-import HeaderModule from '../components/header/HeaderModule';
-import SideBar from '../components/sidebar/Sidebar';
+import HeaderModule from '../components/header/HeaderModule'
+import { getServerSession } from 'next-auth/next'
+import SideBar from '../components/sidebar/Sidebar'
+import { redirect, useRouter } from 'next/navigation'
+import { authOptions } from '../api/auth/[...nextauth]/route'
 
-export default function DashboardLayout({
-  children,
+export default async function DashboardLayout({
+  children
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
+  const session = await getServerSession(authOptions)
+  console.log('Other', session)
+  if (!session) {
+    redirect('/auth/login')
+  }
   return (
     <div className="flex flex-row h-screen  ">
-      <div className="flex  px-4">
+      <div className="flex pl-1 ">
         <SideBar />
       </div>
-      <div className="flex  flex-col flex-grow mr-4">
-        <div className=" mr-4 flex flex-row h-16 border-b border-[#BABBBB] ">
-          <HeaderModule colorBorder="border-[#006AE7] " title="TERCEROS" />
-          <div className=" flex flex-row items-center">
-            <img className="h-8 w-8" src="/account.svg" />
-            <label className="flex-grow text-xs">Juan Arias</label>
-          </div>
+      <div className="flex  flex-col flex-grow ">
+        <div className="  flex flex-row mx-6 my-2 h-16 border-b-2 border-[#10417B] ">
+          <HeaderModule />
         </div>
         <section className=" flex flex-grow my-6 mx-4 h-[80%]">
           {children}
         </section>
       </div>
     </div>
-  );
+  )
 }

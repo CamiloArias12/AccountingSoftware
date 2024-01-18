@@ -15,3 +15,9 @@ export type TypeCreditSavingAcounts = {
   account: any
   nature: any
 }
+export type ClassAccountStatistics = {
+  code: number
+  name: string
+  credit_balance: number
+  debit_balance: number
+}

@@ -1,17 +1,63 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+::-webkit-scrollbar {
+  width: 3px; /* Set a thin width */
+}
 
+::-webkit-scrollbar-track {
+  background-color: transparent; /* Make the track transparent */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Set a semi-transparent thumb color */
+  border-radius: 6px; /* Add rounded corners for a smoother look */
+
+}
 .table thead{
 	background: #10417B;
 	color: #ffffff;
        position: sticky;
 }
 .table-amortization thead{
-	background: #3C7ac2;
+	background: #10417B;
 	color: #ffffff;
+ margin: 0;
+   position: sticky;
+   top: 0;
 }
 
+
+tr {
+   height: 45px;
+   font-size: 15px;
+}
+
+input:focus{
+
+  outline: 2px solid rgb(59 ,130 ,246);
+}
+input:active{
+
+  outline: 2px solid rgb(59 ,130 ,246);
+}
+
+
+.table-account thead th {
+	color: #ffffff;
+	background: #10417B;
+        border: 0.009px solid #aadddd;
+}
+
+
+.table-account tbody tr:nth-child(odd) {
+	background: #ffffff;
+      border: 1px solid #F2F5FA;
+}
+.table-account tbody tr:nth-child(even) {
+	background: #F2F5FA;
+      border: 2px solid #F2F5FA;
+}
 
 .table tbody tr:nth-child(odd) {
 	background: #ffffff;
@@ -34,7 +80,7 @@ body {
 
 
 .selected {
-  background-color: #FFF9F5 !important;
+  background-color: #FFECDF !important;
 }
 
 .account-table table {
@@ -51,4 +97,7 @@ body {
    position: sticky;
    top: 0;
 }
+
+
+
 

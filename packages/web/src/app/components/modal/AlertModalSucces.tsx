@@ -1,5 +1,5 @@
-'use client';
-import { motion } from 'framer-motion';
+'use client'
+import { motion } from 'framer-motion'
 
 function AlertModalSucces({ value }: { value: string }) {
   return (
@@ -31,7 +31,7 @@ function AlertModalSucces({ value }: { value: string }) {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }
 
-export default AlertModalSucces;
+export default AlertModalSucces

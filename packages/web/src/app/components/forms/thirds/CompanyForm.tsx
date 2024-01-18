@@ -1,22 +1,24 @@
-import InputField from '@/app/components/input/InputField';
-import SelectField from '@/app/components/input/SelectField';
+import InputField from '@/app/components/input/InputField'
+import SelectField from '@/app/components/input/SelectField'
 import {
   IdentificationForm,
   RegimeForm,
-  TypePersonForm,
-} from '@/lib/utils/thirds/selectForm';
-import React from 'react';
+  TypePersonForm
+} from '@/lib/utils/thirds/selectForm'
+import React from 'react'
+import InputNumber from '../../input/InputNumber'
+import { FieldRequired } from '@/lib/utils/FieldValidation'
 
 export function FormCompany({
-  companyInformation,
-  handleChangeCompanyInformation,
-  handleCompanyInformation,
-  handleChangeCompanyNumber,
+  company,
+  control,
+  setValue,
+  errors
 }: {
-  companyInformation: any;
-  handleChangeCompanyInformation: any;
-  handleChangeCompanyNumber: any;
-  handleCompanyInformation: any;
+  company: any
+  control: any
+  setValue: any
+  errors: any
 }) {
   return (
     <div className="flex flex-col m-3">
@@ -24,85 +26,102 @@ export function FormCompany({
         Datos empresa
       </label>
       <InputField
-        name="socialReason"
+        name="name"
         label="Razón Social"
-        value={companyInformation.socialReason}
-        onChange={handleChangeCompanyInformation}
+        required
+        props={{ ...company('name', FieldRequired) }}
+        error={errors.name}
       />
 
       <div className="grid  grid-cols-2 gap-2 my-2">
         <InputField
           name="typeIdentification"
           label="Tipo de Identificación"
-          value={companyInformation.typeIdentification}
-          onChange={handleChangeCompanyInformation}
+          required
+          props={{ ...company('typeIdentification', FieldRequired) }}
+          error={errors.typeIdentification}
         />
 
-        <InputField
-          name="numberIdentification"
+        <InputNumber
+          name="identification"
           label="Número de Identificación"
-          value={companyInformation.numberIdentification}
-          onChange={handleChangeCompanyInformation}
-          onBlur={handleChangeCompanyNumber}
+          control={control}
+          required
+          rules={FieldRequired}
+          error={errors.identification}
         />
 
         <SelectField
           name="regime"
           label="Régimen"
-          value={companyInformation.regime}
           options={RegimeForm}
-          handleGeneralInformation={handleCompanyInformation}
+          control={control}
+          setValue={setValue}
+          required
+          rules={FieldRequired}
+          error={errors.regime}
         />
 
         <SelectField
           name="typePerson"
           label="Tipo de Persona"
-          value={companyInformation.typePerson}
           options={TypePersonForm}
-          handleGeneralInformation={handleCompanyInformation}
+          setValue={setValue}
+          control={control}
+          required
+          rules={FieldRequired}
+          error={errors.typePerson}
         />
-        <InputField
+        <InputNumber
           name="digitVerification"
           label="Dígito de Verificación"
-          value={companyInformation.digitVerification}
-          onChange={handleChangeCompanyInformation}
-          onBlur={handleChangeCompanyNumber}
+          control={control}
+          error={errors.digitVerification}
+          required
+          rules={FieldRequired}
         />
 
         <InputField
           name="natureCompany"
           label="Naturaleza de la Empresa"
-          value={companyInformation.natureCompany}
-          onChange={handleChangeCompanyInformation}
+          required
+          props={{ ...company('natureCompany', FieldRequired) }}
+          error={errors.typeIdentification}
         />
       </div>
       <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
         Datos representante legal
       </label>
       <SelectField
-        name="legalRepresentativeTypeIdentificatio"
+        name="legalRepresentativeTypeIdentification"
         label="Tipo de Identificación"
-        value={companyInformation.legalRepresentativeTypeIdentificatio}
         options={IdentificationForm}
-        handleGeneralInformation={handleCompanyInformation}
+        setValue={setValue}
+        required
+        control={control}
+        rules={FieldRequired}
+        error={errors?.legalRepresentativeTypeIdentification}
       />
       <div className="flex flex-row">
         <InputField
           name="legalRepresentativeName"
           label="Nombres"
-          value={companyInformation.legalRepresentativeName}
-          onChange={handleChangeCompanyInformation}
+          required
+          props={{ ...company('legalRepresentativeName', FieldRequired) }}
+          error={errors.name}
         />
 
-        <InputField
+        <InputNumber
           name="legalRepresentativeDocument"
           label="Identificación"
-          value={companyInformation.legalRepresentativeDocument}
-          onChange={handleChangeCompanyInformation}
+          control={control}
+          required
+          rules={FieldRequired}
+          error={errors?.legalRepresentativeDocument}
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default FormCompany;
+export default FormCompany

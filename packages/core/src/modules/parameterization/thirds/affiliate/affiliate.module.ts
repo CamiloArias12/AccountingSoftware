@@ -9,9 +9,15 @@ import { BeneficiaryAffiliateService } from './beneficiary-affiliate/beneficiary
 import { Beneficiary } from './beneficiary/beneficiary.entity';
 
 @Module({
-
-  imports:[TypeOrmModule.forFeature([Affiliate,BeneficiaryAffiliate,Beneficiary])],
-  providers: [AffiliateService, AffiliateResolver,BeneficiaryService,BeneficiaryAffiliateService],
-  exports :[AffiliateService]
+  imports: [
+    TypeOrmModule.forFeature([Affiliate, BeneficiaryAffiliate, Beneficiary]),
+  ],
+  providers: [
+    AffiliateService,
+    AffiliateResolver,
+    BeneficiaryService,
+    BeneficiaryAffiliateService,
+  ],
+  exports: [AffiliateService, BeneficiaryAffiliateService, BeneficiaryService],
 })
 export class AffiliateModule {}

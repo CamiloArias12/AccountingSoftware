@@ -22,7 +22,7 @@ function UploadAccounts({ setShowModal }: { setShowModal: any }) {
 
   return (
     <Modal
-      size="h-[500px] w-[500px]"
+      size="h-[500px] w-[500px] bg-white"
       title="Cargar plan de cuentas"
       onClick={() => {
         setShowModal(false)

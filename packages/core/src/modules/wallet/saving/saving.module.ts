@@ -8,7 +8,11 @@ import { AffiliateModule } from 'src/modules/parameterization/thirds/affiliate/a
 
 @Module({
   providers: [SavingResolver, SavingService],
-  imports: [TypeOrmModule.forFeature([Saving]),TypeSavingModule,AffiliateModule],  
+  imports: [
+    TypeOrmModule.forFeature([Saving]),
+    TypeSavingModule,
+    AffiliateModule,
+  ],
+  exports: [SavingService],
 })
 export class SavingModule {}
-

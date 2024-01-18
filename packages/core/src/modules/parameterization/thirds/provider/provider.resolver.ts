@@ -6,7 +6,6 @@ import { Provider } from './provider.entity';
 export class ProviderResolver {
   constructor(private readonly providerService: ProviderService) {}
 
-
   @Query(() => [Provider], { name: 'provider' })
   findAll() {
     return this.providerService.findAll();

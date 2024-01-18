@@ -1,51 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import InputField from '../../input/InputField';
-import { Beneficiaries } from '@/lib/utils/thirds/types';
-import InputFieldBeneficiary from '../../input/InputBeneficiary';
-import { AddSvg } from '../../logo/Add';
-import InputNumberBeneficiary from '../../input/InputNumberBeneficiary';
+import React, { useEffect, useState } from 'react'
+import InputField from '../../input/InputField'
+import { AddSvg } from '../../logo/Add'
+import InputNumberBeneficiary from '../../input/InputNumberBeneficiary'
+import { useFieldArray } from 'react-hook-form'
+import {} from '@/lib/utils/FieldValidation'
 
 export function BeneficiaryInformation({
+  control,
   beneficiaryInformation,
-  setBeneficiaryInformation,
+  errors,
+  setValue
 }: {
-  beneficiaryInformation: Beneficiaries[];
-  setBeneficiaryInformation: any;
+  control: any
+  beneficiaryInformation: any
+  errors: any
+  setValue: any
 }) {
-  console.log(beneficiaryInformation);
-
-  const handleChangeTodo = (beneficiary: Beneficiaries, id: number) => {
-    setBeneficiaryInformation(
-      beneficiaryInformation.map((t, index) => {
-        if (index === id) {
-          return beneficiary;
-        } else {
-          return t;
-        }
-      }),
-    );
-  };
-  const handleDelete = (id: number) => {
-    setBeneficiaryInformation(
-      beneficiaryInformation.filter((t, index) => index !== id),
-    );
-  };
-
-  const addBeneficiary = () => {
-    const beneficiary: Beneficiaries = {
-      beneficiary: { name: '', idDocument: '' },
-      percentage: '',
-    };
-    setBeneficiaryInformation([...beneficiaryInformation, beneficiary]);
-  };
-
+  const { fields, append, remove } = useFieldArray({
+    name: 'beneficiaries',
+    control,
+    rules: {
+      required: 'Please append at least 1 item'
+    }
+  })
   return (
     <>
       <div className="flex flex-row  mt-4 justify-between ">
         <label className="text-sm font-bold">Beneficiarios</label>
-        <div
-          className=" w-24 flex flex-end items-center  hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
-          onClick={addBeneficiary}
+        <button
+          className=" w-24  flex flex-end items-center  hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
+          onClick={() => {
+            append({
+              beneficiary: {
+                idDocument: '',
+                name: ''
+              },
+              percentage: ''
+            })
+          }}
+          type="button"
         >
           <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
             <AddSvg color="#ffffff" />
@@ -53,93 +46,68 @@ export function BeneficiaryInformation({
           <label className="pl-2 hidden group-hover:block text-[12px]">
             Agregar
           </label>
-        </div>
+        </button>
       </div>
-      {beneficiaryInformation.map((beneficiary: Beneficiaries, index) => (
-        <div className="flex flex-row w-full grid lg:grid-cols-4">
-          <InputFieldBeneficiary
-            label="Nombre"
-            name="name"
-	    className=" pr-2"
-            value={beneficiary.beneficiary.name}
-            onChange={(e) => {
-              handleChangeTodo(
-                {
-                  ...beneficiary,
-                  beneficiary: {
-                    idDocument: beneficiary.beneficiary.idDocument,
-                    name: e.target.value,
-                  },
-                },
-                index,
-              );
-            }}
-          />
-          <InputNumberBeneficiary
-            label="Identificación"
-            value={beneficiary.beneficiary.idDocument}
-            handleChange={(e:any) => {
-	       console.log(e)
-              handleChangeTodo(
-                {
-                  ...beneficiary,
-                  beneficiary: {
-                    idDocument: e.floatValue,
-                    name: beneficiary.beneficiary.name,
-                  },
-                },
-                index,
-              );
-            }}
-            onBlur={() => {
-              handleChangeTodo(
-                {
-                  ...beneficiary,
-                  beneficiary: {
-                    idDocument: Number(beneficiary.beneficiary.idDocument),
-                    name: beneficiary.beneficiary.name,
-                  },
-                },
-                index,
-              );
-            }}
-          />
-          <InputFieldBeneficiary
-            label="Porcentage"
-            name="name"
-            value={beneficiary.percentage}
-	    className=" pr-2"
-            onChange={(e) => {
-              handleChangeTodo(
-                { ...beneficiary, percentage: e.target.value },
-                index,
-              );
-            }}
-            onBlur={() => {
-              if (isNaN(beneficiary.percentage)) {
-              } else {
-                handleChangeTodo(
-                  {
-                    ...beneficiary,
-                    percentage: Number(beneficiary.percentage),
-                  },
-                  index,
-                );
+
+      <div className="flex flex-col gap-2 ">
+        {fields.map((field, index) => (
+          <section key={field.id} className="flex flex-row gap-2">
+            <InputField
+              type="text"
+              name={`beneficiaries.${index}.beneficiary.name`}
+              label={index === 0 && 'Nombres'}
+              required
+              value={''}
+              props={{
+                ...beneficiaryInformation(
+                  `beneficiaries.${index}.beneficiary.name`
+                )
+              }}
+              error={
+                errors?.beneficiaries &&
+                errors?.beneficiaries[index]?.beneficiary?.name &&
+                errors?.beneficiaries[index]?.beneficiary?.name
               }
-            }}
-          />
-          <button
-            className="flex items-end justify-center h-8 w-8"
-            onClick={() => {
-              handleDelete(index);
-            }}
-          >
-            <img src="/delete.svg" />
-          </button>
-        </div>
-      ))}
+            />
+            <InputNumberBeneficiary
+              name={`beneficiaries.${index}.beneficiary.idDocument`}
+              label={index === 0 && 'Identificacion'}
+              control={control}
+              required
+              error={
+                errors?.beneficiaries &&
+                errors?.beneficiaries[index]?.beneficiary?.idDocument &&
+                errors?.beneficiaries[index]?.beneficiary?.idDocument
+              }
+              setValue={setValue}
+            />
+            <InputNumberBeneficiary
+              name={`beneficiaries.${index}.percentage`}
+              label={index === 0 && 'Porcentaje'}
+              control={control}
+              required
+              error={
+                errors?.beneficiaries &&
+                errors?.beneficiaries[index]?.percentage &&
+                errors?.beneficiaries[index]?.percentage
+              }
+              setValue={setValue}
+            />
+
+            <button
+              type="button"
+              className="flex items-end justify-center h-8 w-8"
+              onClick={() => {
+                remove(index)
+              }}
+            >
+              <img src="/delete.svg" />
+            </button>
+          </section>
+        ))}
+      </div>
     </>
-  );
+  )
 }
 
-export default BeneficiaryInformation;
+export default BeneficiaryInformation

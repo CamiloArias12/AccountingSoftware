@@ -11,7 +11,7 @@ export interface IAfiliate{
 
    jobTitle:string
 
-   phone:number
+   phone:string
 
    incomeCompany:Date
 

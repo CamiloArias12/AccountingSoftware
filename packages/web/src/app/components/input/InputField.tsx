@@ -1,52 +1,59 @@
-'use client';
-import React, { useState } from 'react';
+'use client'
+import React, { useState } from 'react'
 
 type InputFieldProps = {
-  name?: string;
-  type?: string;
-  label: string;
-  value?: string | number;
-  onBlur?: any;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onlyRead?: boolean;
-};
+  name?: string
+  type?: string
+  label?: string
+  value?: string | number
+  onBlur?: any
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onlyRead?: boolean
+  required?: boolean
+  props?: any
+  error?: any
+}
 
 function InputField({
   name,
-  type,
   label,
   value,
   onChange,
-  onBlur,
   onlyRead,
+  props,
+  error,
+  required
 }: InputFieldProps) {
-  const [color, setColor] = useState(false);
-
   return (
-    <div className={`flex pr-2 flex-grow flex-col text-input `}>
-      <label className={`pb-2 `}>{label}</label>
+    <div className={`flex  flex-grow flex-col text-input `}>
+      {label && (
+        <label
+          htmlFor={name}
+          className={`pb-2 font-semibold flex flex-row gap-1`}
+        >
+          <span> {label}</span>
+          {required && <span className="text-[#E61515]">*</span>}
+        </label>
+      )}
       <input
         type="text"
+        id={name}
         name={name}
-        value={value}
+        defaultValue={value}
         readOnly={onlyRead}
-        className={`bg-white  rounded-sm border ${
-          !color ? 'border-[#d9d9d9]' : 'border-[#AD1A1A]'
-        } h-[30px] `}
+        className={`bg-white  rounded-md border pl-2   h-[34px]`}
         onChange={onChange}
-        onBlur={() => {
-          if (onBlur !== undefined) {
-            console.log('asfsadjkf');
-            if (!onBlur(name, value)) {
-              setColor(true);
-            } else {
-              setColor(false);
-            }
-          }
-        }}
+        autoComplete="off"
+        {...props}
       />
+
+      {error && (
+        <span className={`text-[#E61515] text-xs font-semibold`}>
+          {error?.message}
+        </span>
+      )}
     </div>
-  );
+  )
 }
 
-export default InputField;
+export default InputField

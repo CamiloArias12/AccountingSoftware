@@ -5,6 +5,7 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
@@ -22,16 +23,15 @@ import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useVirtual } from 'react-virtual'
 import { motion } from 'framer-motion'
-import { AddSvg } from '../../logo/Add'
-import UpdateThird from './UpdateThird'
 import ViewThird from './ViewThird'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
 import OptionsTable from '../../options-table/OptionsTable'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
 
 export const revalidate = 0
 const UPDATE_STATUS = gql`
-  mutation ($identification: Int!, $status: Boolean!) {
+  mutation ($identification: Float!, $status: Boolean!) {
     updateStatus(identification: $identification, status: $status) {
       identification
     }
@@ -39,7 +39,7 @@ const UPDATE_STATUS = gql`
 `
 
 const DELETE_USER = gql`
-  mutation ($identification: Int!) {
+  mutation ($identification: Float!) {
     deleteUser(identification: $identification)
   }
 `
@@ -47,11 +47,11 @@ const DELETE_USER = gql`
 function TableThirds({ affiliates }: { affiliates: Affiliate[] }) {
   console.log(affiliates)
   const [showOptions, setShowOptions] = useState(false)
-  const [showUpdate, setShowUpdate] = useState(false)
   const [showView, setShowView] = useState(false)
   const [userSelected, setUserSelected] = useState<number>(0)
   const [data, setData] = useState<Affiliate[]>(affiliates)
 
+  const [globalFilter, setGlobalFilter] = useState('')
   const rerender = useReducer(() => ({}), {})[1]
 
   const [updateStatus, { data: statusData, loading, error }] =
@@ -119,7 +119,7 @@ function TableThirds({ affiliates }: { affiliates: Affiliate[] }) {
         cell: (row: any) => (
           <div className="py-1">
             <button
-              className={` py-1 px-4 rounded-[30px] ${
+              className={` py-1 px-4 font-medium rounded-[30px] ${
                 row.getValue()
                   ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
                   : 'bg-[#FECACA] text-sm'
@@ -144,19 +144,26 @@ function TableThirds({ affiliates }: { affiliates: Affiliate[] }) {
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting
+    filterFns: {
+      fuzzy: fuzzyFilter
     },
+
+    state: {
+      sorting,
+      globalFilter
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     debugTable: true
   })
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
   const { rows } = table.getRowModel()
-  const [idrow, setIdRow] = useState<string>('')
   const [showWarning, setShowWarning] = useState(false)
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
@@ -181,26 +188,20 @@ function TableThirds({ affiliates }: { affiliates: Affiliate[] }) {
     }
   }, [deleteData, errorDelete])
 
+  useEffect(() => {
+    deleteData?.deleteUser && setShowOptions(false)
+  }, [deleteData])
+
   return (
     <>
-      {showUpdate && (
-        <UpdateThird
-          thirdIdentification={userSelected}
-          setShow={setShowUpdate}
-        />
-      )}
-      {showView && (
-        <ViewThird thirdIdentification={userSelected} setShow={setShowView} />
-      )}
-
       <div className="flex flex-grow flex-col bg-white rounded-tr-sm rounded-b-sm py-8 px-4  gap-4">
         <OptionsTable
           showOptions={showOptions}
-          setView={setShowView}
-          setCreate={() => {
-            route.push('/dashboard/parametrization/thirds/create')
-          }}
-          setUpdate={setShowUpdate}
+          search={globalFilter}
+          setSearch={setGlobalFilter}
+          viewRoute={`/dashboard/parametrization/thirds/${userSelected}`}
+          createRoute="/dashboard/parametrization/thirds/create"
+          updateRoute={`/dashboard/parametrization/thirds/update/${userSelected}`}
           deleteHandle={deleteUserHandle}
         />
 
@@ -265,7 +266,7 @@ function TableThirds({ affiliates }: { affiliates: Affiliate[] }) {
                                 )
                                 cell.column.columnDef.cell, cell.getContext()
                               }}
-                              className="font-light px-2"
+                              className="px-2"
                               key={cell.id}
                             >
                               {flexRender(

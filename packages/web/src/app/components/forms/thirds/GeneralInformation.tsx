@@ -13,17 +13,18 @@ import { gql, useQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import InputCalendar from '../../input/Calendar'
 import InputNumber from '../../input/InputNumber'
-
+import { FieldRequired } from '@/lib/utils/FieldValidation'
 interface GeneralInformationProps {
-  generalInformation: GeneralInformationData
-  handleChangeGeneralInformation: any
+  generalInformation: any
   countries: any
-  handleGeneralInformation: any
-  handleNumber: any
   country: any
   state: any
   setState: any
   setCountry: any
+  control: any
+  errors: any
+  setValue: any
+  informationUser?: any
 }
 
 const STATES = gql`
@@ -44,151 +45,171 @@ const TOWN = gql`
     }
   }
 `
-
 export function GeneralInformation({
   generalInformation,
-  handleGeneralInformation,
-  handleChangeGeneralInformation,
-  handleNumber,
   countries,
   setCountry,
   setState,
   state,
-  country
+  country,
+  control,
+  errors,
+  setValue,
+  informationUser
 }: GeneralInformationProps) {
-  const { data } = useQuery(STATES, {
+  const { data, loading: loadingState } = useQuery(STATES, {
     variables: { isoCode: country }
   })
-  const { data: dataTown } = useQuery(TOWN, {
+  const { data: dataTown, loading: loadingTown } = useQuery(TOWN, {
     variables: { isoCode: country, isoCodeState: state }
   })
 
   useEffect(() => {
     countries.find((country: any) => {
-      console.log(country, generalInformation.countryBirth)
       if (country.name === generalInformation.countryBirth) {
-        console.log(country.name, generalInformation.countryBirth)
         setCountry(country.iso2)
       }
     })
   }, [])
 
-  console.log(generalInformation)
   return (
-    <div className=" flex-grow grid grid-cols-2  gap-4 lg:grid-cols-4  ">
-      <div className="row-start-1 ">
+    <div className="  grid grid-cols-2 gap-4 lg:gap-6 lg:grid-cols-4  ">
+      <div className="lg:row-start-1 ">
         <InputField
           name="name"
           label="Nombres"
-          value={generalInformation.name}
-          onChange={handleChangeGeneralInformation}
+          required
+          props={{ ...generalInformation('name', FieldRequired) }}
+          error={errors.name}
         />
       </div>
       <div>
         <InputField
           name="lastName"
           label="Apellidos"
-          value={generalInformation.lastName}
-          onChange={handleChangeGeneralInformation}
+          required
+          props={{ ...generalInformation('lastName', FieldRequired) }}
+          error={errors.lastName}
         />
       </div>
-
-      <div className="row-start-2">
+      <div className="lg:row-start-2">
         <SelectField
           name="typeIdentification"
           label="Tipo de Identificación"
-          value={generalInformation.typeIdentification}
           options={IdentificationForm}
-          handleGeneralInformation={handleGeneralInformation}
           image={false}
+          control={control}
+          error={errors.typeIdentification}
+          setValue={setValue}
         />
       </div>
-      <div className="row-start-2">
+
+      <div className="lg:row-start-2">
         <InputNumber
           name="identification"
           label="Numero de Identificación"
-          value={generalInformation.identification}
-          handleChange={handleGeneralInformation}
+          control={control}
+          required
+          error={errors.identification}
         />
       </div>
-      <div className="row-start-3">
+
+      <div className="lg:row-start-3">
         <InputCalendar
           name="expeditionDate"
           label="Fecha de Expedición"
-          value={generalInformation.expeditionDate}
-          onChange={handleGeneralInformation}
+          control={control}
+          required
+          error={errors.expeditionDate}
         />
       </div>
-      <div className="row-start-3">
+
+      <div className="lg:row-start-3">
         <InputField
           type="text"
           name="expeditionCity"
           label="Ciudad de Expedición"
-          value={generalInformation.expeditionCity}
-          onChange={handleChangeGeneralInformation}
+          props={{
+            ...generalInformation('expeditionCity', { required: true })
+          }}
         />
       </div>
 
-      <div className="row-start-4">
+      <div className="lg:row-start-4">
         <InputCalendar
-          name="expeditionDate"
+          name="birthDate"
           label="Fecha de nacimiento"
-          value={generalInformation.birthDate}
-          onChange={handleGeneralInformation}
+          control={control}
+          required
+          error={errors.birthDate}
         />
       </div>
-      <div className="row-start-4">
+
+      <div className="lg:row-start-4">
         <SelectField
           name="countryBirth"
           label="País"
-          handleGeneralInformation={(data: any) => {
-            console.log(data)
-          }}
+          setCountry={setCountry}
           image={true}
-          value={generalInformation.countryBirth}
           options={countries}
           country={country}
-          setCountry={setCountry}
+          control={control}
+          setValue={setValue}
+          required
+          error={errors.countryBirth}
         />
       </div>
-      <div className="row-start-4">
+
+      <div className="lg:row-start-4">
         <SelectField
           name="stateBirth"
           label="Estado/Departamento"
-          handleGeneralInformation={handleGeneralInformation}
           image={false}
-          value={generalInformation.stateBirth}
           options={data?.getState}
           setState={setState}
+          setCountry={setCountry}
+          isState
+          control={control}
+          setValue={setValue}
+          required
+          error={errors.stateBirth}
         />
       </div>
-      <div className="row-start-4">
+
+      <div className="lg:row-start-4">
         <SelectField
           name="cityBirth"
           label="Municipio/Ciudad"
-          handleGeneralInformation={handleGeneralInformation}
           image={false}
-          value={generalInformation.cityBirth}
           options={dataTown?.getTown}
+          control={control}
+          setValue={setValue}
+          required
+          error={errors.cityBirth}
         />
       </div>
-      <div className="row-start-5">
+      <div className="lg:row-start-5">
         <SelectField
           name="gender"
           label="Género"
-          value={generalInformation.gender}
+          value={generalInformation.gender ? generalInformation.gender : ''}
           options={GenderForm}
-          handleGeneralInformation={handleGeneralInformation}
           image={false}
+          control={control}
+          setValue={setValue}
+          required
+          error={errors.gender}
         />
       </div>
-      <div className="row-start-5">
+      <div className="lg:row-start-5">
         <SelectField
           name="statusCivil"
           label="Estado Civil"
-          value={generalInformation.statusCivil}
           options={CivilStatusForm}
-          handleGeneralInformation={handleGeneralInformation}
+          control={control}
+          setValue={setValue}
+          required
+          error={errors.statusCivil}
         />
       </div>
     </div>

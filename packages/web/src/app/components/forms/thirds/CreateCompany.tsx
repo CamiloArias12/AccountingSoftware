@@ -1,59 +1,63 @@
-'use client';
-import { data } from '@/app/components/chart/Chart';
-import { FormCompany } from '@/app/components/forms/thirds/CompanyForm';
-import AlertModalError from '@/app/components/modal/AlertModalError';
-import AlertModalSucces from '@/app/components/modal/AlertModalSucces';
-import { useCompany } from '@/app/hooks/thirds/CompanyInput';
-import { OptionsThirds } from '@/lib/utils/thirds/OptionsThirds';
-import { gql, useMutation } from '@apollo/client';
-import { useEffect, useState } from 'react';
-import Modal from '../../modal/Modal';
-import Button from '../../input/Button';
-import { useRouter } from 'next/navigation';
+'use client'
+import { FormCompany } from '@/app/components/forms/thirds/CompanyForm'
+import AlertModalError from '@/app/components/modal/AlertModalError'
+import AlertModalSucces from '@/app/components/modal/AlertModalSucces'
+import { useCompany } from '@/app/hooks/thirds/CompanyInput'
+import { OptionsThirds } from '@/lib/utils/thirds/OptionsThirds'
+import { gql, useMutation } from '@apollo/client'
+import { useEffect, useState } from 'react'
+import Modal from '../../modal/Modal'
+import Button from '../../input/Button'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
 
 const CREATE_COMPANY = gql`
   mutation ($create: CreateCompanyDto!) {
     createCompany(input: $create)
   }
-`;
+`
 
 function CreateThirdCompany({ setCreate }: { setCreate: any }) {
-  const [showWarning, setShowWarning] = useState(false);
-  const [list, setList] = useState(OptionsThirds);
+  const [showWarning, setShowWarning] = useState(false)
+  const [list, setList] = useState(OptionsThirds)
   const [
     createCompany,
-    { data: companyData, loading: loadingCompany, error: errorCompany },
-  ] = useMutation(CREATE_COMPANY);
+    { data: companyData, loading: loadingCompany, error: errorCompany }
+  ] = useMutation(CREATE_COMPANY)
   const {
-    handleChangeCompanyNubmer,
-    handleCompanyInformation,
-    companyInformation,
-    handleChangeCompanyInformation,
-  } = useCompany();
+    register: company,
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    formState: { errors }
+  } = useForm({
+    mode: 'all'
+  })
 
-  const handleCreate = async () => {
-    setShowWarning(true);
+  const handleCreate = async values => {
+    setShowWarning(true)
     createCompany({
       variables: {
-        create: companyInformation,
-      },
-    });
-  };
+        create: values
+      }
+    })
+  }
 
-  const route = useRouter();
+  const route = useRouter()
   useEffect(() => {
-    if (data) {
+    if (companyData) {
       const timeout = setTimeout(() => {
-        setShowWarning(false);
-      }, 2000); // 3 seconds in milliseconds
+        setShowWarning(false)
+      }, 2000) // 3 seconds in milliseconds
 
       return () => {
-        clearTimeout(timeout);
-      };
+        clearTimeout(timeout)
+      }
     }
-  }, [companyData, errorCompany]);
+  }, [companyData, errorCompany])
 
-  console.log(companyData?.createCompany);
+  console.log(companyData?.createCompany)
 
   if (companyData?.createCompany && !showWarning) {
     route.refresh()
@@ -62,32 +66,34 @@ function CreateThirdCompany({ setCreate }: { setCreate: any }) {
 
   return (
     <Modal
-      size="min-w-[550px] w-[800px]"
+      size=" w-screen h-screen lg:w-[800px] lg:h-auto overflow-scroll bg-white"
       title="Crear persona juridica"
       onClick={() => {
-        setCreate(false);
+        setCreate(false)
       }}
     >
-      <FormCompany
-        handleChangeCompanyInformation={handleChangeCompanyInformation}
-        companyInformation={companyInformation}
-        handleChangeCompanyNumber={handleChangeCompanyNubmer}
-        handleCompanyInformation={handleCompanyInformation}
-      />
+      <form className="flex-grow" onSubmit={handleSubmit(handleCreate)}>
+        <FormCompany
+          setValue={setValue}
+          control={control}
+          errors={errors}
+          company={company}
+        />
 
-      <div className="pt-10 flex justify-end">
-        <div className="pr-4">
+        <div className="pt-10 flex justify-end">
+          <div className="pr-4">
+            <Button
+              name="Cancelar"
+              background="border border-[#10417B] text-[#10417B]"
+            />
+          </div>
           <Button
-            name="Cancelar"
-            background="border border-[#10417B] text-[#10417B]"
+            name="Aceptar"
+            background="bg-[#10417B] text-white"
+            type={'submit'}
           />
         </div>
-        <Button
-          name="Aceptar"
-          background="bg-[#10417B] text-white"
-          onClick={handleCreate}
-        />
-      </div>
+      </form>
 
       {companyData?.createCompany && showWarning ? (
         <AlertModalSucces value="El tercero ha sido registrado" />
@@ -97,7 +103,7 @@ function CreateThirdCompany({ setCreate }: { setCreate: any }) {
         errorCompany && showWarning && <AlertModalError value="Error" />
       )}
     </Modal>
-  );
+  )
 }
 
-export default CreateThirdCompany;
+export default CreateThirdCompany

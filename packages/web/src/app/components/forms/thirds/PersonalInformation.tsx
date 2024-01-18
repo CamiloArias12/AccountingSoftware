@@ -7,23 +7,24 @@ import {
   IdentificationForm,
   StudiesForm
 } from '@/lib/utils/thirds/selectForm'
-import { GeneralInformationData } from '@/lib/utils/thirds/types'
 import SelectField from '../../input/SelectField'
 import { gql, useQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import InputNumber from '../../input/InputNumber'
 import { NumberFormatValues } from 'react-number-format'
+import { FieldRequired } from '@/lib/utils/FieldValidation'
 
-interface GeneralInformationProps {
-  generalInformation: GeneralInformationData
-  handleChangeGeneralInformation: any
+interface PersonalInformationProps {
+  personalInformation: any
   countries: any
-  handleGeneralInformation: any
-  handleNumber: any
+  handlePersonalInformation: any
   country: any
   state: any
   setState: any
   setCountry: any
+  control: any
+  errors: any
+  getValues: any
 }
 
 const STATES = gql`
@@ -46,41 +47,42 @@ const TOWN = gql`
 `
 
 export function PersonalInformation({
-  generalInformation,
-  handleGeneralInformation,
-  handleChangeGeneralInformation,
+  personalInformation,
+  handlePersonalInformation,
   countries,
   setCountry,
   setState,
   state,
-  country
-}: GeneralInformationProps) {
-  const { data } = useQuery(STATES, {
+  country,
+  control,
+  errors,
+  getValues
+}: PersonalInformationProps) {
+  const { data, loading: loadingState } = useQuery(STATES, {
     variables: { isoCode: country }
   })
-  const { data: dataTown } = useQuery(TOWN, {
+  const { data: dataTown, loading: loadingTown } = useQuery(TOWN, {
     variables: { isoCode: country, isoCodeState: state }
   })
-
   useEffect(() => {
     countries.find((country: any) => {
-      console.log(country, generalInformation.countryResidence)
-      if (country.name === generalInformation.countryResidence) {
-        console.log(country.name, generalInformation.countryResidence)
+      if (country.name === personalInformation.countryResidence) {
         setCountry(country.iso2)
       }
     })
   }, [])
-
   return (
-    <div className=" flex-grow grid grid-cols-2  gap-4 lg:grid-cols-4  ">
+    <div className=" grid grid-cols-2  gap-4 lg:grid-cols-4  ">
       <div className="row-start-1">
         <InputField
           type="text"
           name="addressResidence"
           label="Dirección de Residencia"
-          value={generalInformation.addressResidence}
-          onChange={handleChangeGeneralInformation}
+          props={{
+            ...personalInformation('addressResidence', FieldRequired)
+          }}
+          required
+          error={errors.addressResidence}
         />
       </div>
 
@@ -88,12 +90,14 @@ export function PersonalInformation({
         <SelectField
           name="countryResidence"
           label="País"
-          handleGeneralInformation={handleGeneralInformation}
           image={true}
-          value={generalInformation.countryResidence}
           options={countries}
           country={country}
           setCountry={setCountry}
+          control={control}
+          setValue={handlePersonalInformation}
+          required
+          error={errors.countryResidence}
         />
       </div>
 
@@ -101,19 +105,25 @@ export function PersonalInformation({
         <SelectField
           name="stateResidence"
           label="Estado/Departamento"
-          handleGeneralInformation={handleGeneralInformation}
-          value={generalInformation.stateResidence}
           options={data?.getState}
           setState={setState}
+          setCountry={setCountry}
+          isState
+          control={control}
+          setValue={handlePersonalInformation}
+          required
+          error={errors.stateResidence}
         />
       </div>
       <div className="row-start-1">
         <SelectField
           name="cityResidence"
           label="Municipio/Ciudad"
-          handleGeneralInformation={handleGeneralInformation}
-          value={generalInformation.cityResidence}
           options={dataTown?.getTown}
+          control={control}
+          setValue={handlePersonalInformation}
+          required
+          error={errors.cityResidence}
         />
       </div>
 
@@ -122,28 +132,31 @@ export function PersonalInformation({
           type="email"
           name="email"
           label="Correo Personal"
-          value={generalInformation.email}
-          onChange={handleChangeGeneralInformation}
+          props={{
+            ...personalInformation('email')
+          }}
+          required
+          error={errors?.email}
         />
       </div>
       <div className="row-start-2">
         <InputNumber
           name="phone"
           label="Celular"
-          value={generalInformation.phone}
           onChange={true}
-          handleChange={values => {
-            console.log('value', values)
-            handleGeneralInformation('phone', values.value)
-          }}
+          isString
+          control={control}
+          error={errors?.phone}
+          required
         />
       </div>
       <div className="row-start-2">
         <InputField
           name="landLine"
           label="Teléfono Fijo"
-          value={generalInformation.landLine}
-          onChange={handleChangeGeneralInformation}
+          props={{
+            ...personalInformation('landLine', { required: true })
+          }}
         />
       </div>
 
@@ -151,10 +164,12 @@ export function PersonalInformation({
         <SelectField
           name="housingType"
           label="Tipo de vivienda"
-          value={generalInformation.housingType}
           options={HousingTypeForm}
-          handleGeneralInformation={handleGeneralInformation}
           image={false}
+          control={control}
+          setValue={handlePersonalInformation}
+          required
+          error={errors.housingType}
         />
       </div>
 
@@ -162,10 +177,12 @@ export function PersonalInformation({
         <SelectField
           name="studies"
           label="Estudios"
-          value={generalInformation.studies}
           options={StudiesForm}
-          handleGeneralInformation={handleGeneralInformation}
           image={false}
+          control={control}
+          setValue={handlePersonalInformation}
+          required
+          error={errors.studies}
         />
       </div>
 
@@ -173,40 +190,38 @@ export function PersonalInformation({
         <InputField
           name="profession"
           label="Profesión"
-          value={generalInformation.profession}
-          onChange={handleChangeGeneralInformation}
+          props={{
+            ...personalInformation('profession', { required: true })
+          }}
+          required
         />
       </div>
       <div className="row-start-4">
         <CheckboxField
           name="foreignOperations"
           label="¿Realiza operaciones en el exterior?"
-          isChecked={generalInformation.foreignOperations}
-          onChange={handleGeneralInformation}
+          control={control}
         />
       </div>
       <div className="row-start-4">
         <CheckboxField
           name="publicResources"
           label="¿Accede a recursos públicos?"
-          isChecked={generalInformation.publicResources}
-          onChange={handleGeneralInformation}
+          control={control}
         />
       </div>
       <div className="row-start-4">
         <CheckboxField
           name="publicRecognition"
           label="¿Tiene reconocimiento público?"
-          isChecked={generalInformation.publicRecognition}
-          onChange={handleGeneralInformation}
+          control={control}
         />
       </div>
       <div className="row-start-4">
         <CheckboxField
+          control={control}
           name="publicPower"
           label="¿Posee poder público?"
-          isChecked={generalInformation.publicPower}
-          onChange={handleGeneralInformation}
         />
       </div>
     </div>

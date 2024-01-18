@@ -1,22 +1,26 @@
-'use client';
-import { useEffect, useState } from 'react';
-import InputField from '@/app/components/input/InputField';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import Select from '../../input/Select';
-import Button from '../../input/Button';
-import { AddSvg } from '../../logo/Add';
-import Modal from '../../modal/Modal';
-import { useRouter } from 'next/navigation';
-import AlertModalSucces from '../../modal/AlertModalSucces';
-import AlertModalError from '../../modal/AlertModalError';
-import { useTypeCredit } from '@/app/hooks/type-credit/TypeCreditInput';
-import { TypeCreditSavingAcounts } from '@/lib/utils/type-account/types';
-import InputFieldBeneficiary from '../../input/InputBeneficiary';
-import SelectField from '../../input/SelectField';
-import { optionsNature } from '@/lib/utils/type-account/options';
-import SelectOptions from '../../input/SelectOptions';
-import InputNumber from '../../input/InputNumber';
-import { NumberFormatValues } from 'react-number-format';
+'use client'
+import { useEffect, useState } from 'react'
+import InputField from '@/app/components/input/InputField'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import Select from '../../input/Select'
+import Button from '../../input/Button'
+import { AddSvg } from '../../logo/Add'
+import Modal from '../../modal/Modal'
+import { useRouter } from 'next/navigation'
+import AlertModalSucces from '../../modal/AlertModalSucces'
+import AlertModalError from '../../modal/AlertModalError'
+import { useTypeCredit } from '@/app/hooks/type-credit/TypeCreditInput'
+import { TypeCreditSavingAcounts } from '@/lib/utils/type-account/types'
+import InputFieldBeneficiary from '../../input/InputBeneficiary'
+import SelectField from '../../input/SelectField'
+import { optionsNature } from '@/lib/utils/type-account/options'
+import SelectOptions from '../../input/SelectOptions'
+import InputNumber from '../../input/InputNumber'
+import { NumberFormatValues } from 'react-number-format'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { FieldRequired } from '@/lib/utils/FieldValidation'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { schemaTypeCredit } from '@/lib/utils/ValidationYup'
 
 const AUXLILIARIES = gql`
   query {
@@ -30,258 +34,267 @@ const AUXLILIARIES = gql`
       }
     }
   }
-`;
-const CREATE_TYPE_CREDIT = gql`
-  mutation ($data: CreateTypeCreditDto!) {
-    createTypeCredit(data: $data)
-  }
-`;
+`
+
+let renderCount = 0
 
 export function TypeCreditForm({
-  setShowModalCreate,
+  dataTypeCredit,
+  onClickAccept,
+  onClickCancel
 }: {
-  setShowModalCreate: any;
+  dataTypeCredit?: any
+  onClickAccept: any
+  onClickCancel: any
 }) {
-  const { data, loading, error } = useQuery(AUXLILIARIES);
-  const [accounts, setAccounts] = useState<TypeCreditSavingAcounts[]>([]);
-  const [accountsInterest, setAccountsInterest] = useState<TypeCreditSavingAcounts[]>([]);
-  const [
-    createTypeCredit,
-    { data: dataCreate, loading: loadingCreate, error: errorCreate },
-  ] = useMutation(CREATE_TYPE_CREDIT);
-  const { typeCredit,setTypeCredit, handleTypeCredit } = useTypeCredit();
-  const route = useRouter();
-  const [showWarning, setShowWarning] = useState(false);
+  const { data, loading, error } = useQuery(AUXLILIARIES)
+  const [accounts, setAccounts] = useState<TypeCreditSavingAcounts[]>([])
+  const [accountsInterest, setAccountsInterest] = useState<
+    TypeCreditSavingAcounts[]
+  >([])
+
+  const { typeCredit, setTypeCredit, handleTypeCredit } = useTypeCredit()
+  const {
+    register: informationCredit,
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    formState: { errors }
+  } = useForm({
+    mode: 'all',
+    // @ts-ignore
+    resolver: yupResolver(schemaTypeCredit)
+  })
+  const { fields, append, remove } = useFieldArray({
+    name: 'accounts',
+    control,
+    rules: {
+      required: 'Please append at least 1 item'
+    }
+  })
+  const {
+    fields: fieldsInterest,
+    append: appendInterest,
+    remove: removeInterest
+  } = useFieldArray({
+    name: 'accountsInterest',
+    control,
+    rules: {
+      required: 'Please append at least 1 item'
+    }
+  })
+
   useEffect(() => {
-    if (data) {
-      const timeout = setTimeout(() => {
-        setShowWarning(false);
-      }, 3000); // 3 seconds in milliseconds
+    if (dataTypeCredit) {
+      console.log(dataTypeCredit)
+      setValue('interest', dataTypeCredit.interest)
+      setValue('name', dataTypeCredit.name)
 
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [dataCreate, errorCreate]);
-
-  const handleCreateTypeCredit = () => {
-    setShowWarning(true);
-        createTypeCredit({
-      variables: {
-        data: { 
-	    name: typeCredit.name,
-	    interest: typeCredit.interest,
-	    accounts: accounts,
-	    accountsInterest:accountsInterest
-	 }
-    }
-  });
-
-  }
- const handleChangeTodo = (id:number,account: TypeCreditSavingAcounts) => {
-    setAccounts(
-      accounts.map((t, index) => {
-        if (index === id) {
-          return account;
-        } else {
-          return t;
+      const accountInput: TypeCreditSavingAcounts[] = []
+      const accountInterestInput: TypeCreditSavingAcounts[] = []
+      for (const auxiliary of dataTypeCredit.auxiliaries) {
+        if (auxiliary.typeAccount === 'Capital') {
+          accountInput.push({
+            account: auxiliary.idAccount,
+            nature: auxiliary.nature
+          })
         }
-      }),
-    );
-  };
-  
-   const handleDelete = (id: number) => {
-    setAccounts(
-      accounts.filter((t, index) => index !== id),
-    );
-  };
-
-   const addAccount = () => {
-    const account: TypeCreditSavingAcounts= {
-      account:'',
-      nature: '',
-    };
-    setAccounts([...accounts, account]);
-  };
-
- const handleChangeInterest = (id:number,account: TypeCreditSavingAcounts) => {
-    setAccountsInterest(
-      accountsInterest.map((t, index) => {
-        if (index === id) {
-          return account;
-        } else {
-          return t;
+        if (auxiliary.typeAccount === 'Interes') {
+          accountInterestInput.push({
+            account: auxiliary.idAccount,
+            nature: auxiliary.nature
+          })
         }
-      }),
-    );
-  };
-  
-   const handleDeleteInterest = (id: number) => {
-    setAccountsInterest(
-      accountsInterest.filter((t, index) => index !== id),
-    );
-  };
+      }
+      console.log(accountInput)
 
-   const addAccountInterest = () => {
-    const account: TypeCreditSavingAcounts= {
-      account:'',
-      nature: '',
-    };
-    setAccountsInterest([...accountsInterest, account]);
-  };
+      setValue('accounts', accountInput)
+      setValue('accountsInterest', accountInterestInput)
+    }
+  }, [dataTypeCredit])
 
-  if (dataCreate?.createTypeCredit && !showWarning) {
-    setShowModalCreate(false);
-    route.push('/dashboard/parametrization/typecredit');
-    route.refresh();
-  }
+  renderCount++
 
+  console.log('renders tiasdf', renderCount)
 
-   console.log(accounts)
   return (
-    <Modal
-      size="min-w-[650px] w-[650px]"
-      title="Crear tipo de crédito"
-      onClick={() => {
-        setShowModalCreate(false);
-        route.push('/dashboard/parametrization/typecredit');
-      }}
+    <form
+      onSubmit={handleSubmit(() => {
+        onClickAccept(
+          { name: getValues('name'), interest: getValues('interest') },
+          getValues().accounts,
+          getValues().accountsInterest
+        )
+      })}
+      className="flex flex-col   w-full h-full"
     >
-      <div className="flex flex-col   w-full h-full">
-        <div className="flex flex-col space-y-4 w-full max-w-3xl p-4">
-          {/* InputFields */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
-            <InputField
-              name="name"
-              label="Nombre"
-              value={typeCredit.name}
-              onChange={handleTypeCredit}
-            />
-	 
-            <InputNumber
-              name="interest"
-              label="Interés"
-              value={Number(typeCredit.interest)}
-              handleChange={(values:NumberFormatValues) =>{
-		  //@ts-ignore
-		  setTypeCredit({...typeCredit,interest:values.floatValue})
-	      }}
-	      onChange={true}
-            />
-          </div>
-          <div className="flex flex-col">
+      <div className="flex flex-col space-y-4 w-full max-w-3xl p-4">
+        {/* InputFields */}
+        <div className="grid grid-cols-2 gap-4 mt-8">
+          <InputField
+            name="name"
+            label="Nombre"
+            required
+            props={{
+              ...informationCredit('name')
+            }}
+            error={errors?.name}
+          />
 
+          <InputNumber
+            name="interest"
+            label="Interés"
+            control={control}
+            required
+            error={errors?.interest}
+            suffix=" %"
+          />
+        </div>
+        <div className="flex flex-grow flex-col">
           <label className="text-center text-white  bg-[#10417B] text-input font-bold my-2">
-              Cuentas</label>
-            <div className="flex flex-row justify-between">
-	       <label className="font-semibold text-input">Capital</label>
-              <div
-                className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
-                onClick={addAccount}
-              >
-                <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
-                  <AddSvg color="#ffffff" />
-                </div>
-                <label className="pl-2 hidden group-hover:block text-[12px]">
-                  Agregar
-                </label>
+            Cuentas
+          </label>
+          <div className="flex  flex-grow flex-row justify-between">
+            <label className="font-semibold text-input">Capital</label>
+            <div
+              className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
+              onClick={() => {
+                append({
+                  account: '',
+                  nature: ''
+                })
+              }}
+            >
+              <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
+                <AddSvg color="#ffffff" />
+              </div>
+              <label className="pl-2 hidden group-hover:block text-[12px]">
+                Agregar
+              </label>
+            </div>
+          </div>
+
+          {fields.map((field, index) => (
+            <div
+              key={field.id}
+              className=" gap-2 flex flex-grow w-full my-2  flex-row"
+            >
+              <Select
+                name={`accounts.${index}.account`}
+                label={index === 0 && 'Cuenta'}
+                options={data.getAuxilaryAll}
+                setValue={setValue}
+                control={control}
+                required
+                error={errors?.accounts && errors?.accounts[index]?.account}
+                value={getValues(`accounts.${index}.account`)}
+              />
+              <SelectField
+                label={index === 0 && 'Naturaleza'}
+                name={`accounts.${index}.nature`}
+                options={optionsNature}
+                control={control}
+                setValue={setValue}
+                required
+                error={errors?.accounts && errors?.accounts[index]?.nature}
+              />
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  className="flex items-end justify-center h-8 w-8"
+                  onClick={() => {
+                    remove(index)
+                  }}
+                >
+                  <img src="/delete.svg" />
+                </button>
               </div>
             </div>
-            {accounts.map((value:TypeCreditSavingAcounts, index) => (
-              <div key={index} className=" gap-2 flex flex-grow w-full my-2  flex-row">
-                  <Select
-		    label={index===0 && "Cuenta"}
-                    options={data.getAuxilaryAll}
-                    index={index}
-                    setValue={handleChangeTodo}
-		    account={value}
-                  />
-		   <SelectOptions
-		    label={index===0 && "Naturaleza"}
-                    options={optionsNature}
-                    index={index}
-                    setValue={handleChangeTodo}
-		    account={value}
-                  />
-	       <div className="flex items-end">
-                <button className="flex flex-col items-center justify-center h-8 w-8"
-		     onClick={() =>{ handleDelete(index)}}
-		>
-                  <img src="/delete.svg" />
-		   
-                </button>
-		</div>
-	    </div>
-            ))}
+          ))}
+          <div className="flex  flex-grow flex-row justify-between">
+            <label className="font-semibold text-input">Interés</label>
+            <div
+              className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
+              onClick={() => {
+                appendInterest({
+                  account: '',
+                  nature: ''
+                })
+              }}
+            >
+              <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
+                <AddSvg color="#ffffff" />
+              </div>
+              <label className="pl-2 hidden group-hover:block text-[12px]">
+                Agregar
+              </label>
+            </div>
+          </div>
 
-	 <div className="flex flex-row justify-between">
-	       <label className="font-semibold text-input">Interés</label>
-              <div
-                className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
-                onClick={addAccountInterest}
-              >
-                <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
-                  <AddSvg color="#ffffff" />
-                </div>
-                <label className="pl-2 hidden group-hover:block text-[12px]">
-                  Agregar
-                </label>
+          {fieldsInterest.map((field, index) => (
+            <div
+              key={field.id}
+              className=" gap-2 flex flex-grow w-full my-2  flex-row"
+            >
+              <Select
+                name={`accountsInterest.${index}.account`}
+                label={index === 0 && 'Cuenta'}
+                options={data.getAuxilaryAll}
+                setValue={setValue}
+                control={control}
+                required
+                value={getValues(`accountsInterest.${index}.account`)}
+                error={
+                  errors?.accountsInterest &&
+                  errors?.accountsInterest[index]?.account
+                }
+              />
+              <SelectField
+                label={index === 0 && 'Naturaleza'}
+                name={`accountsInterest.${index}.nature`}
+                options={optionsNature}
+                control={control}
+                setValue={setValue}
+                required
+                error={
+                  errors?.accountsInterest &&
+                  errors?.accountsInterest[index]?.nature
+                }
+              />
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  className="flex items-end justify-center h-8 w-8"
+                  onClick={() => {
+                    removeInterest(index)
+                  }}
+                >
+                  <img src="/delete.svg" />
+                </button>
               </div>
             </div>
-            {accountsInterest.map((value:TypeCreditSavingAcounts, index) => (
-              <div key={index} className=" gap-2 flex flex-grow w-full my-2  flex-row">
-                  <Select
-		    label={index===0 && "Cuenta"}
-                    options={data.getAuxilaryAll}
-                    index={index}
-                    setValue={handleChangeInterest}
-		    account={value}
-                  />
-		   <SelectOptions
-		    label={index===0 && "Naturaleza"}
-                    options={optionsNature}
-                    index={index}
-                    setValue={handleChangeInterest}
-		    account={value}
-                  />
-	       <div className="flex items-end">
-                <button className="flex flex-col items-center justify-center h-8 w-8"
-		     onClick={() =>{ handleDeleteInterest(index)}}
-		>
-                  <img src="/delete.svg" />
-		   
-                </button>
-		</div>
-	    </div>
-            ))}
-
-          </div>
+          ))}
         </div>
-        <div className="pt-10 flex justify-end">
-          <div className="pr-4">
-            <Button
-              name="Cancelar"
-              background="border border-[#10417B] text-[#10417B]"
-            />
-          </div>
-          <div className="pr-4">
-            <Button
-              name="Aceptar"
-              background="bg-[#10417B] text-white"
-              onClick={handleCreateTypeCredit}
-            />
-          </div>
-        </div>
-        {dataCreate?.createTypeCredit && showWarning ? (
-          <AlertModalSucces value={`la tipo de credito ha sido creado`} />
-        ) : dataCreate?.createTypeCredit === false && showWarning ? (
-          <AlertModalError value={`El codigo  ya existe con otra cuenta`} />
-        ) : (
-          errorCreate && showWarning && <AlertModalError value="Error" />
-        )}
       </div>
-    </Modal>
-  );
+      <div className="pt-10 flex justify-end">
+        <div className="pr-4">
+          <Button
+            name="Cancelar"
+            background="border border-[#10417B] text-[#10417B]"
+            onClick={onClickCancel}
+          />
+        </div>
+        <div className="pr-4">
+          <Button
+            name="Aceptar"
+            background="bg-[#10417B] text-white"
+            type={'submit'}
+          />
+        </div>
+      </div>
+    </form>
+  )
 }
 
-export default TypeCreditForm;
+export default TypeCreditForm

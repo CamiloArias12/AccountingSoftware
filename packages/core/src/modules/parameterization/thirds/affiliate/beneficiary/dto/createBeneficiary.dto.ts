@@ -1,27 +1,21 @@
 import { InputType, Field } from '@nestjs/graphql';
+import { IBeneficiary } from './beneficiary-interface';
+import { BeneficiaryAffiliate } from '../../beneficiary-affiliate/beneficiary-affiliate.entity';
 
 @InputType()
-export class BeneficiaryInput {
-    @Field()
-    name: string;
+export class BeneficiaryInput implements IBeneficiary {
+  @Field()
+  name: string;
 
-    @Field()
-    idDocument: number;
-
+  @Field()
+  idDocument: number;
 }
-
 
 @InputType()
 export class BeneficiaryInputGeneral {
-   
-   @Field(() =>BeneficiaryInput)
-   beneficiary:BeneficiaryInput
+  @Field(() => BeneficiaryInput)
+  beneficiary: BeneficiaryInput;
 
-   @Field()
-   percentage:number
-
-
+  @Field()
+  percentage: number;
 }
-
-
-

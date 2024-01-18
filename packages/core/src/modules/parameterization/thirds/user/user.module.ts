@@ -8,8 +8,13 @@ import { EmployeeModule } from '../employee/employee.module';
 import { ProviderModule } from '../provider/provider.module';
 
 @Module({
-   imports:[TypeOrmModule.forFeature([User]),AffiliateModule,EmployeeModule,ProviderModule ],
-   providers: [UserService,UserResolver],
-   exports:[UserService]
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    AffiliateModule,
+    EmployeeModule,
+    ProviderModule,
+  ],
+  providers: [UserService, UserResolver],
+  exports: [UserService, AffiliateModule, EmployeeModule, ProviderModule],
 })
 export class UserModule {}

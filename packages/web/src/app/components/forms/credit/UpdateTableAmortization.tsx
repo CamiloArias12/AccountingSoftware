@@ -1,4 +1,3 @@
-import { Affiliate } from '@/lib/utils/thirds/types'
 import {
   ColumnDef,
   Row,
@@ -8,62 +7,37 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useReducer, useRef, useState } from 'react'
 import { useVirtual } from 'react-virtual'
 import { motion } from 'framer-motion'
 import { AmortizationTable } from '@/lib/utils/credit/types'
-import { gql, useMutation } from '@apollo/client'
-
-const GENERATE_TABLE_AMORTIZATION_CHANGE = gql`
-  mutation ($table: ChangeAmortization!) {
-    amortizationTableChange(tableAmortization: $table) {
-      installmentNumber
-      paymentDate
-      initialBalance
-      scheduledPayment
-      extraPayment
-      totalPayment
-      capital
-      interest
-      finalBalance
-    }
-  }
-`
+import InputNumber from '../../input/InputNumber'
+import { NumericFormat } from 'react-number-format'
 
 function UpdateTableAmortization({
-  setSelected,
   data,
+  handleAmortizationTable,
   setData
 }: {
   data: AmortizationTable[]
   setData: any
-  setSelected: any
+  handleAmortizationTable: any
 }) {
-  console.log(data)
-
-  const [generateAmortizationChange] = useMutation(
-    GENERATE_TABLE_AMORTIZATION_CHANGE
-  )
-  const handleLoanExtra = (index: number, value: string) => {
+  const handleLoanExtra = (index: number, value: number) => {
     const dataA = [...data]
     console.log(data[index])
     dataA[index].extraPayment = Number(value)
     setData(dataA)
   }
 
-  const handleAmortizationTable = () => {
-    const table = {
-      tableAmortization: data
-    }
-    generateAmortizationChange({
-      variables: {
-        table: table
-      }
-    }).then((response: any) => {
-      console.log(response)
-      setData(response.data.amortizationTableChange)
-    })
+  const handleLoanTotal = (index: number, value: number) => {
+    const dataA = [...data]
+    console.log(data[index])
+    dataA[index].totalPayment = Number(value)
+    setData(dataA)
   }
+
+  console.log('Render ', data)
 
   const columns = useMemo<ColumnDef<AmortizationTable>[]>(
     () => [
@@ -78,7 +52,7 @@ function UpdateTableAmortization({
         accessorKey: 'paymentDate',
         size: 200,
         enableResizing: true,
-        cell: info => info.getValue(),
+        cell: (row: any) => <>{row.getValue().split('T', 1)}</>,
         header: () => <span>Fecha de pago</span>
       },
       {
@@ -98,15 +72,26 @@ function UpdateTableAmortization({
       {
         accessorKey: 'extraPayment',
         cell: (row: any) => (
-          <div className="py-1">
-            <input
-              className="bg-transparent text-center"
-              value={row.getValue()}
-              onChange={e => {
-                handleLoanExtra(row.row.id, e.target.value)
+          <>
+            <NumericFormat
+              className="text-center"
+              value={row.getValue() === '' ? 0 : row.getValue()}
+              thousandSeparator=","
+              defaultValue={0}
+              prefix="$ "
+              readOnly={
+                row.row._valuesCache.state === 'Pendiente' ? false : true
+              }
+              renderText={value => <b> $ {value}</b>}
+              onValueChange={values => {
+                if (values.value === '') {
+                  handleLoanExtra(row.row.id, 0)
+                } else {
+                  handleLoanExtra(row.row.id, values.floatValue)
+                }
               }}
             />
-          </div>
+          </>
         ),
         header: () => <span>Pago extra</span>
       },
@@ -114,20 +99,37 @@ function UpdateTableAmortization({
       {
         accessorKey: 'totalPayment',
         cell: (row: any) => (
-          <div className="py-1">
-            <label className={` py-1 px-4 rounded-[30px] bg-[#DDFFBB] `}>
-              {row.getValue().toLocaleString()}
-            </label>
-          </div>
+          <>
+            <NumericFormat
+              className="text-center"
+              value={row.getValue() === '' ? 0 : row.getValue()}
+              thousandSeparator=","
+              defaultValue={0}
+              readOnly={
+                row.row._valuesCache.state === 'Pendiente'
+                  ? false
+                  : row.row._valuesCache.state === 'Aplazada'
+                  ? false
+                  : true
+              }
+              prefix="$ "
+              renderText={value => <b> $ {value}</b>}
+              onValueChange={values => {
+                if (values.value === '') {
+                  handleLoanTotal(row.row.id, 0)
+                } else {
+                  handleLoanTotal(row.row.id, values.floatValue)
+                }
+              }}
+            />
+          </>
         ),
         header: () => <span>Pago total</span>
       },
       {
         accessorKey: 'capital',
 
-        cell: (info: any) => (
-          <label>$ {info.getValue().toLocaleString()}</label>
-        ),
+        cell: (info: any) => <>$ {info.getValue().toLocaleString()}</>,
         header: () => <span>Capital</span>
       },
       {
@@ -155,10 +157,14 @@ function UpdateTableAmortization({
               className={` py-1 px-4 rounded-[30px] ${
                 row.getValue() === 'Pagada'
                   ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
+                  : row.getValue() === 'Pago anticipado'
+                  ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
+                  : row.getValue() === 'Aplazada'
+                  ? 'bg-[#AAA7D0] text-sm  text-[#306E47]'
                   : 'bg-[#FECACA] text-sm'
               }`}
             >
-              {row.getValue() === 'Pagada' ? 'Pagada' : 'Pendiente'}
+              {row.getValue()}
             </label>
           </div>
         ),
@@ -168,17 +174,10 @@ function UpdateTableAmortization({
     []
   )
 
-  const [sorting, setSorting] = useState<SortingState>([])
-
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting
-    },
-    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     debugTable: true
   })
 
@@ -189,7 +188,7 @@ function UpdateTableAmortization({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 6
+    overscan: 10
   })
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
@@ -199,7 +198,7 @@ function UpdateTableAmortization({
       : 0
 
   return (
-    <div>
+    <div className="flex flex-grow flex-col overflow-scroll">
       <button
         className="ml-4  text-input flex flex-row rounded-sm bg-[#F2F5FA] p-2 "
         onClick={handleAmortizationTable}
@@ -209,10 +208,10 @@ function UpdateTableAmortization({
       </button>
 
       <div
-        className=" flex  mx-4 my-2 overflow-scroll max-h-[300px] text-sm"
+        className=" flex flex-grow  mx-4 my-2 overflow-scroll  text-sm"
         ref={tableContainerRef}
       >
-        <table className="w-full table-fixed   table-amortization">
+        <table className="w-full h-8 flex-grow table-fixed table-amortization ">
           <thead className="font-medium border-b-4 ">
             {table.getHeaderGroups().map(headerGroup => (
               <tr className="rounded-lg" key={headerGroup.id}>
@@ -237,10 +236,6 @@ function UpdateTableAmortization({
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                          {{
-                            asc: ' 🔼',
-                            desc: ' 🔽'
-                          }[header.column.getIsSorted() as string] ?? null}
                         </div>
                       )}
                     </th>
@@ -267,7 +262,7 @@ function UpdateTableAmortization({
                     {row.getVisibleCells().map(cell => {
                       return (
                         <>
-                          <td className="py-2 text-center">
+                          <td className=" text-center">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()

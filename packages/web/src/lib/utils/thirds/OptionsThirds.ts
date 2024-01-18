@@ -11,7 +11,7 @@ export const OptionsThirds = [
   },
   {
     id: 3,
-    name: 'Datos de afiliación',
+    name: 'Datos de afiliacion',
     visible: false
   },
   {

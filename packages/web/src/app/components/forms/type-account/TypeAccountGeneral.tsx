@@ -1,17 +1,19 @@
-import { useTypeAccount } from '@/app/hooks/type-account/TypeAccountInput';
-import { useEffect, useState } from 'react';
+import { useTypeAccount } from '@/app/hooks/type-account/TypeAccountInput'
+import { useEffect, useState } from 'react'
 import {
   TypeAccountEnum,
   optionsAccounts,
-  optionsNature,
-} from '@/lib/utils/type-account/options';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import Select from '../../input/Select';
-import AlertModalSucces from '../../modal/AlertModalSucces';
-import AlertModalError from '../../modal/AlertModalError';
-import Modal from '../../modal/Modal';
-import { useRouter } from 'next/navigation';
-import TypeAccountForm from './TypeAccountInformation';
+  optionsNature
+} from '@/lib/utils/type-account/options'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import Select from '../../input/Select'
+import AlertModalSucces from '../../modal/AlertModalSucces'
+import AlertModalError from '../../modal/AlertModalError'
+import Modal from '../../modal/Modal'
+import { useRouter } from 'next/navigation'
+import TypeAccountForm from './TypeAccountInformation'
+import { useForm } from 'react-hook-form'
+import { FieldRequired } from '@/lib/utils/FieldValidation'
 
 const GET_CLASS = gql`
   query {
@@ -25,7 +27,7 @@ const GET_CLASS = gql`
       }
     }
   }
-`;
+`
 const GET_ACCOUNT = gql`
   query ($code: Float!) {
     getAccountsByGroup(code: $code) {
@@ -35,7 +37,7 @@ const GET_ACCOUNT = gql`
       }
     }
   }
-`;
+`
 const GET_SUBACCOUNT = gql`
   query ($code: Float!) {
     getSubAccountByAccount(code: $code) {
@@ -45,7 +47,7 @@ const GET_SUBACCOUNT = gql`
       }
     }
   }
-`;
+`
 const GET_GROUP = gql`
   query ($code: Float!) {
     getGroupByClass(code: $code) {
@@ -55,7 +57,7 @@ const GET_GROUP = gql`
       }
     }
   }
-`;
+`
 const CREATE_TYPE_ACCOUNT = gql`
   mutation ($create: TypeAccountInput!, $type: String!, $reference: Float) {
     createAccount(
@@ -64,98 +66,134 @@ const CREATE_TYPE_ACCOUNT = gql`
       referenceTypeAccount: $reference
     )
   }
-`;
+`
 function TypeAccountGeneral({
-  setShowModalCreate,
+  setShowModalCreate
 }: {
-  setShowModalCreate: any;
+  setShowModalCreate: any
 }) {
-  const [indexForm, setIndexForm] = useState('');
-  const [type, setType] = useState<TypeAccountEnum>();
-  const [typeCode, setTypeCode] = useState<number>(NaN);
-  const { data, refetch } = useQuery(GET_CLASS);
-  const { data: dataGroup, refetch: queryGroup } = useQuery(GET_GROUP);
-  const { data: dataAccount, refetch: queryAccount } = useQuery(GET_ACCOUNT);
+  const [indexForm, setIndexForm] = useState('')
+  const [type, setType] = useState<TypeAccountEnum>()
+  const [typeReference, setTypeReference] = useState<TypeAccountEnum>()
+  const [typeCode, setTypeCode] = useState<number>(NaN)
+  const { data, refetch } = useQuery(GET_CLASS)
+  const { data: dataGroup, refetch: queryGroup } = useQuery(GET_GROUP)
+  const { data: dataAccount, refetch: queryAccount } = useQuery(GET_ACCOUNT)
+  const [dispatch, setDispatch] = useState(null)
+  const [dispatchValue, setDispatchValue] = useState(null)
   const { data: dataSubAccount, refetch: querySubAccount } =
-    useQuery(GET_SUBACCOUNT);
+    useQuery(GET_SUBACCOUNT)
   const {
-    typeAccount,
-    handleTypeAccount,
-    handleChangeTypeAccount,
-    handleNumber,
-  } = useTypeAccount();
-  const [values, setValues] = useState<number[]>([NaN, NaN, NaN, NaN, NaN]);
+    register: informationAccount,
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    formState: { errors }
+  } = useForm({
+    mode: 'all'
+  })
+  const { typeAccount } = useTypeAccount()
+  const [values, setValues] = useState<number[]>([NaN, NaN, NaN, NaN, NaN])
   const [
     createTypeAccount,
-    { data: typeData, loading: loadingType, error: errorType },
-  ] = useMutation(CREATE_TYPE_ACCOUNT);
-  const route = useRouter();
-  const [showWarning, setShowWarning] = useState(false);
+    { data: typeData, loading: loadingType, error: errorType }
+  ] = useMutation(CREATE_TYPE_ACCOUNT)
+  const route = useRouter()
+  const [showWarning, setShowWarning] = useState(false)
+
   useEffect(() => {
     if (data) {
       const timeout = setTimeout(() => {
-        setShowWarning(false);
-      }, 2000); // 3 seconds in milliseconds
+        setShowWarning(false)
+      }, 2000) // 3 seconds in milliseconds
 
       return () => {
-        clearTimeout(timeout);
-      };
+        clearTimeout(timeout)
+      }
     }
-  }, [typeData, errorType]);
+  }, [typeData, errorType])
   const changeElement = (index: number, value: number) => {
-    console.log(index, value);
-    const updateValues = [...values];
-    updateValues[index] = value;
-    setValues(updateValues);
-  };
-
-  const handleCreate = () => {
-    setShowWarning(true);
-    if (typeCode === 0) {
-      console.log(type, typeCode);
-      createTypeAccount({
-        variables: {
-          create: { ...typeAccount, code: Number(typeAccount.code) },
-          type: type,
-        },
-      });
-    }
-    if (typeCode >= 1) {
-      console.log(values[typeCode - 1]);
-      createTypeAccount({
-        variables: {
-          create: { ...typeAccount, code: Number(typeAccount.code) },
-          type: type,
-          reference: values[typeCode - 1],
-        },
-      });
-    }
-  };
-  if (typeData?.createAccount && !showWarning) {
-    setShowModalCreate(false);
-    route.push('/dashboard/parametrization/typeaccount');
-    route.refresh();
+    console.log(index, value)
+    const updateValues = [...values]
+    updateValues[index] = value
+    setValues(updateValues)
   }
 
+  const handleCreate = () => {
+    console.log(getValues())
+    setShowWarning(true)
+    if (typeCode === 0) {
+      console.log(type, typeCode)
+      createTypeAccount({
+        variables: {
+          create: {
+            code: getValues('code'),
+            name: getValues('name'),
+            nature: getValues('nature')
+          },
+          type: type
+        }
+      })
+    }
+    if (typeCode >= 1) {
+      console.log(values[typeCode - 1])
+      createTypeAccount({
+        variables: {
+          create: {
+            code: getValues('code'),
+            name: getValues('name'),
+            nature: getValues('nature')
+          },
+          type: type,
+          reference: getValues(typeReference)
+        }
+      })
+    }
+  }
+  if (typeData?.createAccount && !showWarning) {
+    setShowModalCreate(false)
+    route.push('/dashboard/parametrization/typeaccount')
+    route.refresh()
+  }
+  console.log(getValues())
+
+  useEffect(() => {
+    if (dispatchValue === TypeAccountEnum.CLASS) {
+      setValue(TypeAccountEnum.GROUP, '')
+      setValue(TypeAccountEnum.ACCOUNT, '')
+      setValue(TypeAccountEnum.SUBACCOUNT, '')
+    }
+    if (dispatchValue === TypeAccountEnum.GROUP) {
+      setValue(TypeAccountEnum.ACCOUNT, '')
+      setValue(TypeAccountEnum.SUBACCOUNT, '')
+    }
+    if (dispatchValue === TypeAccountEnum.ACCOUNT) {
+      setValue(TypeAccountEnum.SUBACCOUNT, '')
+    }
+  }, [dispatch])
+  console.log(errors)
   return (
     <Modal
-      size="md:min-w-[550px]  md:w-[600px]"
+      size=" bg-white md:min-w-[550px]  md:w-[600px]"
       title="Crear tipo de cuenta"
       onClick={() => {
-        setShowModalCreate(false);
-        route.push('/dashboard/parametrization/typeaccount');
+        setShowModalCreate(false)
+        route.push('/dashboard/parametrization/typeaccount')
       }}
     >
       <div className="flex h-full w-full flex-col  ">
         <div className="flex flex-row bg-[#F2F6F8] mt-3 p-2 rounded-lg ">
-          {optionsAccounts.map((option) => (
+          {optionsAccounts.map((option, index) => (
             <div
               key={option.id}
               className="flex flex-row w-full items-center justify-center text-sm "
               onClick={() => {
-                setIndexForm(option.name);
-                setType(option.name);
-                setTypeCode(option.id);
+                setIndexForm(option.name)
+                setType(option.name)
+                setTypeCode(option.id)
+
+                index !== 0 && setTypeReference(optionsAccounts[index - 1].name)
               }}
             >
               <div
@@ -167,83 +205,106 @@ function TypeAccountGeneral({
             </div>
           ))}
         </div>
-        <div className="flex flex-col mt-4">
-            {(indexForm === TypeAccountEnum.GROUP ||
-              indexForm === TypeAccountEnum.ACCOUNT ||
-              indexForm === TypeAccountEnum.SUBACCOUNT ||
-              indexForm === TypeAccountEnum.AUXILIARY) && (
-              <Select
-                label="Clase"
-                options={data?.getClassAccountAll}
-                setValue={changeElement}
-                index={0}
-                onClick={() => {
-                  console.log(refetch());
-                }}
-              />
-            )}
+        <form
+          onSubmit={handleSubmit(handleCreate)}
+          className="flex flex-col mt-4"
+        >
+          {(indexForm === TypeAccountEnum.GROUP ||
+            indexForm === TypeAccountEnum.ACCOUNT ||
+            indexForm === TypeAccountEnum.SUBACCOUNT ||
+            indexForm === TypeAccountEnum.AUXILIARY) && (
+            <Select
+              label="Clase"
+              options={data?.getClassAccountAll}
+              setValue={setValue}
+              name={TypeAccountEnum.CLASS}
+              control={control}
+              dispatch={dispatch}
+              setDispatchValue={setDispatchValue}
+              setDispatch={setDispatch}
+              rules={FieldRequired}
+              error={errors?.Clase}
+            />
+          )}
 
-            {(indexForm === TypeAccountEnum.ACCOUNT ||
-              indexForm === TypeAccountEnum.SUBACCOUNT ||
-              indexForm === TypeAccountEnum.AUXILIARY) && (
-              <Select
-                label="Grupo"
-                options={dataGroup?.getGroupByClass}
-                setValue={changeElement}
-                index={1}
-                onClick={() => {
-                  !isNaN(values[0]) && queryGroup({ code: values[0] });
-                }}
-              />
-            )}
+          {(indexForm === TypeAccountEnum.ACCOUNT ||
+            indexForm === TypeAccountEnum.SUBACCOUNT ||
+            indexForm === TypeAccountEnum.AUXILIARY) && (
+            <Select
+              label="Grupo"
+              options={dataGroup?.getGroupByClass}
+              setValue={setValue}
+              name={TypeAccountEnum.GROUP}
+              control={control}
+              handleQuery={() => {
+                queryGroup({ code: getValues(TypeAccountEnum.CLASS) })
+              }}
+              dispatch={dispatch}
+              setDispatchValue={setDispatchValue}
+              setDispatch={setDispatch}
+              rules={FieldRequired}
+              error={errors?.Grupo}
+            />
+          )}
 
-            {(indexForm === TypeAccountEnum.SUBACCOUNT ||
-              indexForm === TypeAccountEnum.AUXILIARY) && (
-              <Select
-                label="Cuenta"
-                options={dataAccount?.getAccountsByGroup}
-                setValue={changeElement}
-                index={2}
-                onClick={() => {
-                  !isNaN(values[1]) && queryAccount({ code: values[1] });
-                }}
-              />
-            )}
+          {(indexForm === TypeAccountEnum.SUBACCOUNT ||
+            indexForm === TypeAccountEnum.AUXILIARY) && (
+            <Select
+              label="Cuenta"
+              options={dataAccount?.getAccountsByGroup}
+              setValue={setValue}
+              name={TypeAccountEnum.ACCOUNT}
+              control={control}
+              handleQuery={() => {
+                queryAccount({
+                  code: getValues(TypeAccountEnum.GROUP)
+                })
+              }}
+              dispatch={dispatch}
+              setDispatchValue={setDispatchValue}
+              setDispatch={setDispatch}
+              rules={FieldRequired}
+              error={errors?.Cuenta}
+            />
+          )}
 
-            {indexForm === TypeAccountEnum.AUXILIARY && (
-              <Select
-                label="Subcuenta"
-                options={dataSubAccount?.getSubAccountByAccount}
-                setValue={changeElement}
-                index={3}
-                onClick={() => {
-                  !isNaN(values[2]) && querySubAccount({ code: values[2] });
-                }}
-              />
-            )}
+          {indexForm === TypeAccountEnum.AUXILIARY && (
+            <Select
+              label="Subcuenta"
+              options={dataSubAccount?.getSubAccountByAccount}
+              setValue={setValue}
+              name={TypeAccountEnum.SUBACCOUNT}
+              control={control}
+              dispatch={dispatch}
+              setDispatchValue={setDispatchValue}
+              handleQuery={() => {
+                querySubAccount({
+                  code: getValues(TypeAccountEnum.ACCOUNT)
+                })
+              }}
+              rules={FieldRequired}
+              error={errors?.Subcuenta}
+            />
+          )}
+          <TypeAccountForm
+            informationAccount={informationAccount}
+            errors={errors}
+            control={control}
+            setValue={setValue}
+            handleClicckCancel={() => {}}
+          />
+        </form>
+      </div>
 
-            </div>
-        </div>
-        
-	 <TypeAccountForm 
-	       handleNumber={handleNumber} 
-	       handleClicckCancel={() =>{setShowModalCreate(false)}}
-	       handleClicckAccept={handleCreate}
-	       typeAccount={typeAccount}
-	       handleTypeAccount={handleTypeAccount}
-	       handleChangeTypeAccount={handleChangeTypeAccount}
-	       />
-	 
-
-	 {typeData?.createAccount && showWarning ? (
-          <AlertModalSucces value={`la ${type} ha sido creada`} />
-        ) : typeData?.createAccount === false && showWarning ? (
-          <AlertModalError value={`El codigo  ya existe con otra cuenta`} />
-        ) : (
-          errorType && showWarning && <AlertModalError value="Error" />
-        )}
-      </Modal>
-  );
+      {typeData?.createAccount && showWarning ? (
+        <AlertModalSucces value={`la ${type} ha sido creada`} />
+      ) : typeData?.createAccount === false && showWarning ? (
+        <AlertModalError value={`El codigo  ya existe con otra cuenta`} />
+      ) : (
+        errorType && showWarning && <AlertModalError value="Error" />
+      )}
+    </Modal>
+  )
 }
 
-export default TypeAccountGeneral;
+export default TypeAccountGeneral

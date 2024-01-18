@@ -2,7 +2,8 @@ import { IAfiliate } from '@/lib/utils/thirds/types';
 import { useState } from 'react';
 
 export function FormWorkingInformation() {
-  const [workingInformation, setWorkingInformation] = useState<IAfiliate>({
+//@ts-ignore
+  const [workingInformation, setWorkingInformation] = useState({
     company: '',
     addreesCompany: '',
     jobTitle: '',

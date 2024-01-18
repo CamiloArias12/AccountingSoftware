@@ -1,5 +1,5 @@
-'use client';
-import { motion } from 'framer-motion';
+'use client'
+import { motion } from 'framer-motion'
 
 function AlertModalError({ value }: { value: string }) {
   return (
@@ -44,7 +44,7 @@ function AlertModalError({ value }: { value: string }) {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }
 
-export default AlertModalError;
+export default AlertModalError

@@ -1,8 +1,12 @@
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 import { CreateCreditInput } from './create-credit.input';
+import { CreateInstallment } from '../installments/dto/create-installment.input';
 
 @InputType()
-export class UpdateCreditInput extends PartialType(CreateCreditInput) {
+export class UpdateCreditInput {
   @Field(() => Int)
-  id: number;
+  idCredit: number;
+
+  @Field(() => [CreateInstallment])
+  installments: CreateInstallment[];
 }

@@ -2,17 +2,18 @@ import { Affiliate } from '@/lib/utils/thirds/types'
 import {
   ColumnDef,
   ExpandedState,
+  FilterFn,
   Row,
   SortingState,
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
 import { GeneralTypeAccount } from '@/lib/utils/type-account/types'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AddSvg } from '../../logo/Add'
 import { useRouter } from 'next/navigation'
 import { useVirtual } from 'react-virtual'
 import { motion } from 'framer-motion'
@@ -24,6 +25,12 @@ import UpdateTypeAccount from './UpdateTypeAccount'
 import { downloadPuc } from '@/lib/axios/uploadFiles'
 import OptionsTable from '../../options-table/OptionsTable'
 
+import {
+  RankingInfo,
+  rankItem,
+  compareItems
+} from '@tanstack/match-sorter-utils'
+import InputFieldSearch from '../../input/InputSearch'
 const DELETE_ACCOUNT = gql`
   mutation ($code: Int!) {
     deleteAccount(code: $code)
@@ -35,9 +42,31 @@ const UPDATE_STATE = gql`
     updateStatusAccount(code: $code, status: $state)
   }
 `
+
+declare module '@tanstack/table-core' {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo
+  }
+}
+
+export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value)
+
+  // Store the itemRank info
+  addMeta({
+    itemRank
+  })
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed
+}
+
 function TableTypeAccount({
-  typeAccounts,
-  setShowModalCreate
+  typeAccounts
 }: {
   typeAccounts: GeneralTypeAccount[]
   setShowModalCreate: any
@@ -115,13 +144,12 @@ function TableTypeAccount({
         cell: (row: any) => (
           <div className="py-1">
             <button
-              className={` py-1 px-4 rounded-[30px] ${
+              className={` py-1 px-4 font-medium rounded-[30px] ${
                 row.getValue()
                   ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
                   : 'bg-[#FECACA] text-sm'
               }`}
               onClick={() => {
-                console.log(row.r)
                 updateStateHandle(
                   row.row._valuesCache.typeAccount_code,
                   !row.getValue()
@@ -145,6 +173,7 @@ function TableTypeAccount({
   const route = useRouter()
   const [sorting, setSorting] = useState<SortingState>([])
 
+  const [globalFilter, setGlobalFilter] = useState('')
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [
     deleteAccount,
@@ -157,16 +186,23 @@ function TableTypeAccount({
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
     state: {
       sorting,
-      expanded
+      expanded,
+      globalFilter
     },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onExpandedChange: setExpanded,
     getSubRows: row => row.accounts,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
 
     debugTable: true
   })
@@ -218,9 +254,9 @@ function TableTypeAccount({
     if (deleteData) {
       if (deleteData?.deleteAccount) {
         route.refresh()
+        setShowOptions(false)
       }
 
-      console.log('delete')
       const timeout = setTimeout(() => {
         setShowWarning(false)
       }, 5000) // 3 seconds in milliseconds
@@ -258,14 +294,14 @@ function TableTypeAccount({
           deleteHandle={() => {
             deleteAccountHandle()
           }}
+          search={globalFilter}
+          setSearch={setGlobalFilter}
           setUpdate={setUpdate}
-          setCreate={() => {
-            setShowModalCreate(true)
-          }}
+          createRoute="/dashboard/parametrization/typeaccount?create=true"
         />
 
         <div
-          className=" flex  mx-4 my-2 overflow-scroll text-sm"
+          className=" flex   mx-4 my-2 overflow-scroll "
           ref={tableContainerRef}
         >
           <table className="w-full table-fixed account-table ">
@@ -275,7 +311,7 @@ function TableTypeAccount({
                   {headerGroup.headers.map(header => {
                     return (
                       <th
-                        className="text-start font-light pl-3 py-2 font-medium "
+                        className="text-start pl-3  font-medium "
                         key={header.id}
                         colSpan={header.colSpan}
                         style={{ width: header.getSize() }}
@@ -347,7 +383,7 @@ function TableTypeAccount({
                                   }
                                 }
                               }}
-                              className="font-light px-2 py-2"
+                              className=" px-2 "
                               key={cell.id}
                             >
                               {flexRender(

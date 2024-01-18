@@ -1,330 +1,302 @@
 import {
   ColumnDef,
   Row,
-  SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { AddSvg } from '../../logo/Add';
-import { useRouter } from 'next/navigation';
-import { useVirtual } from 'react-virtual';
-import { motion } from 'framer-motion';
-import { gql, useMutation } from '@apollo/client';
-import AlertModalError from '../../modal/AlertModalError';
-import AlertModalSucces from '../../modal/AlertModalSucces';
-import { Movement } from '@/lib/utils/accounting/types';
-import ViewMovementAccount from './ViewAccountMovement';
+  useReactTable
+} from '@tanstack/react-table'
+import { HTMLProps, useEffect, useMemo, useRef, useState } from 'react'
 
-const REFINANCE = gql`
-  mutation ($id: Int!) {
-    isRefinance(id: $id)
-  }
-`;
+import { gql, useMutation } from '@apollo/client'
+import { useRouter } from 'next/navigation'
+import { useVirtual } from 'react-virtual'
+import { motion } from 'framer-motion'
+import { Movement } from '@/lib/utils/accounting/types'
+import OptionsTable from '../../options-table/OptionsTable'
+import AlertModalSucces from '../../modal/AlertModalSucces'
+import AlertModalError from '../../modal/AlertModalError'
+import ViewMovementAccount from './ViewAccountMovement'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
 
-const DELETE_CREDIT = gql`
-  mutation ($id: Int!) {
-    deleteCredit(id: $id)
+export const revalidate = 0
+const DELETE_MOVEMENT = gql`
+  mutation ($id: String!) {
+    deleteMovementById(id: $id) {
+      state
+      message
+    }
   }
-`;
-function TableMovements({ credits }: { credits: Movement[] }) {
+`
+
+function TableMovements({ movements }: { movements: Movement[] }) {
   const columns = useMemo<ColumnDef<Movement>[]>(
     () => [
       {
+        id: 'select',
+        size: 40,
+        header: ({ table }) => (
+          <IndeterminateCheckbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler()
+            }}
+          />
+        ),
+        cell: ({ row }) => (
+          <div className="px-1">
+            <IndeterminateCheckbox
+              {...{
+                checked: row.getIsSelected(),
+                disabled: !row.getCanSelect(),
+                indeterminate: row.getIsSomeSelected(),
+                onChange: row.getToggleSelectedHandler()
+              }}
+            />
+          </div>
+        )
+      },
+
+      {
         accessorKey: 'id',
-        cell: (info) => info.getValue(),
-        header: () => <span>Id</span>,
-        size: 50,
+        cell: info => info.getValue(),
+        header: () => <span>Id</span>
       },
       {
-        accessorKey: 'movement.date',
-        cell: (info) => info.getValue(),
-        header: () => 'Fecha',
-      },
-            {
-        accessorKey: 'movement.concept',
-        cell: (info) => info.getValue(),
-        header: () => <span>Concepto</span>,
-      },
-	 {
-        accessorKey: 'movement.state',
+        accessorKey: 'date',
         cell: (row: any) => (
-          <div
-              className={` py-1 px-4 rounded-[30px] ${
-                row.getValue()
-                  ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
-                  : 'bg-[#FECACA] text-sm'
-              }`}
-            >
-              {row.getValue() ? 'Activo' : 'Inactivo'}
-          </div>
+          <label className={` py-1 px-4 rounded-[30px] bg-[#DDFFBB] `}>
+            {row.getValue().split('T', 1)}
+          </label>
         ),
 
-        header: 'Estado',
+        header: () => 'Fecha'
       },
       {
-        accessorKey: 'movement.accounting',
-        cell: (info) => info.getValue(),
-        header: () => <span>Contabilizacion</span>,
+        accessorKey: 'concept',
+        cell: info => info.getValue(),
+        header: () => <span>Concepto</span>
       },
+      {
+        accessorKey: 'state',
+        cell: (row: any) => (
+          <label
+            className={` py-1 px-4 font-medium rounded-[30px] ${
+              row.getValue()
+                ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
+                : 'bg-[#FECACA] text-sm'
+            }`}
+          >
+            {row.getValue() ? 'Activo' : 'Inactivo'}
+          </label>
+        ),
 
-         
+        header: 'Estado'
+      },
+      {
+        accessorKey: 'accounting',
+        cell: info => info.getValue(),
+        header: () => <span>Contabilizacion</span>
+      }
     ],
-    [],
-  );
+    []
+  )
 
-  const [data, setData] = useState<Movement[]>(credits);
-  const [showOptions, setShowOptions] = useState(false);
-  const route = useRouter();
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [
-    isRefinance,
-    { data: dataRefinance, loading: loadingRefinance, error: errorRefinance },
-  ] = useMutation(REFINANCE);
-  const [
-    deleteCredit,
-    { data: deleteData, loading: loadingDelete, error: errorDelete },
-  ] = useMutation(DELETE_CREDIT);
+  const [data, setData] = useState<Movement[]>(movements)
+  const [showOptions, setShowOptions] = useState(false)
+
+  const [rowSelection, setRowSelection] = useState({})
+  const [globalFilter, setGlobalFilter] = useState('')
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting,
+    filterFns: {
+      fuzzy: fuzzyFilter
     },
-    onSortingChange: setSorting,
+
+    state: {
+      rowSelection,
+      globalFilter
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
-  });
-  const tableContainerRef = useRef<HTMLDivElement>(null);
+    getFilteredRowModel: getFilteredRowModel(),
 
-  const { rows } = table.getRowModel();
+    onRowSelectionChange: setRowSelection,
+    debugTable: true
+  })
+
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+
+  const { rows } = table.getRowModel()
 
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 12,
-  });
-  const { virtualItems: virtualRows } = rowVirtualizer;
+    overscan: 12
+  })
+  const { virtualItems: virtualRows } = rowVirtualizer
 
-  const [id, setId] = useState<number>(0);
-  const [index, setIndex] = useState<number>(0);
-  const [showView, setShowView] = useState<boolean>(false);
+  const [showView, setShowView] = useState<boolean>(false)
 
-  const [showWarning, setShowWarning] = useState(false);
-  const [showWarningDelete, setShowWarningDelete] = useState(false);
+  const route = useRouter()
 
-  useEffect(() => {
-    setData(credits);
-  }, [credits]);
+  const [showWarningDelete, setShowWarningDelete] = useState(false)
+  const [movementsSelected, setMovementsSelected] = useState<string[]>([])
 
-  useEffect(() => {
-    if (data) {
-      const timeout = setTimeout(() => {
-        setShowWarning(false);
-      }, 1000); // 3 seconds in milliseconds
+  const [
+    deleteMovement,
+    { data: deleteData, loading: loadingDelete, error: errorDelete }
+  ] = useMutation(DELETE_MOVEMENT)
 
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [dataRefinance, errorRefinance]);
-
-  const deleteCreditHandle = () => {
-    setShowWarningDelete(true);
-    deleteCredit({
-      variables: {
-        id: id,
-      },
-    });
-  };
-
-  const handleRefinance = () => {
-    setShowWarning(true);
-    isRefinance({
-      variables: {
-        id: id,
-      },
-    });
-  };
   useEffect(() => {
     if (deleteData) {
-      if (deleteData?.deleteCredit) {
-        route.refresh();
-      }
-
-      console.log('delete');
+      route.refresh()
       const timeout = setTimeout(() => {
-        setShowWarningDelete(false);
-      }, 3000); // 3 seconds in milliseconds
+        setShowWarningDelete(false)
+      }, 3000) // 3 seconds in milliseconds
 
       return () => {
-        clearTimeout(timeout);
-      };
+        clearTimeout(timeout)
+      }
     }
-  }, [deleteData, errorDelete]);
+  }, [deleteData, errorDelete])
 
-  if (dataRefinance?.isRefinance) {
-    route.push(`/dashboard/wallet/credit/${id}`);
-  }
-   console.log(credits[id].movement.id)
+  useEffect(() => {
+    if (Object.keys(rowSelection).length > 0) {
+      setShowOptions(true)
+    } else {
+      setShowOptions(false)
+    }
+  }, [rowSelection])
+
+  useEffect(() => {
+    setData(movements)
+  }, [movements])
+
   return (
     <>
-      {showView && <ViewMovementAccount idMovement={credits[id].id} setView={setShowView} movemnts={[credits[index]]}/>}
-      <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
-        <div className="flex items-center justify-between m-3  ">
-          <div>
-            {showOptions && (
-              <div className="flex flex-row p-2 rounded-lg bg-[#F2F5FA] ">
-                <button
-                  className="flex flex-row"
-                  onClick={() => {
-                    setShowView(true);
-                  }}
-                >
-                  <img src="/view.svg" />
-                  <label className="font-sans px-6 text-sm">Ver</label>
-                </button>
+      {showView && (
+        <ViewMovementAccount
+          setView={setShowView}
+          movements={movementsSelected}
+        />
+      )}
+      <OptionsTable
+        showOptions={showOptions}
+        setView={() => {
+          const movementsShow = []
+          for (const key in rowSelection) {
+            if (rowSelection.hasOwnProperty(key)) {
+              movementsShow.push(movements[Number(key)].id)
+            }
+          }
+          setMovementsSelected(movementsShow)
+          setShowView(true)
+        }}
+        deleteHandle={() => {
+          setShowWarningDelete(true)
+          deleteMovement({
+            variables: {
+              id: movements[Object.keys(rowSelection)[0]].id
+            }
+          })
+        }}
+        search={globalFilter}
+        setSearch={setGlobalFilter}
+      />
 
-                <button
-                  className="flex flex-row"
-                  onClick={() => {
-                  }}
-                >
-                  <img src="/edit.svg" />
-                  <label className="font-sans px-6 text-sm">Editar</label>
-                </button>
-                <button
-                  className="flex flex-row"
-                  onClick={() => {
-                    deleteCreditHandle();
-                  }}
-                >
-                  <img src="/delete.svg" />
-                  <label className="font-sans px-6 text-sm">Eliminar</label>
-                </button>
-                <button
-                  className="flex flex-row"
-                  onClick={() => {
-                    handleRefinance();
-                  }}
-                >
-                  <img src="/refinance.svg" />
-                  <label className="font-sans px-6 text-sm">Refinanciar</label>
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div
-            className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
-            onClick={() => {
-              route.push('/dashboard/wallet/credit/create');
-            }}
-          >
-            <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-8 w-8 bg-[#10417B] ">
-              <AddSvg color="#ffffff" />
-            </div>
-            <label className="pl-2 hidden group-hover:block text-[12px]">
-              Crear
-            </label>
-          </div>
-        </div>
-
-        <div className="mx-4 my-2 flex-grow text-sm">
+      <div className="flex px-4 flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
+        <div className=" flex-grow text-sm">
           <table className="h-full w-full table-fixed table ">
             <thead className="font-medium ">
-              {table.getHeaderGroups().map((headerGroup) => (
+              {table.getHeaderGroups().map(headerGroup => (
                 <tr className="rounded-lg  " key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
+                  {headerGroup.headers.map(header => {
                     return (
                       <th
-                        className="text-start font-light pl-3 py-2 font-medium "
+                        className="text-start  pl-3 py-2 font-medium "
                         key={header.id}
                         colSpan={header.colSpan}
                         style={{ width: header.getSize() }}
                       >
                         {header.isPlaceholder ? null : (
-                          <div
-                            {...{
-                              className: header.column.getCanSort()
-                                ? 'cursor-pointer select-none'
-                                : '',
-                              onClick: header.column.getToggleSortingHandler(),
-                            }}
-                          >
+                          <div>
                             {flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
-                            {{
-                              asc: ' 🔼',
-                              desc: ' 🔽',
-                            }[header.column.getIsSorted() as string] ?? null}
                           </div>
                         )}
                       </th>
-                    );
+                    )
                   })}
                 </tr>
               ))}
             </thead>
             <tbody className=" ">
-              {virtualRows.map((virtualRow) => {
-                const row = rows[virtualRow.index] as Row<any>;
+              {virtualRows.map(virtualRow => {
+                const row = rows[virtualRow.index] as Row<any>
                 return (
                   <>
                     <motion.tr
                       key={row.id}
-                      className={` ${
-                        id === row._valuesCache.id && 'selected'
-                      } hover:border-l-4  hover:border-l-[#3C7AC2] `}
+                      className={`  hover:border-l-4  hover:border-l-[#3C7AC2] `}
                     >
-                      {row.getVisibleCells().map((cell) => {
+                      {row.getVisibleCells().map(cell => {
                         return (
-                          <td
-                            onClick={() => {
-                              setShowOptions(true);
-
-                              setId(Number(row.index));
-                              setIndex(Number(row.index));
-			      console.log(row.index)
-                            }}
-                            className="font-light px-2 py-2"
-                            key={cell.id}
-                          >
+                          <td key={cell.id}>
                             {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext(),
+                              cell.getContext()
                             )}
                           </td>
-                        );
+                        )
                       })}
                     </motion.tr>
                   </>
-                );
+                )
               })}
             </tbody>
           </table>
         </div>
-        {dataRefinance?.isRefinance === false && showWarning ? (
-          <AlertModalError value={`El credito no se puede refinanciar`} />
-        ) : (
-          errorRefinance && showWarning && <AlertModalError value="Error" />
-        )}
-
-        {deleteData?.deleteCredit && showWarningDelete ? (
-          <AlertModalSucces value="Se han eliminado el credito" />
-        ) : deleteData?.deleteCredit === false && showWarningDelete ? (
-          <AlertModalError value="El credito no se puede eliminar" />
-        ) : (
-          errorDelete && showWarningDelete && <AlertModalError value="Error" />
-        )}
       </div>
+      {deleteData?.deleteMovementById.state && showWarningDelete ? (
+        <AlertModalSucces value={deleteData.deleteMovementById.message} />
+      ) : deleteData?.deleteMovementById.state === false &&
+        showWarningDelete ? (
+        <AlertModalError value={deleteData.deleteMovementById.message} />
+      ) : (
+        errorDelete && showWarningDelete && <AlertModalError value="Error" />
+      )}
     </>
-  );
+  )
+}
+function IndeterminateCheckbox({
+  indeterminate,
+  className = '',
+  ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+  const ref = useRef<HTMLInputElement>(null!)
+
+  useEffect(() => {
+    if (typeof indeterminate === 'boolean') {
+      ref.current.indeterminate = !rest.checked && indeterminate
+    }
+  }, [ref, indeterminate])
+
+  return (
+    <input
+      type="checkbox"
+      ref={ref}
+      className={className + 'cursor-pointer'}
+      {...rest}
+    />
+  )
 }
 
-export default TableMovements;
+export default TableMovements

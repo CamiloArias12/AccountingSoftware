@@ -1,58 +1,176 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { AddSvg } from '../logo/Add';
+'use client'
+import { useRouter } from 'next/navigation'
+import { AddSvg } from '../logo/Add'
 
-import { motion } from 'framer-motion';
-import { TreasurySideBar } from '@/lib/utils/MenuTreasury';
-import { MenuSidebar } from '@/lib/utils/SidebarOptions';
+import { motion } from 'framer-motion'
+import { TreasurySideBar } from '@/lib/utils/MenuTreasury'
+import { MenuSidebar } from '@/lib/utils/SidebarOptions'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useState } from 'react'
+import ClickOutside from '../input/ClickOutSide'
+import { OptionsDeferred } from './MenuWallet'
+import { useSession } from 'next-auth/react'
 
 function MenuTreasury({
   toggleBar,
   setSelect,
+  setSelectSub,
+  selectSub
 }: {
-  toggleBar: boolean;
-  setSelect: any;
+  toggleBar: boolean
+  setSelect: any
+  setSelectSub: any
+  selectSub: any
 }) {
-  const router = useRouter();
+  const [showCash, setShowCash] = useState(false)
+  const {
+    data: { user }
+  } = useSession()
+
   return (
     <>
       <div className={`my-3 `}>
-        {TreasurySideBar.map((sidebar) => (
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            key={sidebar.name}
-            className={`w-full flex flex-row justify-betwen ${
-              !toggleBar && ' hover:pb-1 hover:border-b-[1px]'
-            }  my-5 `}
-          >
-            <div
-              className={`${
-                toggleBar && 'flex flex col items-center justify-center'
-              } w-full flex flex-row`}
-              onClick={() => {
-                setSelect(MenuSidebar.treasury);
-                router.push(sidebar.href);
-              }}
-            >
+        {TreasurySideBar.map(sidebar => (
+          <>
+            {user.rol[sidebar.permission] && (
               <motion.div
-                whileHover={{ scale: 2 }}
-                className={`h-4 w-4
-      
-						${toggleBar && 'h-8 w-8 p-2'} `}
+                whileHover={{ scale: 1.01 }}
+                key={sidebar.name}
+                className={`border-b flex flex-row justify-betwen ${
+                  !toggleBar && ' w-full h-full px-1'
+                }  mx-2 my-2 py-1  ${
+                  selectSub === sidebar.name &&
+                  'border-b-2 pb-1 rounded-md bg-[#C7CBD1]'
+                }	hover:bg-[#E1E1E1] hover:rounded-md `}
               >
-                <img src={sidebar.icon} />
+                <li
+                  className={`${
+                    toggleBar && 'flex flex col items-center justify-center'
+                  } w-full flex flex-row`}
+                >
+                  <Link
+                    className={`text-input flex-grow font-sans ${
+                      !toggleBar ? '' : 'px-1'
+                    }`}
+                    key={sidebar.href}
+                    href={sidebar.href}
+                    onClick={() => {
+                      setSelect(MenuSidebar.wallet)
+                      setSelectSub(sidebar.name)
+                    }}
+                  >
+                    <span className="flex flex-row gap-2">
+                      <Image src={sidebar.icon} height={16} width={16} alt="" />
+                      {!toggleBar && (
+                        <span
+                          className={`text-[14px] ${
+                            selectSub === sidebar.name && ' font-semibold'
+                          }`}
+                        >
+                          {sidebar.name}
+                        </span>
+                      )}
+                    </span>
+                  </Link>
+                </li>
+                {!toggleBar && sidebar.name !== 'Recibos de caja' && (
+                  <Link
+                    href={`${sidebar.href}/create`}
+                    className="flex items-center justify-center"
+                    onClick={() => {
+                      setSelect(MenuSidebar.wallet)
+                      setSelectSub(sidebar.name)
+                    }}
+                  >
+                    <motion.span
+                      className="  flex items-center justify center h-6 w-6 rounded-[50%] bg-[#10417B] hover:bg-[#000000] p-1"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.2,
+                        ease: [0, 0.71, 0.2, 1.01]
+                      }}
+                    >
+                      <AddSvg color="#ffffff" />
+                    </motion.span>
+                  </Link>
+                )}
+                {!toggleBar && sidebar.name === 'Recibos de caja' && (
+                  <ClickOutside
+                    onClick={() => {
+                      setShowCash(false)
+                    }}
+                    className={''}
+                  >
+                    <motion.span
+                      className="  flex items-center justify center h-6 w-6 rounded-[50%] bg-[#10417B] hover:bg-[#000000] p-1"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.2,
+                        ease: [0, 0.71, 0.2, 1.01]
+                      }}
+                      onClick={() => {
+                        setSelectSub(sidebar.name)
+                        setShowCash(!showCash)
+                      }}
+                    >
+                      <AddSvg color="#ffffff" />
+                    </motion.span>
+                    {showCash && (
+                      <OptionsCash
+                        setShowDeferred={setShowCash}
+                        showDeferred={showCash}
+                      />
+                    )}
+                  </ClickOutside>
+                )}
               </motion.div>
-              {!toggleBar && (
-                <label className=" font-sans text-[13px] pl-2">
-                  {sidebar.name}
-                </label>
-              )}
-            </div>
-          </motion.div>
+            )}
+          </>
         ))}
       </div>
     </>
-  );
+  )
 }
 
-export default MenuTreasury;
+export function OptionsCash({
+  showDeferred,
+  setShowDeferred
+}: {
+  showDeferred: boolean
+  setShowDeferred: any
+}) {
+  return (
+    <ul
+      className={`ml-[-60px] flex flex-col absolute text-sm  z-10  w-[100px] flex-grow bg-white shadow-lg max-h-100 rounded-md  ring-1 ring-black ring-opacity-5 focus:outline-none
+
+                      ${!showDeferred && 'hidden'}
+		      `}
+    >
+      <Link
+        href={'/dashboard/treasury/cash/credit'}
+        className=" flex-grow cursor-default select-none relative py-2 px-2 border-b  flex items-center hover:bg-[#f8fafb] transition"
+        onClick={() => {
+          setShowDeferred(false)
+        }}
+      >
+        Créditos
+      </Link>
+      <Link
+        href={'/dashboard/treasury/cash/saving'}
+        className=" flex-grow  cursor-default select-none relative py-2 px-2 flex items-center hover:bg-[#f8fafb] transition"
+        onClick={() => {
+          setShowDeferred(false)
+        }}
+      >
+        Ahorros
+      </Link>
+    </ul>
+  )
+}
+
+export default MenuTreasury

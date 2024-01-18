@@ -1,7 +1,10 @@
-import { getClient } from '@/lib/graphql/apollo-client-server';
-import { gql } from '@apollo/client';
-import FormCredit from './CreateCredit';
-export const revalidate = 0;
+import { getClient } from '@/lib/graphql/apollo-client-server'
+import { gql } from '@apollo/client'
+import FormCredit from './CreateCredit'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { redirect } from 'next/navigation'
+export const revalidate = 0
 
 async function getCreditInformation(): Promise<any> {
   const CREDIT_INFORMATION = gql`
@@ -18,25 +21,22 @@ async function getCreditInformation(): Promise<any> {
         id
         name
         interest
-        auxiliarys {
-          type
-          typeAccount {
-            code
-            name
-            nature
-          }
-        }
       }
     }
-  `;
+  `
+  const { data } = await getClient().query({ query: CREDIT_INFORMATION })
 
-  const { data } = await getClient().query({ query: CREDIT_INFORMATION });
-
-  return data;
+  return data
 }
 
 async function CreatePage() {
-  const data = await getCreditInformation();
+  const session = await getServerSession(authOptions)
+
+  if (!session.user.rol['credit']) {
+    redirect('/dashboard')
+  }
+
+  const data = await getCreditInformation()
   return (
     <>
       <FormCredit
@@ -44,7 +44,7 @@ async function CreatePage() {
         affiliates={data.allAfiliates}
       />
     </>
-  );
+  )
 }
 
-export default CreatePage;
+export default CreatePage

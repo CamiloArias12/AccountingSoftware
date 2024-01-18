@@ -1,18 +1,14 @@
-const route: string = '/dashboard/accounting/';
+const route: string = '/dashboard/accounting/'
 
 export enum LogoTreasury {
   payments = '/payment.svg',
-  interest = '/interest.svg',
+  interest = '/interest.svg'
 }
 export const AccountingSideBar = [
   {
-    name: 'Moviminetos credito',
+    name: 'Movimientos',
     href: `${route}movements`,
-    icon: LogoTreasury.payments,
-  },
-  {
-    name: 'jkasdjf',
-    href: `${route}interest`,
-    icon: LogoTreasury.interest,
-  },
-];
+    permission: 'movement',
+    icon: LogoTreasury.payments
+  }
+]

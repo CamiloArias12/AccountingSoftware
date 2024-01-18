@@ -6,23 +6,35 @@ import Button from '@/app/components/input/Button'
 import Logo from '@/app/components/logo/Logo'
 import TableAmortization from '@/app/components/forms/credit/TableAmortization'
 import { AmortizationTable, RefinanceCredit } from '@/lib/utils/credit/types'
-import { optionsCredit } from '@/lib/utils/credit/options'
+import {
+  PaymentMethods,
+  optionsCredit,
+  optionsMethod
+} from '@/lib/utils/credit/options'
 import { useCredit } from '@/app/hooks/credit/CreditInput'
 import { useRouter } from 'next/navigation'
 import AlertModalSucces from '@/app/components/modal/AlertModalSucces'
 import AlertModalError from '@/app/components/modal/AlertModalError'
 import InputCalendar from '@/app/components/input/Calendar'
+import { useForm } from 'react-hook-form'
+import { FieldRequired } from '@/lib/utils/FieldValidation'
+import InputNumber from '../../input/InputNumber'
+import SelectField from '../../input/SelectField'
 
 const GENERATE_TABLE_AMORTIZATION = gql`
   mutation (
-    $date: Date!
+    $dateCredit: Date!
+    $datePayment: Date
+    $paymentMethod: String!
     $creditValue: Float!
     $interest: Float!
-    $installments: Int!
+    $installments: Int
   ) {
     amortizationTableGenerate(
-      Date: $date
+      dateCredit: $dateCredit
+      datePayment: $datePayment
       creditValue: $creditValue
+      paymentMethod: $paymentMethod
       interest: $interest
       installments: $installments
     ) {
@@ -38,16 +50,34 @@ const GENERATE_TABLE_AMORTIZATION = gql`
     }
   }
 `
+const GENERATE_TABLE_AMORTIZATION_CHANGE = gql`
+  mutation ($table: ChangeAmortization!) {
+    amortizationTableChange(tableAmortization: $table) {
+      installmentNumber
+      paymentDate
+      initialBalance
+      scheduledPayment
+      extraPayment
+      totalPayment
+      capital
+      interest
+      finalBalance
+    }
+  }
+`
+
 const GENERATE_TABLE_AMORTIZATION_THREE = gql`
   mutation (
     $date: Date!
     $creditValue: Float!
     $interest: Float!
+    $paymentMethod: String!
     $scheduledPayment: Float!
   ) {
     amortizationTableGenerateThree(
       Date: $date
       creditValue: $creditValue
+      paymentMethod: $paymentMethod
       interest: $interest
       scheduledPayment: $scheduledPayment
     ) {
@@ -63,34 +93,37 @@ const GENERATE_TABLE_AMORTIZATION_THREE = gql`
     }
   }
 `
-const CREATE_CREDIT = gql`
-  mutation ($create: CreateCreditInput!) {
-    createCredit(createCreditInput: $create) {
-      id
-      startDate
-      discountDate
-      installments {
-        installmentNumber
-      }
-      affiliate {
-        company
-      }
-    }
+
+const REFINANCE_CREDIT = gql`
+  mutation ($id: Float!, $create: CreateCreditInput!) {
+    refinanceCreditCreate(id: $id, createCreditInput: $create)
   }
 `
 
 export const revalidate = 0
-function RefinanceCreditForm({ dataCredit }: { dataCredit: RefinanceCredit }) {
+function RefinanceCreditForm({
+  dataCredit,
+  id
+}: {
+  id: number
+  dataCredit: RefinanceCredit
+}) {
   const {
-    credit,
-    setCredit,
-    handleCreditNumber,
-    handleCreditSelect,
-    handleCredit
-  } = useCredit()
+    register: informationCredit,
+    unregister,
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    formState: { errors }
+  } = useForm({
+    mode: 'all'
+  })
 
+  const [methodPayment, setMethodPayment] = useState<string>()
   const [data, setData] = useState<AmortizationTable[]>([])
   const [option, setOption] = useState<number>(0)
+  const [button, setButton] = useState<number>(0)
   const [
     generateAmortizationTable,
     {
@@ -108,83 +141,81 @@ function RefinanceCreditForm({ dataCredit }: { dataCredit: RefinanceCredit }) {
     }
   ] = useMutation(GENERATE_TABLE_AMORTIZATION_THREE)
   const [
-    createCredit,
-    { data: dataCreate, loading: loadingCreate, error: errorCreate }
-  ] = useMutation(CREATE_CREDIT)
+    refinaceCredit,
+    { data: dataRefinace, loading: loadingRefinace, error: errorRefinace }
+  ] = useMutation(REFINANCE_CREDIT)
   const [showWarning, setShowWarning] = useState(false)
   const route = useRouter()
-
-  useEffect(() => {
-    setCredit({
-      nameAffiliate: dataCredit.nameAffiliate,
-      //@ts-ignore
-      identification: dataCredit.identification,
-      //@ts-ignore
-      creditValue: dataCredit.previewBalance,
-      typeCredit: dataCredit.typeCredit,
-      startDate: new Date(),
-      discountDate: new Date(),
-      //@ts-ignore
-      interest: dataCredit.interest,
-      interestAnual: '',
-      //@ts-ignore
-      installments: '',
-      scheduledPayment: '',
-      //@ts-ignore
-      idTypeCredit: dataCredit.idTypeCredit,
-      //@ts-ignore
-      previewBalance: dataCredit.previewBalance,
-      newBalance: '',
-      concept: ''
-    })
-  }, [])
-
-  const handleCreateCredit = () => {
-    setShowWarning(true)
-    const create = {
-      creditValue: credit.creditValue,
-      interest: credit.interest,
-      startDate: credit.startDate,
-      discountDate: credit.discountDate,
-      affiliateId: credit.identification,
-      idTypeCredit: credit.idTypeCredit,
-      installments: data,
-      concept: credit.concept
+  const [
+    generateAmortizationChange,
+    {
+      data: dataAmortizationChange,
+      loading: loadingAmortizationChange,
+      error: errorAmortizationChange
     }
-    createCredit({
+  ] = useMutation(GENERATE_TABLE_AMORTIZATION_CHANGE)
+
+  const handleRefinaceCredit = () => {
+    setShowWarning(true)
+
+    refinaceCredit({
       variables: {
-        create: create
+        create: {
+          creditValue: getValues('creditValue'),
+          valuePrevius: getValues('previewBalance'),
+          interest: getValues('interest'),
+          startDate: getValues('startDate'),
+          discountDate: getValues('dateCredit'),
+          affiliateId: getValues('idAffiliate'),
+          idTypeCredit: getValues('idTypeCredit'),
+          installments: data,
+          concept: getValues('concept'),
+          methodPayment: getValues('paymentMethod')
+        },
+        id: id
       }
     })
   }
 
   const handleGenerateTable = () => {
+    setShowWarning(true)
+    setData([])
     if (option === 0) {
       generateAmortizationTable({
         variables: {
-          date: credit.discountDate,
-          creditValue: credit.creditValue,
-          interest: credit.interest,
-          installments: credit.installments
+          dateCredit: getValues('dateCredit'),
+          datePayment: getValues('datePayment'),
+          paymentMethod: getValues('paymentMethod'),
+          creditValue: getValues('total'),
+          interest: getValues('interest'),
+          installments: getValues('installments')
         }
-      }).then((response: any) => {
-        setData(response.data.amortizationTableGenerate)
       })
     }
 
     if (option === 2) {
       generateAmortizationTableThree({
         variables: {
-          date: credit.discountDate,
-          creditValue: Number(credit.creditValue),
-          interest: Number(credit.interest),
-          scheduledPayment: Number(credit.scheduledPayment)
+          scheduledPayment: getValues('scheduledPayment'),
+          date: getValues('dateCredit'),
+          creditValue: getValues('total'),
+          interest: getValues('interest'),
+          paymentMethod: getValues('paymentMethod')
         }
-      }).then((response: any) => {
-        setData(response.data.amortizationTableGenerateThree)
-        handleCreditNumber('installments', data.length)
       })
     }
+  }
+  const handleAmortizationTable = () => {
+    setData([])
+    const table = {
+      tableAmortization: data
+    }
+
+    generateAmortizationChange({
+      variables: {
+        table: table
+      }
+    })
   }
 
   useEffect(() => {
@@ -197,14 +228,52 @@ function RefinanceCreditForm({ dataCredit }: { dataCredit: RefinanceCredit }) {
         clearTimeout(timeout)
       }
     }
-  }, [dataCreate, errorCreate])
+  }, [dataRefinace, errorRefinace])
 
-  console.log(dataCreate?.createCredit)
-
-  if (dataCreate?.createCredit && !showWarning) {
+  if (dataRefinace?.refinanceCreditCreate && !showWarning) {
     route.push('/dashboard/wallet/credit')
     route.refresh()
   }
+
+  useEffect(() => {
+    setValue('idAffiliate', dataCredit.identification)
+    setValue('interest', dataCredit.interest)
+    setValue('nameThird', dataCredit.nameAffiliate)
+    setValue('typeCredit', dataCredit.typeCredit)
+    setValue('idTypeCredit', dataCredit.idTypeCredit)
+    setValue('previewBalance', dataCredit.previewBalance)
+    setValue('creditValue', 0)
+    setValue('total', dataCredit.previewBalance)
+  }, [])
+
+  useEffect(() => {
+    setData([])
+    if (methodPayment === PaymentMethods.singlePayment) {
+      setOption(0)
+      unregister('installments')
+    }
+  }, [methodPayment])
+  useEffect(() => {
+    if (dataAmortizationChange && data.length === 0) {
+      setData([...dataAmortizationChange.amortizationTableChange])
+      setValue(
+        'installments',
+        dataAmortizationChange.amortizationTableChange.length
+      )
+    }
+  }, [dataAmortizationChange])
+
+  useEffect(() => {
+    if (dataAmortization && data.length === 0) {
+      setData([...dataAmortization.amortizationTableGenerate])
+    }
+  }, [dataAmortization])
+
+  useEffect(() => {
+    if (dataAmortizationThree && data.length === 0) {
+      setData([...dataAmortizationThree.amortizationTableGenerateThree])
+    }
+  }, [dataAmortizationThree])
 
   return (
     <div className=" flex-grow flex flex-col  ">
@@ -213,178 +282,266 @@ function RefinanceCreditForm({ dataCredit }: { dataCredit: RefinanceCredit }) {
           Refinaciar credito
         </label>
         <div className="flex  flex-row bg-white mt-3 pl-4  pt-2">
-          {optionsCredit.map(opt => (
+          {methodPayment !== PaymentMethods.singlePayment && (
             <>
-              {opt.id !== 1 && (
-                <div
-                  key={opt.id}
-                  className="flex flex-grow flex-row  items-center justify-center text-sm "
-                  onClick={() => {
-                    setOption(opt.id)
-                    setData([])
-                  }}
-                >
-                  <div
-                    className={`h-5 w-5  rounded-[50%] border-2 border-[#10417B] ${
-                      opt.id === option ? 'bg-[#10417B]' : 'bg-white'
-                    }`}
-                  />
-                  <label className="ml-2 mr-4">{opt.name}</label>
-                </div>
-              )}
+              {optionsCredit.map(opt => (
+                <>
+                  {opt.id !== 1 && (
+                    <>
+                      <div
+                        key={opt.id}
+                        className="flex flex-grow flex-row  items-center justify-center text-sm "
+                        onClick={() => {
+                          setOption(opt.id)
+                          setData([])
+                          console.log('option', option)
+                        }}
+                      >
+                        <div
+                          className={`h-5 w-5  rounded-[50%] border-2 border-[#10417B] ${
+                            opt.id === option ? 'bg-[#10417B]' : 'bg-white'
+                          }`}
+                        />
+                        <label className="ml-2 mr-4">{opt.name}</label>
+                      </div>
+                    </>
+                  )}
+                </>
+              ))}
             </>
-          ))}
+          )}
         </div>
       </div>
-      <div className=" flex-grow flex flex-col bg-white p-4">
-        <div className="flex flex-grow  flex-col   rounded-sm ">
-          <div className=" flex-grow flex flex-row">
-            <div className="flex-grow flex flex-col pr-2 ">
-              <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
-                Afliliado
-              </label>
-              <div className=" flex flex-grow  flex-row">
-                <InputField
-                  label="Identificacion"
-                  name="identification"
-                  value={credit.identification}
-                  onlyRead={true}
-                />
-                <InputField
-                  label="Nombres"
-                  value={credit.nameAffiliate}
-                  onlyRead={true}
-                />
+      <form
+        onSubmit={handleSubmit(
+          button === 2
+            ? handleRefinaceCredit
+            : button === 1 && handleGenerateTable
+        )}
+        className="  flex h-full overflow-scroll h-max-full justify-between-between flex-col bg-white p-4"
+      >
+        <section className="flex  flex-col gap-2">
+          <div className="flex   flex-col  rounded-sm ">
+            <div className=" flex-grow flex flex-row">
+              <div className="flex-grow flex flex-col pr-2 ">
+                <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
+                  Afliliado
+                </label>
+                <div className=" flex flex-grow gap-2  flex-row">
+                  <InputField
+                    label="Identificación"
+                    name="idAffiliate"
+                    onlyRead
+                    props={{
+                      ...informationCredit('idAffiliate')
+                    }}
+                  />
+                  <InputField
+                    label="Nombres"
+                    onlyRead
+                    props={{
+                      ...informationCredit('nameThird')
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex-grow flex flex-col px-2  ">
-              <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
-                Tipo de credito
-              </label>
-              <div className="flex flex-grow  flex-row">
-                <InputField
-                  label="Nombre"
-                  name="typeCredit"
-                  value={credit.typeCredit}
-                />
-                <div className="flex flex-grow flex-row items-end">
-                  <label className="text-input pr-6">
-                    {' '}
-                    Interes {credit.interest}%
-                  </label>
-                  <label className="text-input">Interes anual: 16.56% </label>
+              <div className="flex-grow flex flex-col px-2  ">
+                <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
+                  Tipo de credito
+                </label>
+                <div className="flex flex-grow  gap-2 flex-row">
+                  <InputField
+                    label="Nombre"
+                    name="typeCredit"
+                    props={{
+                      ...informationCredit('typeCredit')
+                    }}
+                  />
+                  <div className="flex flex-grow flex-row gap-2 items-end">
+                    <label className="text-input pb-2 ">
+                      {' '}
+                      Interes {dataCredit.interest}%
+                    </label>
+                    <label className="text-input pb-2">
+                      {dataCredit.interest * 12} %
+                    </label>
+                    <SelectField
+                      name="paymentMethod"
+                      control={control}
+                      label="Forma de pago"
+                      options={optionsMethod}
+                      setValue={setValue}
+                      required
+                      rules={FieldRequired}
+                      error={errors?.paymentMethod}
+                      setDispatch={setMethodPayment}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="flex-grow flex flex-col mt-2  ">
-            <label className="text-center text-white  bg-[#3C7ac2]   text-input font-bold mb-2">
-              Datos credito
-            </label>
-            <div className="flex-grow flex flex-row">
-              <InputCalendar
-                name="startDate"
-                label="Fecha de creacion"
-                value={credit.startDate}
-                onChange={handleCreditSelect}
-              />
-              <InputCalendar
-                name="discountDate"
-                label="Fecha de descuento"
-                value={credit.discountDate}
-                onChange={handleCreditSelect}
-              />
-              <InputField
-                label="Valor"
-                value={credit.creditValue}
-                name="creditValue"
-                onBlur={handleCreditNumber}
-                onlyRead={true}
-                onChange={handleCredit}
-              />
-              <InputField
-                label="Saldo anterior"
-                value={credit.previewBalance}
-                name="previewBalance"
-                onBlur={handleCreditNumber}
-                onlyRead={option !== 1 ? false : true}
-                onChange={handleCredit}
-              />
+            <div className="flex-grow flex flex-col mt-2  ">
+              <label className="text-center text-white  bg-[#3C7ac2]   text-input font-bold mb-2">
+                Datos credito
+              </label>
+              <div className="flex-grow flex flex-row gap-2">
+                <InputCalendar
+                  name="startDate"
+                  label="Fecha de creación"
+                  control={control}
+                  required
+                  rules={FieldRequired}
+                  error={errors.startDate}
+                />
 
-              <InputField
-                label="Nuevo credito"
-                value={credit.newBalance}
-                name="newBalance"
-                onBlur={handleCreditNumber}
-                onlyRead={option !== 1 ? false : true}
-                onChange={handleCredit}
-              />
+                <InputCalendar
+                  name="dateCredit"
+                  label="Fecha de descuento"
+                  control={control}
+                  required
+                  rules={FieldRequired}
+                  error={errors.dateCredit}
+                />
 
-              <InputField
-                label="Numero de coutas"
-                value={credit.installments}
-                onBlur={handleCreditNumber}
-                onlyRead={option !== 2 ? false : true}
-                onChange={handleCredit}
-                name="installments"
-              />
-              <InputField
-                label="Valor couta"
-                value={credit.scheduledPayment}
-                onBlur={handleCreditNumber}
-                onChange={handleCredit}
-                onlyRead={option !== 0 ? false : true}
-                name="scheduledPayment"
-              />
+                <InputNumber
+                  label="Saldo anterior"
+                  name="previewBalance"
+                  prefix="$ "
+                  thousandSeparator=","
+                  control={control}
+                  readonly
+                />
+                <InputNumber
+                  label="Valor credito"
+                  name="creditValue"
+                  prefix="$ "
+                  thousandSeparator=","
+                  control={control}
+                  handleChange={(value: number) => {
+                    setValue('total', getValues('previewBalance') + value)
+                  }}
+                  error={errors.creditValue}
+                  rules={FieldRequired}
+                  required
+                />
+
+                {(option === 0 || option === 2) && (
+                  <InputNumber
+                    label="Valor"
+                    name="total"
+                    prefix="$ "
+                    thousandSeparator=","
+                    control={control}
+                    readonly
+                  />
+                )}
+
+                {(option === 0 || option === 1) &&
+                  methodPayment !== PaymentMethods.singlePayment && (
+                    <InputNumber
+                      label="Número de coutas"
+                      name="installments"
+                      control={control}
+                      rules={FieldRequired}
+                      error={errors.installments}
+                    />
+                  )}
+
+                {(option === 2 || option === 1) && (
+                  <InputNumber
+                    label="Valor couta"
+                    name="scheduledPayment"
+                    control={control}
+                    required
+                    rules={FieldRequired}
+                    error={errors.scheduledPayment}
+                  />
+                )}
+                {methodPayment === PaymentMethods.singlePayment && (
+                  <InputCalendar
+                    name="datePayment"
+                    label="Fecha de pago"
+                    control={control}
+                    required
+                    rules={FieldRequired}
+                    error={errors.datePayment}
+                  />
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="pt-2 flex justify-end mr-4 ">
-          <InputField
-            label="Concepto"
-            name="concept"
-            value={credit.concept}
-            onChange={handleCredit}
-          />
+          <div className="pt-2 flex justify-end mr-4 ">
+            <InputField
+              label="Concepto"
+              name="concept"
+              required
+              props={{
+                ...informationCredit('concept', FieldRequired)
+              }}
+              error={errors?.concept}
+            />
 
-          <button
-            className="flex flex-row rounded-sm bg-[#F2F5FA] p-2 "
-            onClick={handleGenerateTable}
-          >
-            <img src="/generate.svg" height={20} width={20} />
-            <label className="font-sans px-6 text-sm">Generar tabla</label>
-          </button>
-        </div>
+            <button
+              className="flex flex-row items-center gap-2 rounded-sm bg-[#F2FFA5] p-2 "
+              type="submit"
+              onClick={() => {
+                setButton(1)
+              }}
+            >
+              <img src="/generate.svg" height={15} width={15} />
+              <span className="font-bold text-sm">Generar tabla</span>
+            </button>
+          </div>
+        </section>
+        {(loadingAmortization ||
+          loadingAmortizationThree ||
+          loadingAmortizationChange) && <Logo />}
+
         <div className="flex-grow h-full">
           {(loadingAmortization || loadingAmortizationThree) && <Logo />}
 
           {data.length > 0 && (
             <>
               <TableAmortization
+                isChange={
+                  methodPayment !== PaymentMethods.singlePayment ? true : false
+                }
                 data={data}
                 setData={setData}
                 setSelected={true}
+                handleAmortizationTable={handleAmortizationTable}
               />
 
-              <div className="py-4 ">
-                <Button
-                  name="Aceptar"
-                  background="bg-[#10417B] 
+              <div className=" flex flex-row  justify-end gap-2">
+                {data?.length > 0 && (
+                  <Button
+                    name="Aceptar"
+                    type={'submit'}
+                    background="bg-[#10417B] 
+	      
 			   text-white"
-                  onClick={handleCreateCredit}
+                    onClick={() => {
+                      setButton(2)
+                    }}
+                  />
+                )}
+                <Button
+                  name="Cancelar"
+                  background="border border-[#10417B] text-[#10417B]"
+                  route="/dashboard/wallet/credit/all"
                 />
               </div>
             </>
           )}
         </div>
-      </div>
-      {dataCreate?.createCredit && showWarning ? (
-        <AlertModalSucces value="El  credito ha sido registrado" />
-      ) : dataCreate?.createCredit === false && showWarning ? (
-        <AlertModalError value="El credit ya existe" />
-      ) : (
-        errorCreate && showWarning && <AlertModalError value="Error" />
-      )}
+        {dataRefinace?.refinanceCreditCreate && showWarning ? (
+          <AlertModalSucces value="El  credito ha sido refinanciado" />
+        ) : dataRefinace?.refinanceCreditCreate === false && showWarning ? (
+          <AlertModalError value="Error" />
+        ) : (
+          errorRefinace && showWarning && <AlertModalError value="Error" />
+        )}
+      </form>
     </div>
   )
 }

@@ -3,62 +3,95 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeSaving } from './type-saving.entity';
 import { CreateTypeSavingDto } from './dto/createTypeSaving.dto';
-import { SubAccountService } from '../type-account/sub-account/sub-account.service';
-import { AccountService } from '../type-account/account/account.service';
 import { AuxiliaryService } from '../type-account/auxiliary/auxiliary.service';
-import { UpdateTypeCreditInput } from '../type-credit/dto/updateTypeCredit.dto';
+import { TypeSavingAccount } from './type-saving-account/type-saving-account.entity';
+import { TypeSavingAccountService } from './type-saving-account/type-saving-account.service';
 
 @Injectable()
 export class TypeSavingService {
-    constructor(
-        @InjectRepository(TypeSaving)
-        private readonly typeSavingRepository: Repository<TypeSaving>,
-        private readonly auxiliaryService: AuxiliaryService
-    ) { }
+  constructor(
+    @InjectRepository(TypeSaving)
+    private readonly typeSavingRepository: Repository<TypeSaving>,
+    private readonly auxiliaryService: AuxiliaryService,
+    private readonly typeSavingAccountService: TypeSavingAccountService,
+  ) {}
 
-    async createTypeSaving(data: CreateTypeSavingDto): Promise<TypeSaving> {
-        const typeSaving = new TypeSaving();
+  async create(data: CreateTypeSavingDto): Promise<TypeSaving> {
+    const typeSaving = new TypeSaving();
+    let auxiliaries: TypeSavingAccount[] = [];
+    for (const account of data.accounts) {
+      const typeSavingAccount: TypeSavingAccount = new TypeSavingAccount();
+      const auxiliary = await this.auxiliaryService.findOne(account.account);
+      typeSavingAccount.account = auxiliary;
+      typeSavingAccount.nature = account.nature;
+      typeSavingAccount.percentage = account.percentage;
 
-        if (data.auxiliary && data.auxiliary.length) {
-            typeSaving.auxiliarys = await this.auxiliaryService.findAuxiliarys(data.auxiliary);
-        }
-
-        typeSaving.name = data.name;
-
-        return await this.typeSavingRepository.save(typeSaving);
+      auxiliaries.push(typeSavingAccount);
     }
-   async findOne(id:number):Promise<TypeSaving> {
-      return await this.typeSavingRepository.findOne({where:{id:id}});
-    }
+    typeSaving.name = data.name;
 
-   async update(data: UpdateTypeCreditInput,id:number): Promise<Boolean> {
-     try {
-       await this.typeSavingRepository.update({id:id},{name:data.name}) 
-       return true;
-     } catch (e) {
-	return false
-     }
+    typeSaving.auxiliaries = auxiliaries;
+
+    return await this.typeSavingRepository.save(typeSaving);
   }
-    async findAll(): Promise<TypeSaving[]> {
-        return await this.typeSavingRepository.find(
-	    {relations:{
-	       auxiliarys:{
-		     typeAccount:true
-	       }
-	 }}
-	);
+
+  async update(data: CreateTypeSavingDto, id: number): Promise<Boolean> {
+    const typeSaving = await this.findOne(id);
+    await this.typeSavingAccountService.delete(typeSaving.auxiliaries);
+    let auxiliaries: TypeSavingAccount[] = [];
+    for (const account of data.accounts) {
+      const typeSavingAccount: TypeSavingAccount = new TypeSavingAccount();
+      const auxiliary = await this.auxiliaryService.findOne(account.account);
+      typeSavingAccount.account = auxiliary;
+      typeSavingAccount.nature = account.nature;
+      typeSavingAccount.percentage = account.percentage;
+
+      auxiliaries.push(typeSavingAccount);
     }
+    typeSaving.name = data.name;
+    typeSaving.auxiliaries = auxiliaries;
+    try {
+      await this.typeSavingRepository.save(typeSaving);
+      return true;
+    } catch (e) {
+      return false;
+      /* handle error */
+    }
+  }
 
-   async delete (id:number):Promise<Boolean> {
-      try {
-	 await this.typeSavingRepository.delete(id) 
-	 return true;
-      } catch (e) {
-	 console.log(e)
-	 return false
-      }
-   }
+  async findOne(id: number): Promise<TypeSaving> {
+    return await this.typeSavingRepository.findOne({
+      where: { id: id },
+      relations: {
+        auxiliaries: {
+          account: {
+            typeAccount: true,
+          },
+        },
+      },
+      order: { auxiliaries: { nature: 'DESC' } },
+    });
+  }
 
+  async findAll(): Promise<TypeSaving[]> {
+    return await this.typeSavingRepository.find({
+      relations: {
+        auxiliaries: {
+          account: {
+            typeAccount: true,
+          },
+        },
+      },
+    });
+  }
+
+  async delete(id: number): Promise<Boolean> {
+    try {
+      await this.typeSavingRepository.delete(id);
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
 }
-
-

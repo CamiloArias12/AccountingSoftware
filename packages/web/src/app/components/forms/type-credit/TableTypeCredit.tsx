@@ -4,6 +4,7 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
@@ -20,6 +21,10 @@ import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
 import OptionsTable from '../../options-table/OptionsTable'
 import InputNumber from '../../input/InputNumber'
+import ViewTypeCredit from './ViewTypeCredit'
+import id from 'date-fns/locale/id'
+import TypeCreditUpdate from './TypeCreditUpdate'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
 
 const DELETE_TYPE_CREDIT = gql`
   mutation ($id: Int!) {
@@ -77,18 +82,27 @@ function TableTypeCredit({
   const route = useRouter()
   const [sorting, setSorting] = useState<SortingState>([])
   const [selected, setSelected] = useState<number>(0)
+
+  const [globalFilter, setGlobalFilter] = useState('')
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting
+    filterFns: {
+      fuzzy: fuzzyFilter
     },
+
+    state: {
+      sorting,
+      globalFilter
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     debugTable: true
   })
-
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
   const { rows } = table.getRowModel()
@@ -100,48 +114,20 @@ function TableTypeCredit({
   })
   const { virtualItems: virtualRows } = rowVirtualizer
 
-  const [idrow, setIdRow] = useState<string>('')
-  const [expanded, setExpanded] = useState<boolean>(false)
-  const [value, setValue] = useState<any>()
   const [update, setUpdate] = useState<boolean>(false)
+
+  const [showView, setShowView] = useState(false)
   const [
     deleteTypeCredit,
     { data: deleteData, loading: loadingDelete, error: errorDelete }
   ] = useMutation(DELETE_TYPE_CREDIT)
-  const { typeCredit, setTypeCredit, handleTypeCredit } = useTypeCredit()
-  const [
-    updateTypeCredit,
-    { data: updateData, loading: loadingUpdate, error: errorUpdate }
-  ] = useMutation(UPDATE_TYPE_CREDIT)
   const [showWarning, setShowWarning] = useState(false)
-  const [showWarningUpdate, setShowWarningUpdate] = useState(false)
-
-  useEffect(() => {
-    if (deleteData?.deleteTypeCredit) {
-      route.refresh()
-    }
-  }, [deleteData])
-
-  useEffect(() => {
-    if (updateData) {
-      if (updateData?.updateTypeCredit) {
-        setUpdate(false)
-        route.refresh()
-      }
-      const timeout = setTimeout(() => {
-        setShowWarningUpdate(false)
-      }, 3000) // 3 seconds in milliseconds
-
-      return () => {
-        clearTimeout(timeout)
-      }
-    }
-  }, [updateData, errorUpdate])
 
   useEffect(() => {
     if (deleteData) {
       if (deleteData?.deleteTypeCredit) {
         route.refresh()
+        setShowOptions(false)
       }
 
       console.log('delete')
@@ -164,18 +150,12 @@ function TableTypeCredit({
     })
   }
 
-  const updateTypeCreditHandle = () => {
-    setShowWarningUpdate(true)
-    updateTypeCredit({
-      variables: {
-        data: typeCredit,
-        id: selected
-      }
-    })
-  }
-
   return (
     <>
+      {showView && <ViewTypeCredit setShow={setShowView} id={selected} />}
+      {update && (
+        <TypeCreditUpdate setShowModal={setUpdate} idTypeCredit={selected} />
+      )}
       <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] pt-8">
         <OptionsTable
           showOptions={showOptions}
@@ -185,6 +165,11 @@ function TableTypeCredit({
           setUpdate={setUpdate}
           setCreate={() => {
             setShowModalCreate(true)
+          }}
+          search={globalFilter}
+          setSearch={setGlobalFilter}
+          setView={() => {
+            setShowView(true)
           }}
         />
 
@@ -231,99 +216,32 @@ function TableTypeCredit({
                 const row = rows[virtualRow.index] as Row<any>
                 return (
                   <>
-                    {row.id == idrow && update ? (
-                      <tr className=" h-24 border-b-2 border-[#8C4708] px-2 ">
-                        <td className="bg-white h-full">{selected}</td>
-                        <td className="px-2 bg-white">
-                          <InputField
-                            name="name"
-                            label=""
-                            value={typeCredit.name}
-                            onChange={handleTypeCredit}
-                          />
-                        </td>
-                        <td className="px-2 bg-white flex flex-row h-full items-center  ">
-                          <InputNumber
-                            name="interest"
-                            label=""
-                            value={Number(typeCredit.interest)}
-                            handleChange={handleTypeCredit}
-                          />
-
-                          <div className="ml-4 flex flex-col">
-                            <button
-                              className="h-[20px] w-[20px] mb-2"
+                    <motion.tr
+                      key={row.id}
+                      className={`${
+                        selected === row._valuesCache.id && ' selected '
+                      }  hover:border-l-4  hover:border-l-[#3C7AC2] `}
+                    >
+                      {row.getVisibleCells().map(cell => {
+                        return (
+                          <>
+                            <td
                               onClick={() => {
-                                updateTypeCreditHandle()
+                                setShowOptions(true)
+                                setSelected(Number(row._valuesCache.id))
                               }}
+                              className=" px-2 "
+                              key={cell.id}
                             >
-                              <img
-                                src="/accept.png"
-                                className="w-full h-full "
-                              />
-                            </button>
-                            <button
-                              className="h-[20px] w-[20px]"
-                              onClick={() => {
-                                setUpdate(false)
-                              }}
-                            >
-                              <img
-                                src="/cancel.png"
-                                className="w-full h-full "
-                              />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      <motion.tr
-                        key={row.id}
-                        className={`${
-                          selected === row._valuesCache.id && ' selected '
-                        }  hover:border-l-4  hover:border-l-[#3C7AC2] `}
-                      >
-                        {row.getVisibleCells().map(cell => {
-                          return (
-                            <>
-                              <td
-                                onClick={() => {
-                                  setShowOptions(true)
-                                  if (!update) {
-                                    setTypeCredit({
-                                      name: String(row._valuesCache.name),
-                                      //@ts-ignore
-                                      interest: Number(
-                                        row._valuesCache.interest
-                                      )
-                                    })
-                                    setSelected(Number(row._valuesCache.id))
-                                  }
-                                  if (update === false) {
-                                    if (idrow == row.id) {
-                                      setIdRow(row.id)
-                                      setExpanded(!expanded)
-                                    } else {
-                                      setExpanded(false)
-                                      setIdRow(row.id)
-                                      setExpanded(!true)
-                                    }
-                                  }
-                                  console.log('Flex render', row._valuesCache)
-                                }}
-                                className="font-light px-2 py-2"
-                                key={cell.id}
-                              >
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </td>
-                            </>
-                          )
-                        })}
-                      </motion.tr>
-                    )}
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          </>
+                        )
+                      })}
+                    </motion.tr>
                   </>
                 )
               })}
@@ -331,15 +249,8 @@ function TableTypeCredit({
           </table>
         </div>
       </div>
-      {updateData?.updateTypeCredit && showWarningUpdate ? (
-        <AlertModalSucces value="Se han actualizado los datos" />
-      ) : updateData?.updateTypeCredit === false && showWarningUpdate ? (
-        <AlertModalError value="Los datos no se pueden actualizar" />
-      ) : (
-        errorUpdate && showWarningUpdate && <AlertModalError value="Error" />
-      )}
       {deleteData?.deleteTypeCredit && showWarning ? (
-        <AlertModalSucces value="Se han eliminado el tipo de ahorro" />
+        <AlertModalSucces value="Se han eliminado el tipo de credito" />
       ) : deleteData?.deleteTypeCredit === false && showWarning ? (
         <AlertModalError value="El tipo de ahorro no se puede eliminar" />
       ) : (

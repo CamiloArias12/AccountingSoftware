@@ -1,34 +1,39 @@
-'use client';
+'use client'
 
-import { ApolloLink, HttpLink } from '@apollo/client';
-import { removeTypenameFromVariables } from '@apollo/client/link/remove-typename';
+import { ApolloLink, HttpLink } from '@apollo/client'
+import { removeTypenameFromVariables } from '@apollo/client/link/remove-typename'
 import {
   ApolloNextAppProvider,
   NextSSRInMemoryCache,
   NextSSRApolloClient,
-  SSRMultipartLink,
-} from '@apollo/experimental-nextjs-app-support/ssr';
+  SSRMultipartLink
+} from '@apollo/experimental-nextjs-app-support/ssr'
 
 function makeClient() {
   const httpLink = new HttpLink({
-      uri: `${process.env.API_ENDPOINT}/graphql`,
-  });
-  const removeTypenameLink = removeTypenameFromVariables();
+    uri: `${process.env.API_ENDPOINT}/graphql`,
+    fetchOptions: { cache: 'no-store' },
+    headers: {
+      authorization:
+        'Bearer	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwMDI2NDkxMzIiLCJuYW1lIjoiZGVtbyIsImlhdCI6MTcwNDk4NTQ3OCwiZXhwIjoxNzA0OTkyNjc4fQ.aDmyItz4rBiBnX6L0p5S63Di7mobfChDAA-MbGL_GeE'
+    }
+  })
+  const removeTypenameLink = removeTypenameFromVariables()
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache({
-      addTypename: false,
+      addTypename: false
     }),
     link:
       typeof window === 'undefined'
         ? ApolloLink.from([
             new SSRMultipartLink({
-              stripDefer: true,
+              stripDefer: true
             }),
             removeTypenameLink,
-            httpLink,
+            httpLink
           ])
-        : httpLink,
-  });
+        : httpLink
+  })
 }
 
 export function ApolloWrapper({ children }: React.PropsWithChildren) {
@@ -36,5 +41,5 @@ export function ApolloWrapper({ children }: React.PropsWithChildren) {
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}
     </ApolloNextAppProvider>
-  );
+  )
 }

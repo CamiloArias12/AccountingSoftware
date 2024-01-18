@@ -5,43 +5,43 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { AddSvg } from '../../logo/Add';
-import { useRouter } from 'next/navigation';
-import { useVirtual } from 'react-virtual';
-import { motion } from 'framer-motion';
-import { Credit } from '@/lib/utils/credit/types';
-import { gql, useMutation } from '@apollo/client';
-import AlertModalError from '../../modal/AlertModalError';
-import AlertModalSucces from '../../modal/AlertModalSucces';
+  useReactTable
+} from '@tanstack/react-table'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { AddSvg } from '../../logo/Add'
+import { useRouter } from 'next/navigation'
+import { useVirtual } from 'react-virtual'
+import { motion } from 'framer-motion'
+import { Credit } from '@/lib/utils/credit/types'
+import { gql, useMutation } from '@apollo/client'
+import AlertModalError from '../../modal/AlertModalError'
+import AlertModalSucces from '../../modal/AlertModalSucces'
 
 const REFINANCE = gql`
   mutation ($id: Int!) {
     isRefinance(id: $id)
   }
-`;
+`
 
 const DELETE_CREDIT = gql`
   mutation ($id: Int!) {
     deleteCredit(id: $id)
   }
-`;
+`
 function TableCredits({ credits }: { credits: Credit[] }) {
   const columns = useMemo<ColumnDef<Credit>[]>(
     () => [
       {
         accessorKey: 'id',
-        cell: (info) => info.getValue(),
+        cell: info => info.getValue(),
         header: () => <span>Id</span>,
-        size: 50,
+        size: 50
       },
       {
         accessorKey: 'name',
-        accessorFn: (row) => `${row.name} ${row.lastName}`,
-        cell: (info) => info.getValue(),
-        header: () => 'Afiliado',
+        accessorFn: row => `${row.name} ${row.lastName}`,
+        cell: info => info.getValue(),
+        header: () => 'Afiliado'
       },
       {
         accessorKey: 'creditValue',
@@ -54,12 +54,12 @@ function TableCredits({ credits }: { credits: Credit[] }) {
           </div>
         ),
 
-        header: () => <span>Monto</span>,
+        header: () => <span>Monto</span>
       },
       {
         accessorKey: 'nameCredit',
-        cell: (info) => info.getValue(),
-        header: () => <span>Tipo de credito</span>,
+        cell: info => info.getValue(),
+        header: () => <span>Tipo de credito</span>
       },
       {
         accessorKey: 'discountDate',
@@ -71,12 +71,12 @@ function TableCredits({ credits }: { credits: Credit[] }) {
           </div>
         ),
 
-        header: () => <span>Fecha de descuento</span>,
+        header: () => <span>Fecha de descuento</span>
       },
       {
         accessorKey: 'interest',
-        cell: (info) => info.getValue(),
-        header: () => <span>Interes</span>,
+        cell: info => info.getValue(),
+        header: () => <span>Interes</span>
       },
       {
         accessorKey: 'state',
@@ -93,110 +93,110 @@ function TableCredits({ credits }: { credits: Credit[] }) {
             </label>
           </div>
         ),
-        header: () => <span>Estado</span>,
-      },
+        header: () => <span>Estado</span>
+      }
     ],
-    [],
-  );
+    []
+  )
 
-  const [data, setData] = useState<Credit[]>(credits);
-  const [showOptions, setShowOptions] = useState(false);
-  const route = useRouter();
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [data, setData] = useState<Credit[]>(credits)
+  const [showOptions, setShowOptions] = useState(false)
+  const route = useRouter()
+  const [sorting, setSorting] = useState<SortingState>([])
   const [
     isRefinance,
-    { data: dataRefinance, loading: loadingRefinance, error: errorRefinance },
-  ] = useMutation(REFINANCE);
+    { data: dataRefinance, loading: loadingRefinance, error: errorRefinance }
+  ] = useMutation(REFINANCE)
   const [
     deleteCredit,
-    { data: deleteData, loading: loadingDelete, error: errorDelete },
-  ] = useMutation(DELETE_CREDIT);
+    { data: deleteData, loading: loadingDelete, error: errorDelete }
+  ] = useMutation(DELETE_CREDIT)
   const table = useReactTable({
     data,
     columns,
     state: {
-      sorting,
+      sorting
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
-  });
-  const tableContainerRef = useRef<HTMLDivElement>(null);
+    debugTable: true
+  })
+  const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const { rows } = table.getRowModel();
+  const { rows } = table.getRowModel()
 
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 12,
-  });
-  const { virtualItems: virtualRows } = rowVirtualizer;
+    overscan: 12
+  })
+  const { virtualItems: virtualRows } = rowVirtualizer
 
-  const [id, setId] = useState<number>(0);
-  const [update, setUpdate] = useState<boolean>(false);
-  const [showView, setShowView] = useState<boolean>(false);
+  const [id, setId] = useState<number>(0)
+  const [update, setUpdate] = useState<boolean>(false)
+  const [showView, setShowView] = useState<boolean>(false)
 
-  const [showWarning, setShowWarning] = useState(false);
-  const [showWarningDelete, setShowWarningDelete] = useState(false);
+  const [showWarning, setShowWarning] = useState(false)
+  const [showWarningDelete, setShowWarningDelete] = useState(false)
 
   useEffect(() => {
-    setData(credits);
-  }, [credits]);
+    setData(credits)
+  }, [credits])
 
   useEffect(() => {
     if (data) {
       const timeout = setTimeout(() => {
-        setShowWarning(false);
-      }, 1000); // 3 seconds in milliseconds
+        setShowWarning(false)
+      }, 1000) // 3 seconds in milliseconds
 
       return () => {
-        clearTimeout(timeout);
-      };
+        clearTimeout(timeout)
+      }
     }
-  }, [dataRefinance, errorRefinance]);
+  }, [dataRefinance, errorRefinance])
 
   const deleteCreditHandle = () => {
-    setShowWarningDelete(true);
+    setShowWarningDelete(true)
     deleteCredit({
       variables: {
-        id: id,
-      },
-    });
-  };
+        id: id
+      }
+    })
+  }
 
   const handleRefinance = () => {
-    setShowWarning(true);
+    setShowWarning(true)
     isRefinance({
       variables: {
-        id: id,
-      },
-    });
-  };
+        id: id
+      }
+    })
+  }
   useEffect(() => {
     if (deleteData) {
       if (deleteData?.deleteCredit) {
-        route.refresh();
+        route.refresh()
       }
 
-      console.log('delete');
+      console.log('delete')
       const timeout = setTimeout(() => {
-        setShowWarningDelete(false);
-      }, 3000); // 3 seconds in milliseconds
+        setShowWarningDelete(false)
+      }, 3000) // 3 seconds in milliseconds
 
       return () => {
-        clearTimeout(timeout);
-      };
+        clearTimeout(timeout)
+      }
     }
-  }, [deleteData, errorDelete]);
+  }, [deleteData, errorDelete])
 
   if (dataRefinance?.isRefinance) {
-    route.push(`/dashboard/wallet/credit/${id}`);
+    route.push(`/dashboard/wallet/credit/${id}`)
   }
 
   return (
     <>
-      <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
+      <div className="flex fle-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
         <div className="flex items-center justify-between m-3  ">
           <div>
             {showOptions && (
@@ -204,7 +204,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
                 <button
                   className="flex flex-row"
                   onClick={() => {
-                    setShowView(true);
+                    setShowView(true)
                   }}
                 >
                   <img src="/view.svg" />
@@ -214,7 +214,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
                 <button
                   className="flex flex-row"
                   onClick={() => {
-                    setUpdate(true);
+                    setUpdate(true)
                   }}
                 >
                   <img src="/edit.svg" />
@@ -223,7 +223,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
                 <button
                   className="flex flex-row"
                   onClick={() => {
-                    deleteCreditHandle();
+                    deleteCreditHandle()
                   }}
                 >
                   <img src="/delete.svg" />
@@ -232,7 +232,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
                 <button
                   className="flex flex-row"
                   onClick={() => {
-                    handleRefinance();
+                    handleRefinance()
                   }}
                 >
                   <img src="/refinance.svg" />
@@ -245,7 +245,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
           <div
             className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
             onClick={() => {
-              route.push('/dashboard/wallet/credit/create');
+              route.push('/dashboard/wallet/credit/create')
             }}
           >
             <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-8 w-8 bg-[#10417B] ">
@@ -260,9 +260,9 @@ function TableCredits({ credits }: { credits: Credit[] }) {
         <div className="mx-4 my-2 flex-grow text-sm">
           <table className="h-full w-full table-fixed table ">
             <thead className="font-medium ">
-              {table.getHeaderGroups().map((headerGroup) => (
+              {table.getHeaderGroups().map(headerGroup => (
                 <tr className="rounded-lg  " key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
+                  {headerGroup.headers.map(header => {
                     return (
                       <th
                         className="text-start font-light pl-3 py-2 font-medium "
@@ -276,28 +276,28 @@ function TableCredits({ credits }: { credits: Credit[] }) {
                               className: header.column.getCanSort()
                                 ? 'cursor-pointer select-none'
                                 : '',
-                              onClick: header.column.getToggleSortingHandler(),
+                              onClick: header.column.getToggleSortingHandler()
                             }}
                           >
                             {flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
                             {{
                               asc: ' 🔼',
-                              desc: ' 🔽',
+                              desc: ' 🔽'
                             }[header.column.getIsSorted() as string] ?? null}
                           </div>
                         )}
                       </th>
-                    );
+                    )
                   })}
                 </tr>
               ))}
             </thead>
             <tbody className=" ">
-              {virtualRows.map((virtualRow) => {
-                const row = rows[virtualRow.index] as Row<any>;
+              {virtualRows.map(virtualRow => {
+                const row = rows[virtualRow.index] as Row<any>
                 return (
                   <>
                     <motion.tr
@@ -306,27 +306,27 @@ function TableCredits({ credits }: { credits: Credit[] }) {
                         id === row._valuesCache.id && 'selected'
                       } hover:border-l-4  hover:border-l-[#3C7AC2] `}
                     >
-                      {row.getVisibleCells().map((cell) => {
+                      {row.getVisibleCells().map(cell => {
                         return (
                           <td
                             onClick={() => {
-                              setShowOptions(true);
+                              setShowOptions(true)
 
-                              setId(Number(row._valuesCache.id));
+                              setId(Number(row._valuesCache.id))
                             }}
                             className="font-light px-2 py-2"
                             key={cell.id}
                           >
                             {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext(),
+                              cell.getContext()
                             )}
                           </td>
-                        );
+                        )
                       })}
                     </motion.tr>
                   </>
-                );
+                )
               })}
             </tbody>
           </table>
@@ -346,7 +346,7 @@ function TableCredits({ credits }: { credits: Credit[] }) {
         )}
       </div>
     </>
-  );
+  )
 }
 
-export default TableCredits;
+export default TableCredits

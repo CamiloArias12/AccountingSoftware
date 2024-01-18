@@ -1,66 +1,110 @@
-import { useRouter } from "next/navigation";
-import Modal from "../../modal/Modal";
-import { gql, useMutation, useQuery } from '@apollo/client';
-import {
-  useEffect,
-  useState,
-} from 'react';
-import { useTypeAccount } from "@/app/hooks/type-account/TypeAccountInput";
-import AlertModalSucces from "../../modal/AlertModalSucces";
-import AlertModalError from "../../modal/AlertModalError";
-import SplashScreen from "../../splash/Splash";
-import TableMovementsAccount from "./TableMovementsAccount";
-import TableMovements from "./TableMovements";
-import { Movement } from "@/lib/utils/accounting/types";
-const UPDATE_ACCOUNT = gql`
-  mutation ($updateTypeAccount: TypeAccountInput!, $code: Float!) {
-    updateAccount(updateTypeAccount: $updateTypeAccount, code: $code)
-  }
-`;
-
-
+import { useRouter } from 'next/navigation'
+import Modal from '../../modal/Modal'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import TableMovementsAccount from './TableMovementsAccount'
+import { Movement } from '@/lib/utils/accounting/types'
+import TableMovementsDetails from './TableMovementsDetails'
+import TableMovements from './TableMovements'
+import { useState } from 'react'
+import Button from '../../input/Button'
+import Image from 'next/image'
+import { downloadAccountMovementPdf } from '@/lib/axios/uploadFiles'
 const GET_ACCOUNT_MOVEMENT = gql`
-query($idMovement:String!) {
-  findMovementAccount(idMovement:$idMovement){
-    debit
-    credit
-    identificationThird
-    code
-    nameThird
-    nameAccount
+  query ($movements: [String!]!) {
+    findMovementAccount(movements: $movements) {
+      account {
+        credit
+        debit
+        identificationThird
+        nameThird
+        code
+        nameAccount
+      }
+      movement {
+        id
+        date
+        concept
+        state
+        accounting
+      }
+    }
   }
-  
-}
 `
 
-function ViewMovementAccount({idMovement,setView,movemnts}:{idMovement:string,setView:any,movemnts:Movement[]}){
-
+function ViewMovementAccount({
+  setView,
+  movements
+}: {
+  movements: any
+  setView: any
+}) {
+  console.log(movements)
   const { data, loading, error } = useQuery(GET_ACCOUNT_MOVEMENT, {
-    variables: { idMovement: idMovement},
-  });
-return (
-   <>
-    <Modal
-      size="min-w-[550px] min-h-[600px]"
-      title="Movimiento cuentas"
-      onClick={() => {
-        setView(false);
-      }}
-    >
-      
-      {data &&
-      <>
-      <TableMovements credits={movemnts}/>
-      <TableMovementsAccount movementAccounts={data?.findMovementAccount}/>
-      </>
-      }
-     </Modal> 
-</>
-);
+    variables: { movements: movements }
+  })
+  const [index, setIndex] = useState(0)
+  const [loadingDownload, setLoadingDownload] = useState(false)
+  return (
+    <>
+      <Modal
+        size="max-w-[1000px] h-[800px] bg-white"
+        title="Movimiento cuentas"
+        onClick={() => {
+          setView(false)
+        }}
+      >
+        {data && (
+          <>
+            <Button
+              background="bg-[#EEEEEE] rounded-lg "
+              image="/download.svg"
+              name="Descargar"
+              loading={loadingDownload}
+              onClick={async () => {
+                setLoadingDownload(true)
+                await downloadAccountMovementPdf(
+                  data?.findMovementAccount[index].movement.id
+                )
 
+                setLoadingDownload(false)
+              }}
+            />
 
-
+            <TableMovementsDetails
+              movements={[data?.findMovementAccount[index].movement]}
+            />
+            <TableMovementsAccount
+              movementAccounts={data?.findMovementAccount[index].account}
+            />
+            {index > 0 && (
+              <div className="pr-4">
+                <Button
+                  name="Anterior"
+                  background="border border-[#009226] text-[#009226]"
+                  type={'submit'}
+                  onClick={() => {
+                    setIndex(index - 1)
+                  }}
+                />
+              </div>
+            )}
+            {index < data?.findMovementAccount.length - 1 && (
+              <div className="pr-4">
+                <Button
+                  name="Siguiente"
+                  background="border border-[#009226] text-[#009226]"
+                  type={'submit'}
+                  onClick={() => {
+                    setIndex(index + 1)
+                  }}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </Modal>
+    </>
+  )
 }
 
-
-export default ViewMovementAccount 
+export default ViewMovementAccount
