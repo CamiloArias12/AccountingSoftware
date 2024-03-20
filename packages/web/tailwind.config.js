@@ -19,11 +19,12 @@ module.exports = {
         layout: '200px minmax(900px, 1fr) 100px'
       },
       backgroundImage: {
-        'img-bg': "url('/bglogin.png')"
+        'img-bg': "url('/bglogin.jpg')"
       },
 
       fontSize: {
-        input: '14px'
+        input: '15px',
+        'input-medium': '14px'
       }
     }
   },

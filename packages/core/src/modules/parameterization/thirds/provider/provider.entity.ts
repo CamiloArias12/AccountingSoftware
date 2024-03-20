@@ -9,7 +9,7 @@ export class Provider {
   @PrimaryColumn('bigint')
   idProvider: number;
 
-  @Column({ default: false })
+  @Column({ default: true })
   state: boolean;
   @Field(() => Provider)
   @OneToOne(() => User, (user) => user.provider, {

@@ -11,7 +11,7 @@ export class Beneficiary implements IBeneficiary {
   idDocument: number;
 
   @Field()
-  @Column()
+  @Column({ length: 80 })
   name: string;
 
   @Field(() => BeneficiaryAffiliate)

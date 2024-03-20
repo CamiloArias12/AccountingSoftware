@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { DataSource, Repository, TypeORMError } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserInput } from './dto/input/createuser.dto';
 import { AffiliateService } from '../affiliate/affiliate.service';
 import { InputEmployeeCreate } from '../employee/dto/createEmployee.dto';
 import { EmployeeService } from '../employee/employee.service';
 import { ProviderService } from '../provider/provider.service';
-import { Thirds } from '../dto/types';
 import { BeneficiaryAffiliate } from '../affiliate/beneficiary-affiliate/beneficiary-affiliate.entity';
 import { Affiliate } from '../affiliate/affiliate.entity';
 import { ResponseGraphql } from 'src/config/graphql-response/response-graphql';
@@ -16,7 +15,6 @@ import { Beneficiary } from '../affiliate/beneficiary/beneficiary.entity';
 import { BeneficiaryService } from '../affiliate/beneficiary/beneficiary.service';
 import { InputAffiliateCreate } from '../affiliate/dto/InputAffiliate';
 import { Employee } from '../employee/employee.entity';
-import { Role } from '../role/role.entity';
 
 @Injectable()
 export class UserService {
@@ -137,6 +135,7 @@ export class UserService {
           newEmployee.username = employee.username;
           if (employee.password) {
             newEmployee.password = employee.password;
+            newEmployee.state = true;
           }
           await this.employeeService.update(
             newEmployee,
@@ -151,7 +150,6 @@ export class UserService {
 
           try {
             const beneficiaries = user.affiliate.beneficiaries;
-            console.log(beneficiaries);
             let beneficiariesEquals = beneficiaries.filter((beneficiary) =>
               affiliateInput.beneficiaries.some(
                 (inputBeneficiary) =>
@@ -233,7 +231,7 @@ export class UserService {
 
             await queryRunner.manager.update(
               Affiliate,
-              { idAffiliate: user.identification },
+              { identification: user.identification },
               { ...user.affiliate, state: true },
             );
             console.log(user.affiliate);
@@ -244,6 +242,9 @@ export class UserService {
           } finally {
             await queryRunner.release();
           }
+        }
+
+        if (provider && user.provider) {
         }
 
         try {
@@ -305,6 +306,10 @@ export class UserService {
     return await this.findOne(identification);
   }
 
+  async validateFields(options: any) {
+    return this.userRepository.exist({ where: options });
+  }
+
   async delete(identification: number): Promise<Boolean> {
     try {
       await this.userRepository.delete(identification);
@@ -312,5 +317,10 @@ export class UserService {
     } catch (e) {
       return false;
     }
+  }
+  async exist(identification: number): Promise<boolean> {
+    return await this.userRepository.exist({
+      where: { identification: identification },
+    });
   }
 }

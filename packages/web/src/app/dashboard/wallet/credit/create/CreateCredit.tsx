@@ -22,6 +22,9 @@ import InputNumber from '@/app/components/input/InputNumber'
 import { Controller, useForm } from 'react-hook-form'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
 import SelectField from '@/app/components/input/SelectField'
+import { LabeTitle } from '@/app/components/input/LabelTitle'
+import { set } from 'date-fns'
+import { Token } from '@/app/hooks/TokenContext'
 
 const GENERATE_TABLE_AMORTIZATION = gql`
   mutation (
@@ -136,8 +139,6 @@ function FormCredit({
   creditType: any
   accounts?: any
 }) {
-  const { credit, handleCreditNumber, handleCreditSelect, handleCredit } =
-    useCredit()
   const {
     register: informationCredit,
     unregister,
@@ -150,6 +151,7 @@ function FormCredit({
     mode: 'all'
   })
 
+  const { context } = Token()
   const [data, setData] = useState<AmortizationTable[]>([])
   const [option, setOption] = useState<number>(0)
   const [button, setButton] = useState<number>(0)
@@ -191,7 +193,7 @@ function FormCredit({
       interest: getValues('interest'),
       startDate: getValues('startDate'),
       discountDate: getValues('dateCredit'),
-      affiliateId: getValues('idAffiliate'),
+      affiliateId: getValues('identification'),
       idTypeCredit: getValues('idTypeCredit'),
       installments: data,
       concept: getValues('concept'),
@@ -200,7 +202,8 @@ function FormCredit({
     createCredit({
       variables: {
         create: create
-      }
+      },
+      context
     })
   }
 
@@ -216,7 +219,8 @@ function FormCredit({
           creditValue: getValues('creditValue'),
           interest: getValues('interest'),
           installments: getValues('installments')
-        }
+        },
+        context
       })
     }
     if (option === 1) {
@@ -228,7 +232,8 @@ function FormCredit({
           interest: getValues('interest'),
           installments: getValues('installments'),
           paymentMethod: getValues('paymentMethod')
-        }
+        },
+        context
       })
     }
 
@@ -240,7 +245,8 @@ function FormCredit({
           creditValue: getValues('creditValue'),
           interest: getValues('interest'),
           paymentMethod: getValues('paymentMethod')
-        }
+        },
+        context
       })
     }
   }
@@ -252,7 +258,8 @@ function FormCredit({
     generateAmortizationChange({
       variables: {
         table: table
-      }
+      },
+      context
     })
   }
 
@@ -278,21 +285,34 @@ function FormCredit({
   useEffect(() => {
     if (dataAmortization && data.length === 0) {
       setData([...dataAmortization.amortizationTableGenerate])
-      handleCreditNumber('installments', data.length)
+      setValue(
+        'installments',
+        dataAmortization.amortizationTableGenerate.length
+      )
     }
   }, [dataAmortization])
 
   useEffect(() => {
     if (dataAmortizationTwo && data.length === 0) {
       setData([...dataAmortizationTwo.amortizationTableGenerateTwo])
-      handleCreditNumber('installments', data.length)
+      setValue(
+        'installments',
+        dataAmortizationTwo.amortizationTableGenerateTwo.length
+      )
+      setValue(
+        'creditValue',
+        dataAmortizationTwo.amortizationTableGenerateTwo[0].initialBalance
+      )
     }
   }, [dataAmortizationTwo])
 
   useEffect(() => {
     if (dataAmortizationThree && data.length === 0) {
       setData([...dataAmortizationThree.amortizationTableGenerateThree])
-      handleCreditNumber('installments', data.length)
+      setValue(
+        'installments',
+        dataAmortizationThree.amortizationTableGenerateThree.length
+      )
     }
   }, [dataAmortizationThree])
 
@@ -322,29 +342,29 @@ function FormCredit({
   }
 
   return (
-    <div className=" max-h-full h-full w-full flex flex-col   ">
+    <div className=" max-h-full h-full w-full flex flex-col  md:overflow-scroll  ">
       <div className="flex justify-between ">
-        <label className="font-bold px-4 item-center  bg-white pt-2">
+        <h1 className="hidden md:flex font-bold px-4 item-center  bg-white pt-2">
           Crear crédito
-        </label>
-        <div className="flex  flex-row bg-white mt-3 pl-4  pt-2">
+        </h1>
+        <div className=" flex  flex-row gap-2 mt-3 pl-4 py-2   md:pt-2 md:bg-white bg-sky-50 overflow-scroll">
           {methodPayment !== PaymentMethods.singlePayment && (
             <>
               {optionsCredit.map(opt => (
                 <div
                   key={opt.id}
-                  className="flex flex-grow flex-row  items-center justify-center text-sm "
+                  className="flex flex-row  items-center justify-center text-sm "
                   onClick={() => {
                     setOption(opt.id)
                     setData([])
                   }}
                 >
                   <div
-                    className={`h-5 w-5  rounded-[50%] border-2 border-[#10417B] ${
+                    className={`h-5 w-5 cursor-pointer rounded-[50%] border-2 border-[#10417B] ${
                       opt.id === option ? 'bg-[#10417B]' : 'bg-white'
                     }`}
                   />
-                  <label className="ml-2 mr-4">{opt.name}</label>
+                  <span className="ml-2 mr-4 min-w-[150px]">{opt.name}</span>
                 </div>
               ))}
             </>
@@ -358,16 +378,14 @@ function FormCredit({
             ? handleCreateCredit
             : button === 1 && handleGenerateTable
         )}
-        className="  flex h-full overflow-scroll h-max-full justify-between-between flex-col bg-white p-4"
+        className="  flex h-full h-max-full justify-between-between overflow-scroll flex-col bg-white md:p-4 p-2 gap-2"
       >
         <section className="flex  flex-col gap-2">
           <div className="flex   flex-col  rounded-sm ">
-            <div className=" flex-grow flex flex-row">
-              <div className="flex-grow flex flex-col pr-2 ">
-                <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
-                  Afliliado
-                </label>
-                <div className=" flex flex-grow  flex-row">
+            <div className=" flex-grow  flex-col flex 2xl:flex-row gap-2">
+              <div className="flex-grow flex flex-col md:pr-2 ">
+                <LabeTitle value="Afiliado" />
+                <div className=" flex flex-grow gap-2  flex-col md:flex-row">
                   <SelectAffiliate
                     label="Identificación"
                     name="identification"
@@ -376,6 +394,14 @@ function FormCredit({
                     control={control}
                     rules={FieldRequired}
                     required
+                    onClick={(option: any) => {
+                      console.log(option)
+                      setValue('identification', option.user.identification)
+                      setValue(
+                        'nameThird',
+                        `${option.user.name} ${option.user.lastName}`
+                      )
+                    }}
                     error={errors?.identification?.message}
                   />
                   <InputField
@@ -387,12 +413,10 @@ function FormCredit({
                   />
                 </div>
               </div>
-              <div className="flex-grow flex flex-col px-2  ">
-                <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
-                  Tipo de crédito
-                </label>
+              <div className="flex-grow flex flex-col  md:px-2 gap-2 2xl:gap-0 ">
+                <LabeTitle value="Tipo de crédito" />
 
-                <div className="flex flex-grow gap-2 flex-row">
+                <div className=" gap-2  xl:flex xl:flex-row md:grid grid-cols-1 md:grid-cols-2">
                   <SelectAffiliate
                     label="Nombre"
                     name="typeCredit"
@@ -401,10 +425,16 @@ function FormCredit({
                     control={control}
                     rules={FieldRequired}
                     error={errors?.typeCredit?.message}
+                    onClick={(option: any) => {
+                      setValue('interest', option.interest)
+                      setValue('interestAnual', option.interest * 12)
+                      setValue('typeCredit', option.name)
+                      setValue('idTypeCredit', option.id)
+                    }}
                     required
                   />
                   <InputNumber
-                    label="Interes"
+                    label="Interés"
                     name="interest"
                     suffix=" %"
                     thousandSeparator=","
@@ -413,7 +443,7 @@ function FormCredit({
                   />
 
                   <InputNumber
-                    label="Interes anual"
+                    label="Interés anual"
                     name="interestAnual"
                     suffix=" %"
                     thousandSeparator=","
@@ -436,10 +466,8 @@ function FormCredit({
               </div>
             </div>
             <div className="flex-grow flex flex-col mt-2  ">
-              <label className="text-center text-white  bg-[#10417B]   text-input font-bold mb-2">
-                Datos crédito
-              </label>
-              <div className="flex-grow flex flex-row gap-2">
+              <LabeTitle value="Informacion crédito" />
+              <div className=" gap-2 xl:grid-cols-4  2xl:flex 2xl:flex-row md:grid grid-cols-1 md:grid-cols-2">
                 <InputCalendar
                   name="startDate"
                   label="Fecha de creación"
@@ -475,8 +503,6 @@ function FormCredit({
                   methodPayment !== PaymentMethods.singlePayment && (
                     <InputNumber
                       label="Número de coutas"
-                      value={credit.installments}
-                      handleChange={handleCreditSelect}
                       name="installments"
                       control={control}
                       rules={FieldRequired}
@@ -509,7 +535,7 @@ function FormCredit({
               </div>
             </div>
           </div>
-          <div className="pt-2 flex  flex-row  gap-2 justify-end mr-4 ">
+          <div className="pt-2 flex flex-col md:flex-row  gap-2 justify-end mr-4 ">
             <InputField
               label="Concepto"
               name="concept"
@@ -537,7 +563,7 @@ function FormCredit({
           loadingAmortizationChange) && <Logo />}
 
         {data?.length > 0 ? (
-          <div className="flex flex-col h-max-[300px] overflow-hidden ">
+          <div className="flex flex-grow flex-col min-h-[500px] md:h-max-[300px]  md:overflow-scroll">
             <TableAmortization
               isChange={
                 methodPayment !== PaymentMethods.singlePayment ? true : false
@@ -552,7 +578,12 @@ function FormCredit({
           <div />
         )}
 
-        <div className=" flex flex-row  justify-end gap-2">
+        <div className=" flex  flex-col md:flex-row  justify-end gap-2">
+          <Button
+            name="Cancelar"
+            background="border border-[#10417B] text-[#10417B]"
+            route="/dashboard/wallet/credit"
+          />
           {data?.length > 0 && (
             <Button
               name="Aceptar"
@@ -565,11 +596,6 @@ function FormCredit({
               }}
             />
           )}
-          <Button
-            name="Cancelar"
-            background="border border-[#10417B] text-[#10417B]"
-            route="/dashboard/wallet/credit"
-          />
         </div>
         {dataCreate?.createCredit && showWarning ? (
           <AlertModalSucces value="El  crédito ha sido registrado" />

@@ -22,6 +22,7 @@ type SelectFieldProps = {
   error?: any
   setValue: any
   setDispatch?: any
+  className?: string
 }
 
 function SelectField({
@@ -37,9 +38,9 @@ function SelectField({
   rules,
   error,
   setValue,
-  value,
   required,
-  setDispatch
+  setDispatch,
+  className
 }: SelectFieldProps) {
   const [toggle, setToggle] = useState<boolean>(false)
   const [search, setSearch] = useState<string>('')
@@ -66,7 +67,7 @@ function SelectField({
           onClick={() => {
             setToggle(false)
           }}
-          className="flex flex-grow flex-col relative text-input"
+          className="flex flex-grow flex-col relative text-input-medium 2xl:text-input"
         >
           {label && (
             <label className={`pb-2 font-semibold flex flex-row gap-1`}>
@@ -79,8 +80,9 @@ function SelectField({
             type="button"
             className={` ${
               toggle && ' border-2 border-blue-500 '
-            } bg-white relative w-full flex cursor-pointer gap-2 flex-row  rounded-md items-center  border focus:outline-2 focus:outline-[rgb(59,130,246)]  pl-2  text-left  focus: h-[34px] mb-1
-	    
+            } bg-white relative w-full flex cursor-pointer gap-2 flex-row  rounded-md items-center  border focus:outline-2 focus:outline-[rgb(59,130,246)]  pl-2  text-left  
+	   
+	   ${className ? className : ' h-[30px] 2xl:h-[34px] '}
           !color ? 'border-[#d9d9d9]' : 'border-[#AD1A1A]'
 	`}
             onClick={() => {
@@ -89,7 +91,7 @@ function SelectField({
           >
             {image && country && (
               <img
-                className="text-gray-900 cursor-default select-none relative  flex items-center hover:bg-gray-50 transition"
+                className="text-gray-900  cursor-default select-none relative  flex items-center hover:bg-gray-50 transition"
                 src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${country}.svg`}
                 height={20}
                 width={30}
@@ -136,7 +138,7 @@ function SelectField({
           )}
           <div className={`flex flex-grow  ${!toggle && 'hidden'} `}>
             <ul className=" flex absolute w-full z-10  flex-grow bg-white shadow-lg max-h-100 rounded-md text-base ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <div className="flex-grow  flex flex-col  max-h-64 scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-600 scrollbar-thumb-rounded scrollbar-thin overflow-y-scroll text-input">
+              <div className="flex-grow  flex flex-col  max-h-64 scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-600 scrollbar-thumb-rounded scrollbar-thin overflow-y-scroll text-input-medium 2xl:text-input">
                 {toggle && options ? (
                   list.map((option: any) => (
                     <li

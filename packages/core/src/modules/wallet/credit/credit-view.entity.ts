@@ -24,9 +24,9 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
       .leftJoin(
         Affiliate,
         'affiliate',
-        'credit.affiliateIdAffiliate= affiliate.idAffiliate',
+        'credit.affiliateIdentification= affiliate.identification',
       )
-      .leftJoin(User, 'user', 'affiliate.idAffiliate= user.identification')
+      .leftJoin(User, 'user', 'affiliate.identification= user.identification')
       .leftJoin(TypeCredit, 'typeCredit', 'credit.typeCreditId=typeCredit.id '),
 })
 @InputType('inputViewCredit')
@@ -68,7 +68,7 @@ export class ViewCredit {
   @ViewColumn()
   state: string;
 
-  @Field()
+  @Field(() => Date)
   @ViewColumn()
   discountDate: Date;
 

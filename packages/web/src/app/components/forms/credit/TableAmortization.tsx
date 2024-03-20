@@ -12,9 +12,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useVirtual } from 'react-virtual'
 import { motion } from 'framer-motion'
 import { AmortizationTable } from '@/lib/utils/credit/types'
-import { gql, useMutation } from '@apollo/client'
-import SplashScreen from '../../splash/Splash'
 import { NumericFormat } from 'react-number-format'
+import { format } from 'date-fns'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
+import TableInfo from '../../table/TableGeneral'
 
 function TableAmortization({
   setSelected,
@@ -48,7 +49,9 @@ function TableAmortization({
         accessorKey: 'paymentDate',
         size: 200,
         enableResizing: true,
-        cell: (row: any) => <>{row.getValue().split('T', 1)}</>,
+        cell: (row: any) => (
+          <>{format(new Date(row.getValue()), 'dd-MM-yyyy')}</>
+        ),
 
         header: () => <span>Fecha de pago</span>
       },
@@ -124,35 +127,22 @@ function TableAmortization({
   )
 
   const [sorting, setSorting] = useState<SortingState>([])
-
+  const [rowId, setRowId] = useState<number>(0)
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
     state: {
       sorting
     },
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true
   })
-
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const { rows } = table.getRowModel()
-
-  const rowVirtualizer = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 8
-  })
-  const { virtualItems: virtualRows, totalSize } = rowVirtualizer
-  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
-  const paddingBottom =
-    virtualRows.length > 0
-      ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-      : 0
-  console.log(data)
   return (
     <>
       {isChange && (
@@ -165,87 +155,13 @@ function TableAmortization({
         </button>
       )}
 
-      <div
-        className=" flex   my-2 overflow-scroll  text-sm"
-        style={{ minHeight: 'auto' }}
-        ref={tableContainerRef}
-      >
-        <table className="w-full table-fixed table-amortization ">
-          <thead className="font-medium  bg-[#F2F5FA] ">
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr className="rounded-lg" key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  return (
-                    <th
-                      className="text-center font-light py-2 font-medium "
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      style={{ width: header.getSize() }}
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? 'cursor-pointer select-none'
-                              : '',
-                            onClick: header.column.getToggleSortingHandler()
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {{
-                            asc: ' 🔼',
-                            desc: ' 🔽'
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </div>
-                      )}
-                    </th>
-                  )
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody className=" ">
-            {paddingTop > 0 && (
-              <tr>
-                <td style={{ height: `${paddingTop}px` }} />
-              </tr>
-            )}
-
-            {virtualRows.map(virtualRow => {
-              const row = rows[virtualRow.index] as Row<any>
-              return (
-                <>
-                  <motion.tr
-                    key={row.id}
-                    className=" border border-b-gray-200 hover:border-l-4 p-2 hover:border-l-[#3C7AC2] "
-                  >
-                    {row.getVisibleCells().map(cell => {
-                      return (
-                        <>
-                          <td className="py-2 text-center">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        </>
-                      )
-                    })}
-                  </motion.tr>
-                </>
-              )
-            })}
-            {paddingBottom > 0 && (
-              <tr>
-                <td style={{ height: `${paddingBottom}px` }} />
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <TableInfo
+        table={table}
+        className="max-w-full overflow-auto min-h-80 py-2 text-sm table-amortization"
+        rowId={rowId}
+        setRow={setRowId}
+        key={1}
+      />
     </>
   )
 }

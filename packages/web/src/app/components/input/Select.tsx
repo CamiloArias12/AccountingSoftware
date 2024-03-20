@@ -20,6 +20,8 @@ type SelectProps = {
   required?: boolean
   rules?: any
   error?: any
+  className?: string
+  handleChangeOption?: any
 }
 
 function Select({
@@ -38,7 +40,9 @@ function Select({
   error,
   value,
   required,
-  rules
+  rules,
+  className,
+  handleChangeOption
 }: SelectProps) {
   const [toggle, setToggle] = useState<boolean>(false)
 
@@ -46,14 +50,12 @@ function Select({
   const [click, setClick] = useState(false)
   const [valueLabel, setValueLabel] = useState<string>('')
 
-  console.log(setDispatch)
   const toggleText = () => {
     setToggle(false)
     setClick(false)
   }
 
   useEffect(() => {
-    console.log(value)
     if (value !== '') {
       const account = options?.find(
         option => option?.typeAccount?.code === value
@@ -89,7 +91,7 @@ function Select({
       render={({ field: { onChange: handleChange, onBlur, value, ref } }) => (
         <ClickOutside
           onClick={toggleText}
-          className="flex flex-col text-input  flex-grow relative "
+          className={`flex flex-grow  flex-col text-input-medium 2xl:text-input relative `}
         >
           {label && (
             <label className={`pb-2 font-semibold flex flex-row gap-1`}>
@@ -97,19 +99,45 @@ function Select({
               {required && <span className="text-[#E61515]">*</span>}
             </label>
           )}
-          <input
-            className={`mb-1  rounded-md border border-gray-300 placeholder-black  h-[34px] p-1`}
-            placeholder={setDispatch ? value : valueLabel}
-            value={search}
+          <button
+            className={` ${
+              toggle && ' border-2 border-blue-500 '
+            } bg-white relative w-full flex cursor-pointer gap-2 flex-row  items-center border   rounded-md pl-2  text-left  focus:outline-none focus:ring-1 focus:ring-blue-500 
+	    ${className ? className : 'h-[30px] 2xl:h-[34px] '}
+	 `}
+            type="button"
             onClick={() => {
               setToggle(!toggle)
-              handleQuery && handleQuery()
-              setClick(true)
             }}
-            onChange={e => {
-              setSearch(e.target.value)
-            }}
-          />
+          >
+            <input
+              className="flex-grow h-full placeholder-black border-0 hover:none "
+              style={{ outline: 'none' }}
+              placeholder={valueLabel}
+              value={search}
+              onClick={() => {
+                setToggle(!toggle)
+                handleQuery && handleQuery()
+                setClick(true)
+              }}
+              onChange={e => {
+                setSearch(e.target.value)
+                setToggle(true)
+              }}
+            />
+            <svg
+              className={'mr-2'}
+              fill={'#000000'}
+              height={12}
+              width={12}
+              viewBox="-6.5 0 32 32"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M18.813 11.406l-7.906 9.906c-0.75 0.906-1.906 0.906-2.625 0l-7.906-9.906c-0.75-0.938-0.375-1.656 0.781-1.656h16.875c1.188 0 1.531 0.719 0.781 1.656z"></path>
+            </svg>
+          </button>
+
           {error && (
             <span
               className={`text-[#FF0000] text-xs font-semibold ${
@@ -121,7 +149,7 @@ function Select({
           )}
           <div className={`flex flex-grow  ${!toggle && 'hidden'}`}>
             <ul className=" flex absolute w-full z-10  flex-grow bg-white shadow-lg max-h-100 rounded-md text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              <div className="flex-grow  flex flex-col max-h-64 scrollbar scrollbar-track-gray-800 scrollbar-thumb-gray-800 hover:scrollbar-thumb-gray-800 scrollbar-thumb-rounded scrollbar-thin overflow-y-scroll">
+              <div className="flex-grow  flex flex-col max-h-64 scrollbar scrollbar-track-gray-800 scrollbar-thumb-gray-800 hover:scrollbar-thumb-gray-800 scrollbar-thumb-rounded scrollbar-thin overflow-y-scroll text-input-medium 2xl:text-input">
                 {toggle && list ? (
                   list.map((option: any) => (
                     <li
@@ -139,9 +167,7 @@ function Select({
                         setValueLabel(
                           `${option.typeAccount.code}  ${option.typeAccount.name}`
                         )
-
                         setToggle(!toggle)
-
                         setClick(false)
                       }}
                     >

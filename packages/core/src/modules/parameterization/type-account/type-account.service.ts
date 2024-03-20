@@ -20,6 +20,14 @@ import { TypeAccountInput } from './dto/type-account-input';
 import { ClassAccountResolver } from './class-account/class-account.resolver';
 import * as tmp from 'tmp';
 import { createReadStream } from 'fs';
+
+import { AccountMovement } from 'src/modules/treasury/account-movement/account-movement.entity';
+import { CashRegisterMovement } from 'src/modules/treasury/cash-register-movement/cash-register-movement.entity';
+import { CreditMovement } from 'src/modules/treasury/credit-movement/credit-movement.entity';
+import { DeferredMovement } from 'src/modules/treasury/deferred-movement/deferred-movement.entity';
+import { DisbursementMovement } from 'src/modules/treasury/disbursement-movement/disbursement-movement.entity';
+import { NoteMovement } from 'src/modules/treasury/note-movement/note-movement.entity';
+import { Movement } from 'src/modules/treasury/movement/movement.entity';
 @Injectable()
 export class TypeAccountService {
   constructor(
@@ -130,7 +138,6 @@ export class TypeAccountService {
 
   async delete(code: number): Promise<Boolean> {
     try {
-      this.dowloadAccounts();
       await this.typeAccountRepository.delete(code);
       return true;
     } catch (e) {
@@ -156,10 +163,10 @@ export class TypeAccountService {
     workbook.created = new Date();
     const worksheet = workbook.addWorksheet('Plan de cuentas');
     worksheet.columns = [
-      { header: 'Tipo', key: 'type', width: 20 },
       { header: 'Codigo', key: 'code', width: 30 },
       { header: 'Nombre', key: 'name', width: 60 },
       { header: 'Naturaleza', key: 'nature', width: 20 },
+      { header: 'Tipo', key: 'type', width: 20 },
     ];
     const accounts = await this.classAccountResolver.getClassAccountAll();
 
@@ -339,6 +346,124 @@ export class TypeAccountService {
       return false;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async getStatisticsAccount(code: number, typeAccount: TypeAccountEnum) {
+    console.log(code, typeAccount);
+    const query = this.dataSource
+      .createQueryBuilder()
+      .addSelect(
+        ' SUM(CASE WHEN account_movement.nature = "Debito" THEN value ELSE 0 END) ',
+        'debit',
+      )
+      .addSelect(
+        ' SUM(CASE WHEN account_movement.nature = "Credito" THEN value ELSE 0 END) ',
+        'credit',
+      )
+      .addSelect('movement.date', 'date');
+
+    typeAccount === TypeAccountEnum.CLASS && query.from(ClassAccount, 'class');
+    typeAccount === TypeAccountEnum.GROUP && query.from(Group, 'group');
+    typeAccount === TypeAccountEnum.ACCOUNT && query.from(Account, 'account');
+    typeAccount === TypeAccountEnum.SUBACCOUNT &&
+      query.from(SubAccount, 'sub_account');
+    typeAccount === TypeAccountEnum.AUXILIARY &&
+      query.from(Auxiliary, 'auxiliary');
+
+    console.log(query.getQueryAndParameters());
+    typeAccount === TypeAccountEnum.CLASS &&
+      query.leftJoin(Group, 'group', 'class.code=group.classAccountCode');
+
+    {
+      (typeAccount === TypeAccountEnum.CLASS ||
+        typeAccount === TypeAccountEnum.GROUP) &&
+        query.leftJoin(Account, 'account', 'group.code= account.groupCode');
+    }
+
+    {
+      (typeAccount === TypeAccountEnum.CLASS ||
+        typeAccount === TypeAccountEnum.GROUP ||
+        typeAccount === TypeAccountEnum.ACCOUNT) &&
+        query.leftJoin(
+          SubAccount,
+          'sub_account',
+          'account.code= sub_account.accountCode',
+        );
+    }
+
+    {
+      (typeAccount === TypeAccountEnum.CLASS ||
+        typeAccount === TypeAccountEnum.GROUP ||
+        typeAccount === TypeAccountEnum.ACCOUNT ||
+        typeAccount === TypeAccountEnum.SUBACCOUNT) &&
+        query.leftJoin(
+          Auxiliary,
+          'auxiliary',
+          'sub_account.code= auxiliary.subAccountCode',
+        );
+    }
+    query
+      .leftJoin(
+        AccountMovement,
+        'account_movement',
+        'auxiliary.code = account_movement.auxiliaryCode',
+      )
+      .leftJoin(
+        CashRegisterMovement,
+        'cash_movement',
+        'account_movement.movementCashId= cash_movement.id',
+      )
+      .leftJoin(
+        CreditMovement,
+        'credit_movement',
+        'account_movement.movementCreditId =credit_movement.id',
+      )
+      .leftJoin(
+        DeferredMovement,
+        'deferred_movement',
+        'account_movement.movementDefferedId = deferred_movement.id',
+      )
+      .leftJoin(
+        DisbursementMovement,
+        'disbursement_movement',
+        'account_movement.movementDisburmentId = disbursement_movement.id',
+      )
+      .leftJoin(
+        NoteMovement,
+        'note_movement',
+        'account_movement.movementNoteId = note_movement.id',
+      )
+      .innerJoin(
+        Movement,
+        'movement',
+        'cash_movement.movementId = movement.id or note_movement.movementId = movement.id or credit_movement.movementId = movement.id or disbursement_movement.movementId = movement.id or deferred_movement.movementId = movement.id',
+      )
+      .distinct(true)
+      .where(
+        `
+        ${
+          typeAccount === TypeAccountEnum.CLASS
+            ? 'class.code'
+            : typeAccount === TypeAccountEnum.GROUP
+              ? 'group.code'
+              : typeAccount === TypeAccountEnum.ACCOUNT
+                ? 'account.code'
+                : typeAccount === TypeAccountEnum.SUBACCOUNT
+                  ? 'sub_account.code'
+                  : typeAccount === TypeAccountEnum.AUXILIARY &&
+                    'auxiliary.code'
+        } = :code`,
+        { code: code },
+      )
+      .groupBy('movement.date')
+      .orderBy('movement.date', 'ASC');
+    try {
+      console.log(query.getQueryAndParameters());
+      return await query.getRawMany();
+    } catch (e) {
+      console.log(e);
+      return [];
     }
   }
 }

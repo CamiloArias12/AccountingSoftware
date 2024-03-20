@@ -11,11 +11,15 @@ import { AuthGuard } from './auth.guards';
     EmployeeModule,
     JwtModule.register({
       global: true,
-      secret: 'Hello',
-      signOptions: { expiresIn: '2h' },
+      secret: 'FoncastelHello',
+      signOptions: { expiresIn: '3h' },
     }),
     EmployeeModule,
   ],
-  providers: [AuthService, AuthResolver],
+  providers: [
+    { provide: APP_GUARD, useClass: AuthGuard },
+    AuthService,
+    AuthResolver,
+  ],
 })
 export class AuthModule {}

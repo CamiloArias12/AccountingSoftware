@@ -21,11 +21,11 @@ export class Employee implements IEmployee {
   idEmployee: number;
 
   @Field()
-  @Column()
+  @Column({ length: 20, unique: true })
   username: string;
 
   @Field()
-  @Column()
+  @Column({ length: 20 })
   password: string;
 
   @Column({ default: false })

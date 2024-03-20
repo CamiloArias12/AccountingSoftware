@@ -25,7 +25,7 @@ export function BeneficiaryInformation({
   })
   return (
     <>
-      <div className="flex flex-row  mt-4 justify-between ">
+      <div className="flex flex-row  mt-4 justify-between border-t pt-2 ">
         <label className="text-sm font-bold">Beneficiarios</label>
         <button
           className=" w-24  flex flex-end items-center  hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
@@ -51,11 +51,14 @@ export function BeneficiaryInformation({
 
       <div className="flex flex-col gap-2 ">
         {fields.map((field, index) => (
-          <section key={field.id} className="flex flex-row gap-2">
+          <section
+            key={field.id}
+            className=" my-2 border-b md:border-none flex flex-col md:flex-row gap-2"
+          >
             <InputField
               type="text"
               name={`beneficiaries.${index}.beneficiary.name`}
-              label={index === 0 && 'Nombres'}
+              label={'Nombres'}
               required
               value={''}
               props={{
@@ -71,7 +74,7 @@ export function BeneficiaryInformation({
             />
             <InputNumberBeneficiary
               name={`beneficiaries.${index}.beneficiary.idDocument`}
-              label={index === 0 && 'Identificacion'}
+              label={'Identificación'}
               control={control}
               required
               error={
@@ -83,7 +86,8 @@ export function BeneficiaryInformation({
             />
             <InputNumberBeneficiary
               name={`beneficiaries.${index}.percentage`}
-              label={index === 0 && 'Porcentaje'}
+              label={'Porcentaje'}
+              suffix=" %"
               control={control}
               required
               error={
@@ -96,7 +100,7 @@ export function BeneficiaryInformation({
 
             <button
               type="button"
-              className="flex items-end justify-center h-8 w-8"
+              className="flex flex-grow justify-end items-end md:justify-center h-8 w-8"
               onClick={() => {
                 remove(index)
               }}

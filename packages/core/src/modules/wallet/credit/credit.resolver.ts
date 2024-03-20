@@ -7,7 +7,7 @@ import { ChangeAmortization } from './installments/dto/types';
 import { ViewCredit } from './credit-view.entity';
 import { PaymentMethods, RefinanceCredit, StateCredit } from './dto/enum-types';
 import { UpdateCreditInput } from './dto/update-credit.input';
-import { CreditStatistics } from './dto/types';
+import { CreditStatistics, CreditStatisticsGeneral } from './dto/types';
 import { ResponseGraphql } from 'src/config/graphql-response/response-graphql';
 
 @Resolver(() => Credit)
@@ -32,6 +32,11 @@ export class CreditResolver {
   @Query(() => [ViewCredit])
   async getAllCredit(): Promise<ViewCredit[]> {
     return await this.creditService.findAll();
+  }
+
+  @Query(() => [[Float]])
+  async getStatisticsCreditGeneral(): Promise<number[]> {
+    return await this.creditService.countCreditByMonth();
   }
 
   @Query(() => CreditStatistics)
@@ -75,13 +80,6 @@ export class CreditResolver {
       where: { id: id },
       order: { installments: { installmentNumber: 'ASC' } },
     });
-  }
-
-  @Mutation(() => [ViewCredit])
-  async findCreditByDatePayment(
-    @Args('date', { type: () => Date }) date: Date,
-  ) {
-    return this.creditService.findByDateStateDisbursement(date);
   }
 
   @Mutation(() => ResponseGraphql)

@@ -9,6 +9,7 @@ import {
 import { motion } from 'framer-motion'
 import { useRef, useState } from 'react'
 import { useVirtual } from 'react-virtual'
+import { fuzzyFilter } from '../forms/type-account/TableTypeAccount'
 
 function Table({ columns, data }: { columns: any; data: any }) {
   console.log(data)
@@ -17,6 +18,10 @@ function Table({ columns, data }: { columns: any; data: any }) {
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
+
     state: {
       sorting
     },
@@ -39,13 +44,13 @@ function Table({ columns, data }: { columns: any; data: any }) {
 
   return (
     <table className=" w-full table-fixed table text-input overflow-scroll ">
-      <thead className="font-medium border-b-4 bg-[#F2F5FA] border-b-[#3C7AC2]">
+      <thead className="">
         {table.getHeaderGroups().map(headerGroup => (
           <tr className="rounded-lg" key={headerGroup.id}>
             {headerGroup.headers.map(header => {
               return (
                 <th
-                  className="text-start font-light pl-3 py-2 font-medium "
+                  className="text-start pl-3 py-2 font-semibold"
                   key={header.id}
                   colSpan={header.colSpan}
                   style={{ width: header.getSize() }}

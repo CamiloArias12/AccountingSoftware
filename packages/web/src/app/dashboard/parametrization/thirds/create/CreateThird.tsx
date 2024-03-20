@@ -3,6 +3,7 @@ import FormThirdNatural from '@/app/components/forms/thirds/FormThirdNatural'
 import AlertModalError from '@/app/components/modal/AlertModalError'
 import AlertModalSucces from '@/app/components/modal/AlertModalSucces'
 import { gql, useMutation } from '@apollo/client'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -33,6 +34,9 @@ function CreateThirdNatural({ countries }: { countries: any }) {
 
   const route = useRouter()
 
+  const {
+    data: { user }
+  } = useSession()
   const [showWarning, setShowWarning] = useState(false)
 
   const handleCreate = async (
@@ -50,7 +54,8 @@ function CreateThirdNatural({ countries }: { countries: any }) {
         createAffiiate: checkedAffiliate ? affiliate : null,
         createEmployee: checkedEmployee ? credential : null,
         createProvider: checkedProvider ? true : null
-      }
+      },
+      context: { headers: { Authorization: user.token } }
     })
   }
 

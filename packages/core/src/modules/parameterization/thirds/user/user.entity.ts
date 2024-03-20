@@ -29,11 +29,11 @@ export class User implements IUser {
   identification: number;
 
   @Field()
-  @Column()
+  @Column({ length: 50 })
   name: string;
 
   @Field()
-  @Column()
+  @Column({ length: 50 })
   lastName: string;
 
   @Field()
@@ -41,7 +41,7 @@ export class User implements IUser {
   expeditionDate: Date;
 
   @Field()
-  @Column()
+  @Column({ length: 40 })
   expeditionCity: string;
 
   @Field()
@@ -49,16 +49,16 @@ export class User implements IUser {
   birthDate: Date;
 
   @Field()
-  @Column()
+  @Column({ length: 30 })
   countryBirth: string;
 
   @Field()
-  @Column()
-  stateBirth: String;
+  @Column({ length: 30 })
+  stateBirth: string;
 
   @Field()
-  @Column()
-  cityBirth: String;
+  @Column({ length: 30 })
+  cityBirth: string;
 
   @Field()
   @Column({
@@ -77,31 +77,31 @@ export class User implements IUser {
   statusCivil: CivilStatus;
 
   @Field()
-  @Column()
+  @Column({ length: 60 })
   addressResidence: string;
 
   @Field()
-  @Column()
+  @Column({ length: 30 })
   countryResidence: string;
 
   @Field()
-  @Column()
-  stateResidence: String;
+  @Column({ length: 30 })
+  stateResidence: string;
 
   @Field()
-  @Column()
-  cityResidence: String;
+  @Column({ length: 30 })
+  cityResidence: string;
 
   @Field()
-  @Column()
+  @Column({ length: 20 })
   phone: string;
 
   @Field()
-  @Column()
+  @Column({ length: 20 })
   landLine: string;
 
   @Field()
-  @Column()
+  @Column({ length: 50 })
   email: string;
 
   @Field()
@@ -121,7 +121,7 @@ export class User implements IUser {
   studies: Studies;
 
   @Field()
-  @Column()
+  @Column({ length: 80 })
   profession: string;
 
   @Field()

@@ -3,6 +3,7 @@ import { TypeAccount } from './type-account.entity';
 import { TypeAccountService } from './type-account.service';
 import { TypeAccountEnum } from './dto/enum-type';
 import { TypeAccountInput } from './dto/type-account-input';
+import { StatisticsAccount } from './dto/types';
 @Resolver(() => TypeAccount)
 export class TypeAccountResolver {
   constructor(private readonly typeAccountService: TypeAccountService) {}
@@ -30,6 +31,14 @@ export class TypeAccountResolver {
     @Args('code', { type: () => Int }) identification: number,
   ) {
     return this.typeAccountService.delete(identification);
+  }
+ @Query(() => [StatisticsAccount])
+ async statisticsAccount(
+    @Args('code', { type: () => Int }) code: number,
+    @Args('type', { type: () => String}) typeAccount: TypeAccountEnum,
+        
+ ): Promise<StatisticsAccount[]> {
+    return this.typeAccountService.getStatisticsAccount(code,typeAccount)
   }
 
   @Mutation(() => Boolean)

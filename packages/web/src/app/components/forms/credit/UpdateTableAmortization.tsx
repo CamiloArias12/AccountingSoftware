@@ -8,11 +8,11 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { useMemo, useReducer, useRef, useState } from 'react'
-import { useVirtual } from 'react-virtual'
-import { motion } from 'framer-motion'
 import { AmortizationTable } from '@/lib/utils/credit/types'
-import InputNumber from '../../input/InputNumber'
 import { NumericFormat } from 'react-number-format'
+import { format } from 'date-fns'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
+import TableInfo from '../../table/TableGeneral'
 
 function UpdateTableAmortization({
   data,
@@ -52,7 +52,9 @@ function UpdateTableAmortization({
         accessorKey: 'paymentDate',
         size: 200,
         enableResizing: true,
-        cell: (row: any) => <>{row.getValue().split('T', 1)}</>,
+        cell: (row: any) => (
+          <>{format(new Date(row.getValue()), 'dd-MM-yyyy')}</>
+        ),
         header: () => <span>Fecha de pago</span>
       },
       {
@@ -109,8 +111,8 @@ function UpdateTableAmortization({
                 row.row._valuesCache.state === 'Pendiente'
                   ? false
                   : row.row._valuesCache.state === 'Aplazada'
-                  ? false
-                  : true
+                    ? false
+                    : true
               }
               prefix="$ "
               renderText={value => <b> $ {value}</b>}
@@ -158,10 +160,10 @@ function UpdateTableAmortization({
                 row.getValue() === 'Pagada'
                   ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
                   : row.getValue() === 'Pago anticipado'
-                  ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
-                  : row.getValue() === 'Aplazada'
-                  ? 'bg-[#AAA7D0] text-sm  text-[#306E47]'
-                  : 'bg-[#FECACA] text-sm'
+                    ? 'bg-[#BAF7D0] text-sm  text-[#306E47]'
+                    : row.getValue() === 'Aplazada'
+                      ? 'bg-[#AAA7D0] text-sm  text-[#306E47]'
+                      : 'bg-[#FECACA] text-sm'
               }`}
             >
               {row.getValue()}
@@ -174,115 +176,40 @@ function UpdateTableAmortization({
     []
   )
 
+  const [rowId, setRowId] = useState<number>(0)
+  const [sorting, setSorting] = useState<SortingState>([])
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
+    state: {
+      sorting
+    },
+    globalFilterFn: fuzzyFilter,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     debugTable: true
   })
-
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const { rows } = table.getRowModel()
-
-  const rowVirtualizer = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 10
-  })
-  const { virtualItems: virtualRows, totalSize } = rowVirtualizer
-  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
-  const paddingBottom =
-    virtualRows.length > 0
-      ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-      : 0
 
   return (
     <div className="flex flex-grow flex-col overflow-scroll">
       <button
-        className="ml-4  text-input flex flex-row rounded-sm bg-[#F2F5FA] p-2 "
+        className="  text-input flex flex-row rounded-sm bg-[#F2F5FA] p-2 "
         onClick={handleAmortizationTable}
       >
         <img src="/refresh.svg" height={20} width={20} />
         <label className="font-sans px-4 text-sm">Actualizar</label>
       </button>
-
-      <div
-        className=" flex flex-grow  mx-4 my-2 overflow-scroll  text-sm"
-        ref={tableContainerRef}
-      >
-        <table className="w-full h-8 flex-grow table-fixed table-amortization ">
-          <thead className="font-medium border-b-4 ">
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr className="rounded-lg" key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
-                  return (
-                    <th
-                      className="text-center font-light py-2 font-medium "
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      style={{ width: header.getSize() }}
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? 'cursor-pointer select-none'
-                              : '',
-                            onClick: header.column.getToggleSortingHandler()
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </div>
-                      )}
-                    </th>
-                  )
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody className=" ">
-            {paddingTop > 0 && (
-              <tr>
-                <td style={{ height: `${paddingTop}px` }} />
-              </tr>
-            )}
-
-            {virtualRows.map(virtualRow => {
-              const row = rows[virtualRow.index] as Row<any>
-              return (
-                <>
-                  <motion.tr
-                    key={row.id}
-                    className=" border-b border-b-gray-200 hover:border-l-4 p-2 hover:border-l-[#3C7AC2] "
-                  >
-                    {row.getVisibleCells().map(cell => {
-                      return (
-                        <>
-                          <td className=" text-center">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        </>
-                      )
-                    })}
-                  </motion.tr>
-                </>
-              )
-            })}
-            {paddingBottom > 0 && (
-              <tr>
-                <td style={{ height: `${paddingBottom}px` }} />
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <TableInfo
+        table={table}
+        className="max-w-full overflow-auto min-h-80 py-2 text-sm table-amortization"
+        rowId={rowId}
+        setRow={setRowId}
+        key={1}
+      />
     </div>
   )
 }

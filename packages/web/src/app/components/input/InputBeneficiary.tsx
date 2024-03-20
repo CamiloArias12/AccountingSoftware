@@ -33,7 +33,7 @@ function InputFieldBeneficiary({
         name={name}
         value={value}
         required
-        className={`bg-white h-[34px] rounded-md text-input  border ${
+        className={`bg-white h-[30px] 2xl:h-[34px] rounded-md text-input  border ${
           !color ? 'border-[#d9d9d9]' : 'border-[#AD1A1A]'
         } h-[27px] `}
         onChange={onChange}

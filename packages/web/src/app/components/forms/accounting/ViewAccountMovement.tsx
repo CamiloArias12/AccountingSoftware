@@ -9,6 +9,7 @@ import { useState } from 'react'
 import Button from '../../input/Button'
 import Image from 'next/image'
 import { downloadAccountMovementPdf } from '@/lib/axios/uploadFiles'
+import { Token } from '@/app/hooks/TokenContext'
 const GET_ACCOUNT_MOVEMENT = gql`
   query ($movements: [String!]!) {
     findMovementAccount(movements: $movements) {
@@ -38,16 +39,17 @@ function ViewMovementAccount({
   movements: any
   setView: any
 }) {
-  console.log(movements)
+  const { context } = Token()
   const { data, loading, error } = useQuery(GET_ACCOUNT_MOVEMENT, {
-    variables: { movements: movements }
+    variables: { movements: movements },
+    context
   })
   const [index, setIndex] = useState(0)
   const [loadingDownload, setLoadingDownload] = useState(false)
   return (
     <>
       <Modal
-        size="max-w-[1000px] h-[800px] bg-white"
+        size=" lg:h-auto lg:w-[1000px] bg-white"
         title="Movimiento cuentas"
         onClick={() => {
           setView(false)
@@ -55,51 +57,59 @@ function ViewMovementAccount({
       >
         {data && (
           <>
-            <Button
-              background="bg-[#EEEEEE] rounded-lg "
-              image="/download.svg"
-              name="Descargar"
-              loading={loadingDownload}
-              onClick={async () => {
-                setLoadingDownload(true)
-                await downloadAccountMovementPdf(
-                  data?.findMovementAccount[index].movement.id
-                )
-
-                setLoadingDownload(false)
-              }}
-            />
-
-            <TableMovementsDetails
-              movements={[data?.findMovementAccount[index].movement]}
-            />
-            <TableMovementsAccount
-              movementAccounts={data?.findMovementAccount[index].account}
-            />
-            {index > 0 && (
-              <div className="pr-4">
+            <div className="flex flex-row p-2 w-full justify-between items-center bg-gray-100 shadow-inner mt-2 ">
+              {index > 0 ? (
                 <Button
                   name="Anterior"
-                  background="border border-[#009226] text-[#009226]"
+                  image="/arrowLeft.svg"
+                  background="shadow-sm rounded-xl bg-gray-200"
                   type={'submit'}
                   onClick={() => {
                     setIndex(index - 1)
                   }}
                 />
-              </div>
-            )}
-            {index < data?.findMovementAccount.length - 1 && (
-              <div className="pr-4">
+              ) : (
+                <div />
+              )}
+
+              <Button
+                background="shadow-sm rounded-xl bg-gray-200"
+                image="/download.svg"
+                name="Descargar"
+                loading={loadingDownload}
+                onClick={async () => {
+                  setLoadingDownload(true)
+                  await downloadAccountMovementPdf(
+                    data?.findMovementAccount[index].movement.id,
+                    context.headers.Authorization
+                  )
+
+                  setLoadingDownload(false)
+                }}
+              />
+              {index < data?.findMovementAccount.length - 1 ? (
                 <Button
                   name="Siguiente"
-                  background="border border-[#009226] text-[#009226]"
+                  image="/arrowRigth.svg"
+                  background="shadow-sm rounded-xl bg-gray-200"
                   type={'submit'}
+                  rigth
                   onClick={() => {
                     setIndex(index + 1)
                   }}
                 />
-              </div>
-            )}
+              ) : (
+                <div />
+              )}
+            </div>
+            <div className="overflow-scroll flex flex-col ">
+              <TableMovementsDetails
+                movements={[data?.findMovementAccount[index].movement]}
+              />
+              <TableMovementsAccount
+                movementAccounts={data?.findMovementAccount[index].account}
+              />
+            </div>
           </>
         )}
       </Modal>

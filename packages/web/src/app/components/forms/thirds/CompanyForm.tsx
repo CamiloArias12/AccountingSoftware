@@ -8,6 +8,7 @@ import {
 import React from 'react'
 import InputNumber from '../../input/InputNumber'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
+import { LabeTitle } from '../../input/LabelTitle'
 
 export function FormCompany({
   company,
@@ -21,22 +22,20 @@ export function FormCompany({
   errors: any
 }) {
   return (
-    <div className="flex flex-col m-3">
-      <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
-        Datos empresa
-      </label>
+    <div className="flex flex-col m-1 md:m-3">
+      <LabeTitle value="Información empresa" />
       <InputField
         name="name"
-        label="Razón Social"
+        label="Razón social"
         required
         props={{ ...company('name', FieldRequired) }}
         error={errors.name}
       />
 
-      <div className="grid  grid-cols-2 gap-2 my-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 my-2">
         <InputField
           name="typeIdentification"
-          label="Tipo de Identificación"
+          label="Tipo de identificación"
           required
           props={{ ...company('typeIdentification', FieldRequired) }}
           error={errors.typeIdentification}
@@ -44,7 +43,7 @@ export function FormCompany({
 
         <InputNumber
           name="identification"
-          label="Número de Identificación"
+          label="Número de identificación"
           control={control}
           required
           rules={FieldRequired}
@@ -64,7 +63,7 @@ export function FormCompany({
 
         <SelectField
           name="typePerson"
-          label="Tipo de Persona"
+          label="Tipo de persona"
           options={TypePersonForm}
           setValue={setValue}
           control={control}
@@ -74,7 +73,7 @@ export function FormCompany({
         />
         <InputNumber
           name="digitVerification"
-          label="Dígito de Verificación"
+          label="Dígito de verificación"
           control={control}
           error={errors.digitVerification}
           required
@@ -83,18 +82,18 @@ export function FormCompany({
 
         <InputField
           name="natureCompany"
-          label="Naturaleza de la Empresa"
+          label="Naturaleza de la empresa"
           required
           props={{ ...company('natureCompany', FieldRequired) }}
           error={errors.typeIdentification}
         />
       </div>
-      <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
-        Datos representante legal
-      </label>
+
+      <LabeTitle value="Información representante legal" />
+
       <SelectField
         name="legalRepresentativeTypeIdentification"
-        label="Tipo de Identificación"
+        label="Tipo de identificación"
         options={IdentificationForm}
         setValue={setValue}
         required
@@ -102,7 +101,7 @@ export function FormCompany({
         rules={FieldRequired}
         error={errors?.legalRepresentativeTypeIdentification}
       />
-      <div className="flex flex-row">
+      <div className="flex gap-2  flex-col md:flex-row">
         <InputField
           name="legalRepresentativeName"
           label="Nombres"

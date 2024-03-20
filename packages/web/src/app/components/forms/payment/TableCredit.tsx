@@ -16,6 +16,7 @@ import { Credit } from '@/lib/utils/credit/types'
 import { gql, useMutation } from '@apollo/client'
 import AlertModalError from '../../modal/AlertModalError'
 import AlertModalSucces from '../../modal/AlertModalSucces'
+import { fuzzyFilter } from '../type-account/TableTypeAccount'
 
 const REFINANCE = gql`
   mutation ($id: Int!) {
@@ -114,6 +115,10 @@ function TableCredits({ credits }: { credits: Credit[] }) {
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
+
     state: {
       sorting
     },

@@ -32,7 +32,7 @@ function TableMovementsAccount({
           {
             accessorKey: 'code',
             cell: info => info.getValue(),
-            header: () => <span>Codigo</span>,
+            header: () => <span>Código</span>,
             size: 50
           },
           {
@@ -52,7 +52,7 @@ function TableMovementsAccount({
             accessorKey: 'identificationThird',
             cell: (row: any) => <div className="py-1">{row.getValue()}</div>,
 
-            header: () => <span>Identificacion</span>
+            header: () => <span>Identificación</span>
           },
           {
             accessorKey: 'nameThird',
@@ -75,7 +75,7 @@ function TableMovementsAccount({
           {
             accessorKey: 'credit',
             cell: info => '$ ' + info.getValue().toLocaleString(),
-            header: () => <span>Credito</span>
+            header: () => <span>Crédito</span>
           }
         ]
       })
@@ -130,7 +130,7 @@ function TableMovementsAccount({
                 {headerGroup.headers.map(header => {
                   return (
                     <th
-                      className="text-center  border font-light pl-3 py-2 font-medium "
+                      className="text-center  border  pl-3 py-2 font-semibold"
                       key={header.id}
                       colSpan={header.colSpan}
                       style={{ width: header.getSize() }}

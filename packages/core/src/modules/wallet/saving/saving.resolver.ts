@@ -44,8 +44,8 @@ export class SavingResolver {
     return this.savingService.update(updateSavingInput);
   }
 
-  @Mutation(() => Saving)
-  async removeSaving(@Args('id', { type: () => Int }) id: number) {
+  @Mutation(() => Boolean)
+  async deleteSaving(@Args('id', { type: () => Int }) id: number) {
     return this.savingService.remove(id);
   }
 }

@@ -17,14 +17,14 @@ function ListChange({
 }: PropsListChange) {
   return (
     <div className="flex  lg:w-1/2">
-      <ul className="flex flex-grow flex-row w-full">
+      <ul className="flex flex-grow pb-1 mb-2 md:pb-0 md:mb-0 flex-row w-full">
         {list.map((option, index) => (
           <div
             key={option.id}
-            className={`flex-grow w-full  rounded-tl-[20px]  rounded-tr-[100px] px-5 pt-3  text-sm text-center ${
+            className={`flex-grow w-full  md:rounded-tl-[20px]  md:rounded-tr-[100px] px-5 pt-3 text-input  text-center ${
               indexForm.index === index
-                ? 'bg-[#FFFFFF] font-bold'
-                : 'bg-[#DDEEFF] text-gray-600 font-semibold'
+                ? 'bg-[#FFFFFF] border-b-2 md:border-0 font-bold border-b-[#1A5DAD]  text-[#1A5DAD] '
+                : ' md:bg-[#DDEEFF] border-b-2 md:border-0  text-gray-600 font-semibold'
             }`}
             onClick={() => {
               console.log('indexForm', indexForm)

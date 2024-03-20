@@ -1,7 +1,5 @@
 import {
   ColumnDef,
-  Row,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -9,28 +7,16 @@ import {
 } from '@tanstack/react-table'
 import { HTMLProps, useEffect, useMemo, useRef, useState } from 'react'
 
-import { gql, useMutation } from '@apollo/client'
-import { useRouter } from 'next/navigation'
-import { useVirtual } from 'react-virtual'
-import { motion } from 'framer-motion'
 import { Movement } from '@/lib/utils/accounting/types'
 import OptionsTable from '../../options-table/OptionsTable'
-import AlertModalSucces from '../../modal/AlertModalSucces'
-import AlertModalError from '../../modal/AlertModalError'
 import ViewMovementAccount from './ViewAccountMovement'
 import { fuzzyFilter } from '../type-account/TableTypeAccount'
+import { PaginationTable } from '../pagination-table/PaginationTable'
+import TableInfo from '../../table/TableGeneral'
 
 export const revalidate = 0
-const DELETE_MOVEMENT = gql`
-  mutation ($id: String!) {
-    deleteMovementById(id: $id) {
-      state
-      message
-    }
-  }
-`
-
 function TableMovements({ movements }: { movements: Movement[] }) {
+  console.log(movements)
   const columns = useMemo<ColumnDef<Movement>[]>(
     () => [
       {
@@ -106,7 +92,7 @@ function TableMovements({ movements }: { movements: Movement[] }) {
 
   const [data, setData] = useState<Movement[]>(movements)
   const [showOptions, setShowOptions] = useState(false)
-
+  const [rowId, setRowId] = useState<number>(0)
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState('')
   const table = useReactTable({
@@ -130,41 +116,9 @@ function TableMovements({ movements }: { movements: Movement[] }) {
     debugTable: true
   })
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const { rows } = table.getRowModel()
-
-  const rowVirtualizer = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 12
-  })
-  const { virtualItems: virtualRows } = rowVirtualizer
-
   const [showView, setShowView] = useState<boolean>(false)
 
-  const route = useRouter()
-
-  const [showWarningDelete, setShowWarningDelete] = useState(false)
   const [movementsSelected, setMovementsSelected] = useState<string[]>([])
-
-  const [
-    deleteMovement,
-    { data: deleteData, loading: loadingDelete, error: errorDelete }
-  ] = useMutation(DELETE_MOVEMENT)
-
-  useEffect(() => {
-    if (deleteData) {
-      route.refresh()
-      const timeout = setTimeout(() => {
-        setShowWarningDelete(false)
-      }, 3000) // 3 seconds in milliseconds
-
-      return () => {
-        clearTimeout(timeout)
-      }
-    }
-  }, [deleteData, errorDelete])
 
   useEffect(() => {
     if (Object.keys(rowSelection).length > 0) {
@@ -186,93 +140,38 @@ function TableMovements({ movements }: { movements: Movement[] }) {
           movements={movementsSelected}
         />
       )}
-      <OptionsTable
-        showOptions={showOptions}
-        setView={() => {
-          const movementsShow = []
-          for (const key in rowSelection) {
-            if (rowSelection.hasOwnProperty(key)) {
-              movementsShow.push(movements[Number(key)].id)
-            }
-          }
-          setMovementsSelected(movementsShow)
-          setShowView(true)
-        }}
-        deleteHandle={() => {
-          setShowWarningDelete(true)
-          deleteMovement({
-            variables: {
-              id: movements[Object.keys(rowSelection)[0]].id
-            }
-          })
-        }}
-        search={globalFilter}
-        setSearch={setGlobalFilter}
-      />
-
-      <div className="flex px-4 flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
-        <div className=" flex-grow text-sm">
-          <table className="h-full w-full table-fixed table ">
-            <thead className="font-medium ">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr className="rounded-lg  " key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
-                      <th
-                        className="text-start  pl-3 py-2 font-medium "
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        style={{ width: header.getSize() }}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <div>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                          </div>
-                        )}
-                      </th>
-                    )
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody className=" ">
-              {virtualRows.map(virtualRow => {
-                const row = rows[virtualRow.index] as Row<any>
-                return (
-                  <>
-                    <motion.tr
-                      key={row.id}
-                      className={`  hover:border-l-4  hover:border-l-[#3C7AC2] `}
-                    >
-                      {row.getVisibleCells().map(cell => {
-                        return (
-                          <td key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        )
-                      })}
-                    </motion.tr>
-                  </>
-                )
-              })}
-            </tbody>
-          </table>
+      <div className="flex h-full w-full flex-col bg-white pb-4 rounded-tr-sm rounded-b-sm md:py-8 md:px-4 gap-2 md:gap-4">
+        <div className="flex  flex-col">
+          <OptionsTable
+            showOptions={showOptions}
+            setView={() => {
+              const movementsShow = []
+              for (const key in rowSelection) {
+                if (rowSelection.hasOwnProperty(key)) {
+                  movementsShow.push(movements[Number(key)].id)
+                }
+              }
+              setMovementsSelected(movementsShow)
+              if (movementsShow.length > 0) {
+                setShowView(true)
+              }
+            }}
+            search={globalFilter}
+            setSearch={setGlobalFilter}
+          />
         </div>
+        <div className=" flex md:hidden justify-end px-2 ">
+          <PaginationTable table={table} />
+        </div>
+        <TableInfo
+          table={table}
+          className="account-table"
+          rowId={rowId}
+          setRow={setRowId}
+          setOptions={setShowOptions}
+          key={1}
+        />
       </div>
-      {deleteData?.deleteMovementById.state && showWarningDelete ? (
-        <AlertModalSucces value={deleteData.deleteMovementById.message} />
-      ) : deleteData?.deleteMovementById.state === false &&
-        showWarningDelete ? (
-        <AlertModalError value={deleteData.deleteMovementById.message} />
-      ) : (
-        errorDelete && showWarningDelete && <AlertModalError value="Error" />
-      )}
     </>
   )
 }

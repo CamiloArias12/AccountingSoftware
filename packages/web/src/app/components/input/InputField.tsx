@@ -12,6 +12,7 @@ type InputFieldProps = {
   required?: boolean
   props?: any
   error?: any
+  className?: string
 }
 
 function InputField({
@@ -22,10 +23,13 @@ function InputField({
   onlyRead,
   props,
   error,
-  required
+  required,
+  className
 }: InputFieldProps) {
   return (
-    <div className={`flex  flex-grow flex-col text-input `}>
+    <div
+      className={`flex  flex-grow flex-col text-input-medium 2xl:text-input `}
+    >
       {label && (
         <label
           htmlFor={name}
@@ -41,7 +45,10 @@ function InputField({
         name={name}
         defaultValue={value}
         readOnly={onlyRead}
-        className={`bg-white  rounded-md border pl-2   h-[34px]`}
+        className={`${
+          className ? className : 'h-[30px] 2xl:h-[34px]'
+        } rounded-md pl-2 border border-[#d9d9d9]
+               `}
         onChange={onChange}
         autoComplete="off"
         {...props}

@@ -21,6 +21,8 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { schemaTypeCredit } from '@/lib/utils/ValidationYup'
+import ButtonAdd from '../../input/ButtonAdd'
+import { Token } from '@/app/hooks/TokenContext'
 
 const AUXLILIARIES = gql`
   query {
@@ -36,8 +38,6 @@ const AUXLILIARIES = gql`
   }
 `
 
-let renderCount = 0
-
 export function TypeCreditForm({
   dataTypeCredit,
   onClickAccept,
@@ -47,13 +47,9 @@ export function TypeCreditForm({
   onClickAccept: any
   onClickCancel: any
 }) {
-  const { data, loading, error } = useQuery(AUXLILIARIES)
-  const [accounts, setAccounts] = useState<TypeCreditSavingAcounts[]>([])
-  const [accountsInterest, setAccountsInterest] = useState<
-    TypeCreditSavingAcounts[]
-  >([])
+  const { context } = Token()
+  const { data, loading, error } = useQuery(AUXLILIARIES, { context })
 
-  const { typeCredit, setTypeCredit, handleTypeCredit } = useTypeCredit()
   const {
     register: informationCredit,
     handleSubmit,
@@ -87,13 +83,12 @@ export function TypeCreditForm({
 
   useEffect(() => {
     if (dataTypeCredit) {
-      console.log(dataTypeCredit)
-      setValue('interest', dataTypeCredit.interest)
-      setValue('name', dataTypeCredit.name)
+      setValue('interest', dataTypeCredit?.interest)
+      setValue('name', dataTypeCredit?.name)
 
       const accountInput: TypeCreditSavingAcounts[] = []
       const accountInterestInput: TypeCreditSavingAcounts[] = []
-      for (const auxiliary of dataTypeCredit.auxiliaries) {
+      dataTypeCredit?.auxiliaries.map((auxiliary: any) => {
         if (auxiliary.typeAccount === 'Capital') {
           accountInput.push({
             account: auxiliary.idAccount,
@@ -106,17 +101,11 @@ export function TypeCreditForm({
             nature: auxiliary.nature
           })
         }
-      }
-      console.log(accountInput)
-
+      })
       setValue('accounts', accountInput)
       setValue('accountsInterest', accountInterestInput)
     }
   }, [dataTypeCredit])
-
-  renderCount++
-
-  console.log('renders tiasdf', renderCount)
 
   return (
     <form
@@ -127,63 +116,56 @@ export function TypeCreditForm({
           getValues().accountsInterest
         )
       })}
-      className="flex flex-col   w-full h-full"
+      className="flex flex-col py-2 w-full    "
     >
-      <div className="flex flex-col space-y-4 w-full max-w-3xl p-4">
+      <div className="flex-grow gap-4 mt-8">
         {/* InputFields */}
-        <div className="grid grid-cols-2 gap-4 mt-8">
-          <InputField
-            name="name"
-            label="Nombre"
-            required
-            props={{
-              ...informationCredit('name')
-            }}
-            error={errors?.name}
-          />
+        <InputField
+          name="name"
+          label="Nombre"
+          required
+          props={{
+            ...informationCredit('name')
+          }}
+          error={errors?.name}
+        />
 
-          <InputNumber
-            name="interest"
-            label="Interés"
-            control={control}
-            required
-            error={errors?.interest}
-            suffix=" %"
-          />
-        </div>
-        <div className="flex flex-grow flex-col">
+        <InputNumber
+          name="interest"
+          label="Interés"
+          control={control}
+          required
+          error={errors?.interest}
+          suffix=" %"
+        />
+        <div className="flex flex-grow flex-col gap-2">
           <label className="text-center text-white  bg-[#10417B] text-input font-bold my-2">
             Cuentas
           </label>
           <div className="flex  flex-grow flex-row justify-between">
             <label className="font-semibold text-input">Capital</label>
-            <div
-              className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
+            <ButtonAdd
               onClick={() => {
                 append({
                   account: '',
                   nature: ''
                 })
               }}
-            >
-              <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
-                <AddSvg color="#ffffff" />
-              </div>
-              <label className="pl-2 hidden group-hover:block text-[12px]">
-                Agregar
-              </label>
-            </div>
+            />
           </div>
 
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className=" gap-2 flex flex-grow w-full my-2  flex-row"
+              className=" gap-2 flex  w-full my-2 flex-col  p-4 lg:p-0  rounded-sm border-2 md:border-none shadow-xm lg:shadow-none lg:flex-row"
             >
+              <span className="md:hidden font-bold items-center ">
+                No {index + 1}
+              </span>
               <Select
                 name={`accounts.${index}.account`}
-                label={index === 0 && 'Cuenta'}
-                options={data.getAuxilaryAll}
+                label={'Cuenta'}
+                options={data?.getAuxilaryAll}
                 setValue={setValue}
                 control={control}
                 required
@@ -191,7 +173,7 @@ export function TypeCreditForm({
                 value={getValues(`accounts.${index}.account`)}
               />
               <SelectField
-                label={index === 0 && 'Naturaleza'}
+                label={'Naturaleza'}
                 name={`accounts.${index}.nature`}
                 options={optionsNature}
                 control={control}
@@ -214,33 +196,28 @@ export function TypeCreditForm({
           ))}
           <div className="flex  flex-grow flex-row justify-between">
             <label className="font-semibold text-input">Interés</label>
-            <div
-              className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
+            <ButtonAdd
               onClick={() => {
                 appendInterest({
                   account: '',
                   nature: ''
                 })
               }}
-            >
-              <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
-                <AddSvg color="#ffffff" />
-              </div>
-              <label className="pl-2 hidden group-hover:block text-[12px]">
-                Agregar
-              </label>
-            </div>
+            />
           </div>
 
           {fieldsInterest.map((field, index) => (
             <div
               key={field.id}
-              className=" gap-2 flex flex-grow w-full my-2  flex-row"
+              className=" gap-2 flex  w-full my-2 flex-col  p-4 lg:p-0  rounded-sm border-2 md:border-none shadow-xm lg:shadow-none lg:flex-row"
             >
+              <span className="md:hidden font-bold items-center ">
+                No {index + 1}
+              </span>
               <Select
                 name={`accountsInterest.${index}.account`}
-                label={index === 0 && 'Cuenta'}
-                options={data.getAuxilaryAll}
+                label={'Cuenta'}
+                options={data?.getAuxilaryAll}
                 setValue={setValue}
                 control={control}
                 required
@@ -251,7 +228,7 @@ export function TypeCreditForm({
                 }
               />
               <SelectField
-                label={index === 0 && 'Naturaleza'}
+                label={'Naturaleza'}
                 name={`accountsInterest.${index}.nature`}
                 options={optionsNature}
                 control={control}
@@ -277,21 +254,18 @@ export function TypeCreditForm({
           ))}
         </div>
       </div>
-      <div className="pt-10 flex justify-end">
-        <div className="pr-4">
-          <Button
-            name="Cancelar"
-            background="border border-[#10417B] text-[#10417B]"
-            onClick={onClickCancel}
-          />
-        </div>
-        <div className="pr-4">
-          <Button
-            name="Aceptar"
-            background="bg-[#10417B] text-white"
-            type={'submit'}
-          />
-        </div>
+      <div className="pt-10 flex gap-2 flex-col md:flex-row justify-end">
+        <Button
+          name="Cancelar"
+          background="border border-[#10417B] text-[#10417B]"
+          type={'button'}
+          onClick={onClickCancel}
+        />
+        <Button
+          name="Aceptar"
+          background="bg-[#10417B] text-white"
+          type={'submit'}
+        />
       </div>
     </form>
   )

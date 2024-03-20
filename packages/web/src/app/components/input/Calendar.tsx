@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
-import { registerLocale, setDefaultLocale } from 'react-datepicker'
 import './calendar.css'
 import { Controller } from 'react-hook-form'
-import { error } from 'console'
 interface InputCalendarProps {
   name: string
   label: string
@@ -36,24 +34,30 @@ function InputCalendar({
   }
 
   return (
-    <div className="flex  flex-grow  flex-col text-input ">
+    <div className="flex  flex-grow  flex-col text-input-medium 2xl:text-input ">
       <label className={`pb-2 font-semibold flex flex-row gap-1`}>
         <span>{label}</span>
-        {required && <span className="text-[#A10909]">*</span>}
+        {required && <span className="text-[#E61515]">*</span>}
       </label>
       {control ? (
         <Controller
           control={control}
           name={name}
           rules={rules}
-          render={({ field: { onChange, onBlur, value, ref } }) => (
+          render={({
+            field: { onChange, onBlur, value, ref },
+            formState: { dirtyFields }
+          }) => (
             <DatePicker
               onChange={onChange}
               selected={value}
-              dateFormat={showMonthYearPicker && 'MM/yyyy'}
+              dateFormat={showMonthYearPicker ? 'MM/yyyy' : 'dd/MM/yyyy'}
               showMonthYearPicker={showMonthYearPicker}
               onBlur={onBlur} // notify when input is touched/blur
               readOnly={onlyRead}
+              onClick={() => {
+                console.log('dirtyFields', dirtyFields)
+              }}
             />
           )}
         />

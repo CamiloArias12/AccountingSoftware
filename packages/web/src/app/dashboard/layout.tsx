@@ -1,8 +1,8 @@
 import HeaderModule from '../components/header/HeaderModule'
 import { getServerSession } from 'next-auth/next'
 import SideBar from '../components/sidebar/Sidebar'
-import { redirect, useRouter } from 'next/navigation'
-import { authOptions } from '../api/auth/[...nextauth]/route'
+import { OptionsUser } from '../components/header/OptionUser'
+import authOptions from '../api/auth/[...nextauth]/options'
 
 export default async function DashboardLayout({
   children
@@ -10,21 +10,18 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const session = await getServerSession(authOptions)
-  console.log('Other', session)
-  if (!session) {
-    redirect('/auth/login')
-  }
+  if (!session) return <SideBar />
   return (
-    <div className="flex flex-row h-screen  ">
-      <div className="flex pl-1 ">
+    <div className="flex flex-row h-screen w-screen md:bg-[#f5f5fb] bg-white ">
+      <div className="flex md:pl-1 ">
         <SideBar />
       </div>
-      <div className="flex  flex-col flex-grow ">
-        <div className="  flex flex-row mx-6 my-2 h-16 border-b-2 border-[#10417B] ">
-          <HeaderModule />
-        </div>
-        <section className=" flex flex-grow my-6 mx-4 h-[80%]">
+      <div className="flex  flex-col w-full md:overflow-hidden  h-full   ">
+        <HeaderModule />
+        <section className="mt-20 md:my-4 flex  md:mx-2  principal-container lg:h-[90%] md:max-w-full md:overflow-hidden ">
+          {' '}
           {children}
+          <OptionsUser />
         </section>
       </div>
     </div>

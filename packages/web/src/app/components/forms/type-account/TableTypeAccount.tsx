@@ -31,6 +31,8 @@ import {
   compareItems
 } from '@tanstack/match-sorter-utils'
 import InputFieldSearch from '../../input/InputSearch'
+import ViewTypeAccount from './ViewTypeAccount'
+import { Token } from '@/app/hooks/TokenContext'
 const DELETE_ACCOUNT = gql`
   mutation ($code: Int!) {
     deleteAccount(code: $code)
@@ -66,7 +68,8 @@ export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 }
 
 function TableTypeAccount({
-  typeAccounts
+  typeAccounts,
+  setShowModalCreate
 }: {
   typeAccounts: GeneralTypeAccount[]
   setShowModalCreate: any
@@ -110,7 +113,7 @@ function TableTypeAccount({
             </>
           </div>
         ),
-        size: 50,
+        minSize: 150,
         footer: props => props.column.id
       },
 
@@ -125,19 +128,20 @@ function TableTypeAccount({
         ),
 
         header: () => 'Código',
-        size: 50
+        size: 70
       },
       {
         accessorKey: 'typeAccount.name',
         cell: info => info.getValue(),
-        header: () => <span>Nombre</span>
+        header: () => <span>Nombre</span>,
+        minSize: 240
       },
       {
         accessorKey: 'typeAccount.nature',
 
         cell: info => info.getValue(),
         header: () => <span>Naturaleza</span>,
-        size: 50
+        size: 70
       },
       {
         accessorKey: 'typeAccount.state',
@@ -161,13 +165,14 @@ function TableTypeAccount({
           </div>
         ),
 
-        size: 50,
+        size: 70,
         header: () => <span>Estado</span>
       }
     ],
     []
   )
 
+  const { context } = Token()
   const [data, setData] = useState<GeneralTypeAccount[]>(typeAccounts)
   const [showOptions, setShowOptions] = useState(false)
   const route = useRouter()
@@ -224,10 +229,9 @@ function TableTypeAccount({
       ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0
 
-  const [idrow, setIdRow] = useState<string>('')
+  const [values, setValues] = useState(null)
   const [upload, setUpload] = useState<boolean>(false)
-  const [expandedA, setExpandedA] = useState<boolean>(false)
-  const [value, setValue] = useState<String>('')
+  const [view, setView] = useState<boolean>(false)
   const [update, setUpdate] = useState<boolean>(false)
   const [typeAccountSelected, setTypeAccountSelected] = useState<number>(0)
   const [showWarning, setShowWarning] = useState(false)
@@ -236,7 +240,8 @@ function TableTypeAccount({
     deleteAccount({
       variables: {
         code: typeAccountSelected
-      }
+      },
+      context
     })
   }
 
@@ -246,7 +251,8 @@ function TableTypeAccount({
       variables: {
         code: code,
         state: state
-      }
+      },
+      context
     })
   }
 
@@ -272,9 +278,15 @@ function TableTypeAccount({
   }, [typeAccounts])
 
   useEffect(() => {}, [deleteData])
-
   return (
     <>
+      {view && (
+        <ViewTypeAccount
+          values={values}
+          typeAccountSelected={typeAccountSelected}
+          setView={setView}
+        />
+      )}
       {update && (
         <UpdateTypeAccount
           setUpdate={setUpdate}
@@ -282,39 +294,43 @@ function TableTypeAccount({
         />
       )}
       {upload && <UploadAccounts setShowModal={setUpload} />}
-      <div className="flex flex-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] pt-8 ">
-        <OptionsTable
-          showOptions={showOptions}
-          setImportAccount={() => {
-            setUpload(true)
-          }}
-          setDownloadAccount={() => {
-            downloadPuc()
-          }}
-          deleteHandle={() => {
-            deleteAccountHandle()
-          }}
-          search={globalFilter}
-          setSearch={setGlobalFilter}
-          setUpdate={setUpdate}
-          createRoute="/dashboard/parametrization/typeaccount?create=true"
-        />
-
+      <div className="flex h-full w-full flex-col md:shadow-lg bg-white pb-4 rounded-tr-sm rounded-b-sm md:py-8 md:px-4 gap-2 md:gap-4">
+        <div className="flex  flex-col">
+          <OptionsTable
+            setView={setView}
+            showOptions={showOptions}
+            setImportAccount={() => {
+              setUpload(true)
+            }}
+            setDownloadAccount={() => {
+              downloadPuc(context.headers.Authorization)
+            }}
+            deleteHandle={() => {
+              deleteAccountHandle()
+            }}
+            search={globalFilter}
+            setSearch={setGlobalFilter}
+            setUpdate={setUpdate}
+            setCreate={setShowModalCreate}
+          />
+        </div>
         <div
-          className=" flex   mx-4 my-2 overflow-scroll "
+          className=" flex  w-screen md:w-auto   overflow-scroll "
           ref={tableContainerRef}
         >
-          <table className="w-full table-fixed account-table ">
-            <thead className="font-medium border-b-2 bg-[#F2F5FA] border-b-[#3C7AC2] ">
+          <table
+            className={` h-full flex-grow md:h-10 table-fixed text-input overflow-scroll account-table `}
+          >
+            <thead className="font-semibold bg-[#F2F5FA]  ">
               {table.getHeaderGroups().map(headerGroup => (
                 <tr className="rounded-lg" key={headerGroup.id}>
                   {headerGroup.headers.map(header => {
                     return (
                       <th
-                        className="text-start pl-3  font-medium "
+                        className="text-start pl-3  font-semibold"
                         key={header.id}
                         colSpan={header.colSpan}
-                        style={{ width: header.getSize() }}
+                        style={{ minWidth: header.getSize() }}
                       >
                         {header.isPlaceholder ? null : (
                           <div
@@ -364,24 +380,10 @@ function TableTypeAccount({
                             <td
                               onClick={() => {
                                 setShowOptions(true)
-                                if (!update) {
-                                  setValue(String(row._valuesCache.type))
-                                  setTypeAccountSelected(
-                                    Number(row._valuesCache.typeAccount_code)
-                                  )
-                                }
-
-                                console.log(row._valuesCache)
-                                if (update === false) {
-                                  if (idrow == row.id) {
-                                    setIdRow(row.id)
-                                    setExpandedA(!expandedA)
-                                  } else {
-                                    setExpandedA(false)
-                                    setIdRow(row.id)
-                                    setExpandedA(!true)
-                                  }
-                                }
+                                setTypeAccountSelected(
+                                  Number(row._valuesCache.typeAccount_code)
+                                )
+                                setValues(row._valuesCache)
                               }}
                               className=" px-2 "
                               key={cell.id}
@@ -409,7 +411,7 @@ function TableTypeAccount({
         </div>
       </div>
       {deleteData?.deleteAccount && showWarning ? (
-        <AlertModalSucces value="Se han eliminado la cuenta" />
+        <AlertModalSucces value="Se ha eliminado la cuenta" />
       ) : deleteData?.deleteAccount === false && showWarning ? (
         <AlertModalError value="La cuenta no se puede eliminar" />
       ) : (

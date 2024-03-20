@@ -12,24 +12,23 @@ import { User } from '../user/user.entity';
 import { BeneficiaryAffiliate } from './beneficiary-affiliate/beneficiary-affiliate.entity';
 import { Credit } from 'src/modules/wallet/credit/credit.entity';
 import { Saving } from 'src/modules/wallet/saving/saving.entity';
-import { AccountMovement } from 'src/modules/treasury/account-movement/account-movement.entity';
 
 @ObjectType()
 @Entity()
 export class Affiliate implements IAfiliate {
   @PrimaryColumn('bigint')
-  idAffiliate: number;
+  identification: number;
 
   @Field()
-  @Column()
+  @Column({ length: 60 })
   company: string;
 
   @Field()
-  @Column()
+  @Column({ length: 120 })
   addreesCompany: string;
 
   @Field()
-  @Column()
+  @Column({ length: 60 })
   emailJob: string;
 
   @Field()
@@ -37,15 +36,15 @@ export class Affiliate implements IAfiliate {
   salary: number;
 
   @Field()
-  @Column()
+  @Column({ length: 80 })
   bank: string;
 
   @Field()
-  @Column()
+  @Column({ length: 40 })
   jobTitle: string;
 
   @Field()
-  @Column()
+  @Column({ length: 30 })
   phone: string;
 
   @Field()
@@ -53,7 +52,7 @@ export class Affiliate implements IAfiliate {
   incomeCompany: Date;
 
   @Field()
-  @Column()
+  @Column({ length: 40 })
   typeAccount: string;
 
   @Field()
@@ -61,7 +60,7 @@ export class Affiliate implements IAfiliate {
   numberAccount: number;
 
   @Field()
-  @Column({ default: false })
+  @Column({ default: true })
   state: boolean;
 
   @Field(() => User)
@@ -69,7 +68,7 @@ export class Affiliate implements IAfiliate {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'idAffiliate' })
+  @JoinColumn({ name: 'identification' })
   user: User;
 
   @Field(() => [BeneficiaryAffiliate])

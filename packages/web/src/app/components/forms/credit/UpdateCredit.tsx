@@ -10,6 +10,10 @@ import Button from '../../input/Button'
 import AlertModalError from '../../modal/AlertModalError'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import { useForm } from 'react-hook-form'
+import InputNumber from '../../input/InputNumber'
+import { LabeTitle } from '../../input/LabelTitle'
+import { Token } from '@/app/hooks/TokenContext'
+import { useRouter } from 'next/navigation'
 
 const GENERATE_TABLE_AMORTIZATION_CHANGE = gql`
   mutation ($table: ChangeAmortization!) {
@@ -59,10 +63,13 @@ function UpdateCredit({
     mode: 'all'
   })
 
+  const { context } = Token()
   const [showWarningUpdate, setShowWarningUpdate] = useState(false)
   const [data, setData] = useState<AmortizationTable[]>([
     ...dataCredit.installments
   ])
+
+  const route = useRouter()
   const [generateAmortizationChange, { data: dataNew, loading: loadingNew }] =
     useMutation(GENERATE_TABLE_AMORTIZATION_CHANGE)
   const [
@@ -78,7 +85,8 @@ function UpdateCredit({
     generateAmortizationChange({
       variables: {
         table: table
-      }
+      },
+      context
     })
   }
 
@@ -90,16 +98,39 @@ function UpdateCredit({
           idCredit: idCredit,
           installments: data
         }
-      }
+      },
+      context
     })
   }
+  useEffect(() => {
+    if (updateData) {
+      const timeout = setTimeout(() => {
+        setShowWarningUpdate(false)
+      }, 2000) // 3 seconds in milliseconds
+
+      return () => {
+        clearTimeout(timeout)
+      }
+    }
+  }, [updateData, errorUpdate])
 
   useEffect(() => {
+    const date = dataCredit.startDate.split('-', 3)
+    const date2 = dataCredit.discountDate.split('-', 3)
+
     setCredit({
       identification: dataCredit.affiliate?.user?.identification,
       creditValue: dataCredit.creditValue,
-      discountDate: new Date(dataCredit.discountDate),
-      startDate: new Date(dataCredit.startDate),
+      discountDate: new Date(
+        Number(date2[0]),
+        Number(date2[1]) - 1,
+        Number(date2[2].split('T', 1))
+      ),
+      startDate: new Date(
+        Number(date[0]),
+        Number(date[1]) - 1,
+        Number(date[2].split('T', 1))
+      ),
       installments: dataCredit.installments.length,
       interestAnual: String(dataCredit.interest * (12 / 100) * 100),
       nameAffiliate: `${dataCredit.affiliate?.user?.name} ${dataCredit?.affiliate?.user?.lastName}`,
@@ -124,21 +155,23 @@ function UpdateCredit({
     }
   }, [dataNew])
 
-  console.log(dataCredit.methodPayment)
+  if (updateData?.updateCredit && !showWarningUpdate) {
+    route.push('/dashboard/wallet/credit')
+    route.refresh()
+  }
 
   return (
-    <div className="flex flex-col  flex-grow">
-      <label className="font-bold px-4 item-center  bg-white pt-2">
-        Actualizar crédito
-      </label>
-
-      <div className="  flex h-full overflow-scroll h-max-full justify-between-between flex-col bg-white p-4">
-        <div className="  flex flex-row gap-2">
-          <div className="flex-grow flex flex-col gap-2">
-            <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
-              Afliliado
-            </label>
-            <div className=" flex flex-grow  gap-2 flex-row">
+    <div className=" max-h-full h-full w-full flex flex-col  md:overflow-scroll  ">
+      <div className="flex justify-between ">
+        <h1 className="hidden md:flex font-bold px-4 item-center  bg-white pt-2">
+          Editar crédito
+        </h1>
+      </div>
+      <div className="  flex h-full h-max-full justify-between-between overflow-scroll flex-col bg-white md:p-4 p-2 gap-2">
+        <div className=" flex-grow  flex-col flex 2xl:flex-row gap-2">
+          <div className="flex-grow flex flex-col md:pr-2 ">
+            <LabeTitle value="Afiliado" />
+            <div className=" flex flex-grow  gap-2 flex-col md:flex-row">
               <InputField
                 label="Identificación"
                 name="identification"
@@ -152,80 +185,88 @@ function UpdateCredit({
               />
             </div>
           </div>
-          <div className="flex-grow flex flex-col   ">
-            <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
-              Tipo de credito
-            </label>
-            <div className="flex flex-grow gap-2  flex-row">
+          <div className="flex-grow flex flex-col  md:px-2 gap-2 2xl:gap-0 ">
+            <LabeTitle value="Tipo de crédito" />
+
+            <div className=" gap-2  xl:flex xl:flex-row md:grid grid-cols-1 md:grid-cols-2">
               <InputField
                 label="Nombre"
                 name="typeCredit"
                 value={credit.typeCredit}
+                onlyRead
               />
-              <div className="flex flex-grow flex-row items-end">
-                <label className="text-input pr-6">
-                  {' '}
-                  Interes {credit.interest}%
-                </label>
-                <label className="text-input">Interés anual: 16.56% </label>
-                <InputField
-                  label="Forma de pago"
-                  name="methodPayment"
-                  value={credit.methodPayment}
-                />
-              </div>
+              <InputNumber
+                label="Interés"
+                value={credit.interest}
+                readonly
+                suffix=" %"
+              />
+              <InputNumber
+                label="Interés anual"
+                value={Number(credit.interest) * 12}
+                readonly
+                suffix=" %"
+              />
+              <InputField
+                label="Forma de pago"
+                name="methodPayment"
+                value={credit.methodPayment}
+                onlyRead
+              />
             </div>
           </div>
         </div>
-        <div className=" flex flex-col mt-2  ">
-          <label className="text-center text-white  bg-[#10417B]   text-input font-bold mb-2">
-            Datos credito
-          </label>
-          <div className="flex-grow flex flex-row gap-2 ">
+        <div className="flex-grow flex flex-col mt-2  ">
+          <LabeTitle value="Informacion crédito" />
+          <div className=" gap-2  xl:flex xl:flex-row md:grid grid-cols-1 md:grid-cols-2">
             <InputCalendar
               name="startDate"
               label="Fecha de creación"
               value={credit.startDate}
-              onChange={handleCreditSelect}
+              onlyRead
             />
             <InputCalendar
               name="discountDate"
               label="Fecha de descuento"
               value={credit.discountDate}
-              onChange={handleCreditSelect}
+              onlyRead
             />
-            <InputField
+            <InputNumber
               label="Valor"
               value={credit.creditValue}
-              onlyRead={true}
+              readonly
+              prefix="$ "
+              thousandSeparator=","
             />
-            <InputField
+            <InputNumber
               label="Número de coutas"
               value={credit.installments}
-              onBlur={handleCreditNumber}
-              onlyRead={true}
+              readonly
             />
-            <InputField
+            <InputNumber
               label="Valor couta"
               value={credit.scheduledPayment}
-              onlyRead={true}
+              prefix="$ "
+              thousandSeparator=","
+              readonly
             />
           </div>
         </div>
         {data.length > 0 && (
-          <UpdateTableAmortization
-            data={data}
-            setData={setData}
-            handleAmortizationTable={handleAmortizationTable}
-          />
-        )}
-        <div className="pt-10 flex justify-end">
-          <div className="pr-4">
-            <Button
-              name="Cancelar"
-              background="border border-[#10417B] text-[#10417B]"
+          <div className="flex flex-grow flex-col min-h-[500px] md:h-max-[300px]  md:overflow-scroll">
+            <UpdateTableAmortization
+              data={data}
+              setData={setData}
+              handleAmortizationTable={handleAmortizationTable}
             />
           </div>
+        )}
+        <div className="flex flex-col pt-4 md:flex-row justify-end gap-2">
+          <Button
+            name="Cancelar"
+            background="border border-[#10417B] text-[#10417B]"
+            route="/dashboard/wallet/credit/"
+          />
           <Button
             name="Aceptar"
             background="bg-[#10417B] text-white"
@@ -235,9 +276,9 @@ function UpdateCredit({
         </div>
       </div>
       {updateData?.updateCredit === true && showWarningUpdate ? (
-        <AlertModalSucces value="Se han actualizado los datos" />
+        <AlertModalSucces value="El crédito ha sido actualizado" />
       ) : updateData?.updateCredit === false && showWarningUpdate ? (
-        <AlertModalError value="Los datos no se pueden actualizar" />
+        <AlertModalError value="El crédito no ha sido actualizado" />
       ) : (
         errorUpdate && showWarningUpdate && <AlertModalError value="Error" />
       )}

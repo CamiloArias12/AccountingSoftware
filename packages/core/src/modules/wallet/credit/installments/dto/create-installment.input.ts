@@ -8,7 +8,7 @@ export class CreateInstallment implements IInstallment {
   @Field()
   installmentNumber: number;
 
-  @Field()
+  @Field(() => Date)
   paymentDate: Date;
 
   @Field()

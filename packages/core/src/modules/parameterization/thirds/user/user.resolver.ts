@@ -5,17 +5,10 @@ import { UserInput } from './dto/input/createuser.dto';
 import { InputAffiliateCreate } from '../affiliate/dto/InputAffiliate';
 import { InputEmployeeCreate } from '../employee/dto/createEmployee.dto';
 import { ResponseGraphql } from 'src/config/graphql-response/response-graphql';
-import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../../auth/auth.guards';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
-  private sleep = async (milliseconds) => {
-    await new Promise((resolve) => {
-      return setTimeout(resolve, milliseconds);
-    });
-  };
 
   @Mutation(() => ResponseGraphql)
   async createUser(
@@ -52,7 +45,6 @@ export class UserResolver {
 
   @Query(() => User, { name: 'getUser' })
   async findOne(@Args('id') id: number) {
-    console.log('Get  users', id);
     return await this.userService.findOne(id);
   }
   @Query(() => Int)
@@ -66,7 +58,6 @@ export class UserResolver {
 
     return await this.userService.findUsers();
   }
-
   @Mutation(() => User, { name: 'updateStatus' })
   async updateStatus(
     @Args('identification') id: number,

@@ -50,12 +50,12 @@ export class CreditService {
     const creditMovement: CreditMovement = new CreditMovement();
     const accountMovemnts: AccountMovement[] = [];
     const movement: Movement = new Movement();
-    movement.date = createCreditInput.discountDate;
+    movement.date = createCreditInput.startDate;
     movement.concept = createCreditInput.concept;
     for (const account of typeCredit.auxiliaries) {
       if (account.typeAccount === TypeAccountCreditEnum.CAPITAL) {
         const accounMovement: AccountMovement = new AccountMovement();
-        accounMovement.auxiliay = account.account;
+        accounMovement.auxiliary = account.account;
         accounMovement.value = createCreditInput.creditValue;
         accounMovement.user = affiliate.user;
         accounMovement.nature = account.nature;
@@ -122,19 +122,8 @@ export class CreditService {
   }
 
   async findAll(): Promise<ViewCredit[]> {
+    console.log(await this.countCreditByMonth());
     return await this.dataSource.manager.find(ViewCredit);
-  }
-  async findByDateStateDisbursement(date: Date): Promise<ViewCredit[]> {
-    console.log(date.getMonth());
-    const data = await this.dataSource.manager
-      .createQueryBuilder()
-      .from(ViewCredit, 'viewCredit')
-      .where(`MONTH(viewCredit.startDate) = :month`, {
-        month: date.getMonth() + 1,
-      })
-      .andWhere('viewCredit.state = :state', { state: StateCredit.APROBADO })
-      .getRawMany();
-    return data;
   }
 
   async updateRefinance(id: number, credit: Credit) {
@@ -146,14 +135,16 @@ export class CreditService {
 
   async update(data: UpdateCreditInput): Promise<Boolean> {
     try {
-      const credit = await this.findOne({ where: { id: data.idCredit } });
+      const credit = await this.findOne({
+        where: { id: data.idCredit },
+        relations: { installments: true },
+      });
       const installmentsDelete = [
         ...credit.installments.slice(
           data.installments.length,
           credit.installments.length,
         ),
       ];
-
       if (installmentsDelete.length > 0) {
         await this.installmentService.delete(installmentsDelete);
       }
@@ -190,7 +181,7 @@ export class CreditService {
 
   async countAllByAffiliate(id: number) {
     return this.creditRepository.count({
-      where: { affiliate: { idAffiliate: id } },
+      where: { affiliate: { identification: id } },
     });
   }
 
@@ -206,7 +197,7 @@ export class CreditService {
 
   async countCreditAffiliate(identification: number) {
     return this.creditRepository.count({
-      where: { affiliate: { idAffiliate: identification } },
+      where: { affiliate: { identification: identification } },
       relations: { affiliate: true },
     });
   }
@@ -302,9 +293,9 @@ export class CreditService {
       .leftJoin(
         Affiliate,
         'affiliate',
-        'credit.affiliateIdAffiliate= affiliate.idAffiliate',
+        'credit.affiliateIdentification= affiliate.identification',
       )
-      .leftJoin(User, 'user', 'affiliate.idAffiliate= user.identification')
+      .leftJoin(User, 'user', 'affiliate.identification= user.identification')
       .leftJoin(TypeCredit, 'typeCredit', 'credit.typeCreditId=typeCredit.id ')
       .where('installments.state= :stateB', {
         stateB: StateInstallment.PAGO_ANTICIPADO,
@@ -319,6 +310,28 @@ export class CreditService {
       ...query[0],
       nameAffiliate: `${query[0].name} ${query[0].lastName}`,
     };
+  }
+  async countCreditByMonth() {
+    const query = await this.dataSource
+      .createQueryBuilder()
+      .addSelect(
+        'YEAR(credit.startDate) AS year, MONTH(credit.startDate) AS month',
+      )
+      .addSelect('COUNT(*) AS count')
+      .from(Credit, 'credit')
+      .groupBy('YEAR(credit.startDate), MONTH(credit.startDate)')
+      .orderBy('YEAR(credit.startDate), MONTH(credit.startDate)')
+      .getRawMany();
+
+    const values = [];
+    query.map((data) => {
+      values.push([
+        new Date(data.year, data.month - 1, 1).getTime(),
+        Number(data.count),
+      ]);
+    });
+    console.log(values);
+    return values;
   }
 
   interestCalculate(interest: number, methodPayment: number) {
@@ -421,6 +434,7 @@ export class CreditService {
     method: PaymentMethods,
     valuePayment: number,
   ): Promise<CreateInstallment[]> {
+    console.log(method);
     const array: CreateInstallment[] = [];
     let flag = false;
     let loanPartial = valueLoan;
@@ -434,9 +448,15 @@ export class CreditService {
           : method === PaymentMethods.monthly
           ? 12
           : 2));
-
+    console.log(loanPartial);
     let finalBalance = loanPartial - (valueInstallment - interestValue);
     for (let i = 0; flag === false; i++) {
+      console.log(interestValue);
+      if (i > 500) {
+        console.log(array);
+        i = 0;
+        return [];
+      }
       array.push({
         installmentNumber: i + 1,
         paymentDate: addMonths(
@@ -445,9 +465,9 @@ export class CreditService {
             ? i
             : i *
                 (method === PaymentMethods.monthly
-                  ? 1
-                  : method === PaymentMethods.annual
                   ? 12
+                  : method === PaymentMethods.annual
+                  ? 1
                   : 6),
         ),
 
@@ -460,7 +480,7 @@ export class CreditService {
         finalBalance: Math.round(finalBalance),
       });
 
-      loanPartial = finalBalance;
+      loanPartial = finalBalance + 0;
       interestValue =
         loanPartial *
         ((interest * 12) /
@@ -524,7 +544,15 @@ export class CreditService {
     let totalPayment = 0;
     let scheduledPayment = array[0].scheduledPayment;
     for (let i = 0; i < array.length; i++) {
-      interestValue = loanInitial * 0.014;
+      interestValue =
+        loanInitial *
+        ((interest * 12) /
+          100 /
+          (method === PaymentMethods.annual
+            ? 1
+            : method === PaymentMethods.monthly
+            ? 12
+            : 2));
 
       totalPayment = scheduledPayment + array[i].extraPayment;
       finalBalance = loanInitial - (totalPayment - interestValue);
@@ -543,7 +571,16 @@ export class CreditService {
 
       loanInitial = finalBalance;
       if (finalBalance < scheduledPayment) {
-        scheduledPayment = finalBalance + loanInitial * 0.014;
+        scheduledPayment =
+          finalBalance +
+          loanInitial *
+            ((interest * 12) /
+              100 /
+              (method === PaymentMethods.annual
+                ? 1
+                : method === PaymentMethods.monthly
+                ? 12
+                : 2));
       }
       if (finalBalance === 0) {
         break;
@@ -563,16 +600,36 @@ export class CreditService {
     let interestValue = 0;
     let finalBalance = 0;
     let totalPayment = 0;
+    let extraPayment = 0;
     let capital = 0;
     let scheduledPayment = array[0].scheduledPayment;
     for (let i = 0; ; i++) {
-      interestValue = loanInitial * 0.014;
+      interestValue =
+        loanInitial *
+        ((interest * 12) /
+          100 /
+          (method === PaymentMethods.annual
+            ? 1
+            : method === PaymentMethods.monthly
+            ? 12
+            : 2));
+
       if (i < array.length) {
         if (
           array[i].state === StateInstallment.PENDIENTE ||
           array[i].state === StateInstallment.APLAZADA
         ) {
-          totalPayment = array[i].totalPayment + array[i].extraPayment;
+          if (
+            array[i].scheduledPayment === array[i].totalPayment ||
+            array[i].scheduledPayment + array[i].extraPayment ===
+              array[i].totalPayment
+          ) {
+            totalPayment = array[i].scheduledPayment + array[i].extraPayment;
+            extraPayment = Math.round(array[i].extraPayment);
+          } else {
+            totalPayment = array[i].totalPayment;
+            extraPayment = 0;
+          }
 
           if (
             totalPayment === scheduledPayment ||
@@ -595,7 +652,7 @@ export class CreditService {
             paymentDate: array[i].paymentDate,
             initialBalance: Math.round(loanInitial),
             scheduledPayment: Math.round(scheduledPayment),
-            extraPayment: Math.round(array[i].extraPayment),
+            extraPayment: extraPayment,
             totalPayment: Math.round(totalPayment),
             capital: Math.round(capital),
             interest: Math.round(interestValue),
@@ -604,7 +661,16 @@ export class CreditService {
           });
 
           if (finalBalance < scheduledPayment) {
-            scheduledPayment = finalBalance + loanInitial * 0.014;
+            scheduledPayment =
+              finalBalance +
+              loanInitial *
+                ((interest * 12) /
+                  100 /
+                  (method === PaymentMethods.annual
+                    ? 1
+                    : method === PaymentMethods.monthly
+                    ? 12
+                    : 2));
           }
         } else {
           finalBalance = array[i].finalBalance;
@@ -613,7 +679,7 @@ export class CreditService {
             paymentDate: array[i].paymentDate,
             initialBalance: Math.round(loanInitial),
             scheduledPayment: Math.round(array[i].scheduledPayment),
-            extraPayment: Math.round(array[i].extraPayment),
+            extraPayment: extraPayment,
             totalPayment: Math.round(array[i].totalPayment),
             capital: Math.round(array[i].capital),
             interest: Math.round(array[i].interest),
@@ -638,8 +704,26 @@ export class CreditService {
         });
       }
       if (finalBalance < scheduledPayment) {
-        scheduledPayment = finalBalance + loanInitial * 0.014;
-        interestValue = finalBalance * 0.014;
+        scheduledPayment =
+          finalBalance +
+          finalBalance *
+            ((interest * 12) /
+              100 /
+              (method === PaymentMethods.annual
+                ? 1
+                : method === PaymentMethods.monthly
+                ? 12
+                : 2));
+
+        interestValue =
+          finalBalance *
+          ((interest * 12) /
+            100 /
+            (method === PaymentMethods.annual
+              ? 1
+              : method === PaymentMethods.monthly
+              ? 12
+              : 2));
         totalPayment = scheduledPayment;
 
         arrayFinal.push({

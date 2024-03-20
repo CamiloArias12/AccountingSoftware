@@ -14,6 +14,8 @@ import { useSaving } from '@/app/hooks/saving/SavingInput'
 import InputNumber from '../../input/InputNumber'
 import { useForm } from 'react-hook-form'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
+import { LabeTitle } from '../../input/LabelTitle'
+import { Token } from '@/app/hooks/TokenContext'
 
 const CREATE_SAVING = gql`
   mutation ($create: CreateSavingInput!) {
@@ -38,9 +40,7 @@ const TYPE_SAVINGS_AFFILIATES = gql`
 `
 export const revalidate = 0
 function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
-  const { saving, handleSaving, handleSavingSelect, handleSavingNumber } =
-    useSaving()
-
+  const { context } = Token()
   const {
     register: informationSaving,
     unregister,
@@ -63,7 +63,7 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
     data: dataSavings,
     loading,
     error
-  } = useQuery(TYPE_SAVINGS_AFFILIATES)
+  } = useQuery(TYPE_SAVINGS_AFFILIATES, { context })
 
   const handleCreateSaving = saving => {
     setShowWarning(true)
@@ -75,7 +75,8 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
           affiliateId: saving.identification,
           typeSavingId: saving.idTypeSaving
         }
-      }
+      },
+      context
     })
   }
 
@@ -98,7 +99,7 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
   }
   return (
     <Modal
-      size="min-w-[650px] min-h-[500px] bg-white "
+      size="  md:h-auto bg-white md:min-w-[550px]  md:w-[600px]"
       title="Crear ahorro"
       onClick={() => {
         setShowModalCreate(false)
@@ -107,13 +108,10 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
     >
       <>
         <form
-          className=" flex-grow flex flex-col bg-white h-full m-2  gap-2"
+          className="flex flex-col py-2 w-full    "
           onSubmit={handleSubmit(handleCreateSaving)}
         >
-          <label className="text-center text-white  bg-[#10417B] text-input font-bold mb-2">
-            {' '}
-            Información afiliado
-          </label>
+          <LabeTitle value="Información afiliado" />
           <SelectAffiliate
             label="Identificación"
             name="identification"
@@ -123,6 +121,14 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
             rules={FieldRequired}
             required
             error={errors?.identification?.message}
+            onClick={(option: any) => {
+              console.log(option)
+              setValue('identification', option.user.identification)
+              setValue(
+                'nameThird',
+                `${option.user.name} ${option.user.lastName}`
+              )
+            }}
           />
           <InputField
             label="Nombres"
@@ -132,10 +138,7 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
             }}
           />
 
-          <label className="text-center text-white  bg-[#10417B] text-input font-bold my-2">
-            {' '}
-            Información ahorro
-          </label>
+          <LabeTitle value="Información ahorro" />
           <SelectAffiliate
             label="Tipo de ahorro"
             name="typeSaving"
@@ -145,6 +148,10 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
             rules={FieldRequired}
             error={errors?.typeSaving?.message}
             required
+            onClick={(option: any) => {
+              setValue('typeSaving', option.name)
+              setValue('idTypeSaving', option.id)
+            }}
           />
           <InputCalendar
             name="startDate"
@@ -165,10 +172,11 @@ function FormSaving({ setShowModalCreate }: { setShowModalCreate: any }) {
             rules={FieldRequired}
             error={errors.qoutaValue}
           />
-          <div className="mt-8 flex  gap-2 justify-end  ">
+          <div className="pt-10 flex gap-2 flex-col md:flex-row justify-end">
             <Button
               name="Cancelar"
               background="border border-[#10417B] text-[#10417B]"
+              type={'button'}
               onClick={() => {
                 setShowModalCreate(false)
               }}

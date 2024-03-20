@@ -1,4 +1,4 @@
-import { ObjectType, Field, Float, Int, DateScalarMode } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -26,11 +26,11 @@ export class Credit implements ICredit {
   id: number;
 
   @Field()
-  @Column('double', { nullable: false })
+  @Column('decimal', { precision: 12, scale: 2 })
   creditValue: number;
 
   @Field()
-  @Column('double', { nullable: false, default: 0 })
+  @Column('decimal', { precision: 12, scale: 2, default: 0 })
   valuePrevius: number;
 
   @Field()
@@ -63,6 +63,7 @@ export class Credit implements ICredit {
   })
   methodPayment: string;
 
+  //Relation affiliate
   @Field(() => Affiliate)
   @ManyToOne(() => Affiliate, (affiliate) => affiliate.credits, {
     nullable: false,
@@ -74,8 +75,21 @@ export class Credit implements ICredit {
   @RelationId((it: Credit) => it.affiliate)
   @Column({ nullable: false })
   @Index()
-  affiliateId: number;
+  affiliateIdentification: number;
 
+  //Relation  type credit
+  @Field(() => TypeCredit)
+  @ManyToOne(() => TypeCredit, (typeCredit) => typeCredit.credits, {
+    nullable: false,
+  })
+  typeCredit: TypeCredit;
+
+  @RelationId((it: Credit) => it.typeCredit)
+  @Column({ nullable: false })
+  @Index()
+  typeCreditId: number;
+
+  //Relation  installments
   @Field(() => [Installment])
   @OneToMany(() => Installment, (installment) => installment.credit, {
     nullable: false,
@@ -84,29 +98,26 @@ export class Credit implements ICredit {
   })
   installments: Installment[];
 
+  //Relation  credit movement
   @Field(() => [CreditMovement], { nullable: true })
   @OneToOne(() => CreditMovement, (movement_credit) => movement_credit.credit, {
     cascade: ['insert', 'update'],
   })
   credit_movement: CreditMovement;
 
+  //Relation  credit movement
   @Field(() => [DisbursementMovement], { nullable: true })
   @OneToOne(
     () => DisbursementMovement,
     (movement_credit) => movement_credit.credit_disbursement,
   )
-  disbursement_movement: CreditMovement;
+  disbursement_movement: DisbursementMovement;
 
+  //Relation  credit refinance
   @Field(() => Credit)
   @OneToOne(() => Credit, (credit) => credit.credit_refinance)
   @JoinColumn()
   credit_refinance: Credit;
-
-  @Field(() => TypeCredit)
-  @ManyToOne(() => TypeCredit, (typeCredit) => typeCredit.credits, {
-    nullable: false,
-  })
-  typeCredit: TypeCredit;
 
   constructor(params?: ICredit) {
     Object.assign(this, params);

@@ -22,7 +22,7 @@ export class TypeAccount implements ITypeAccount {
   code: number;
 
   @Field()
-  @Column()
+  @Column({ length: 150 })
   name: string;
 
   @Field()

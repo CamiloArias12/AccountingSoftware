@@ -1,5 +1,4 @@
 'use client'
-import { useRouter } from 'next/navigation'
 import { AddSvg } from '../logo/Add'
 
 import { motion } from 'framer-motion'
@@ -8,8 +7,6 @@ import { MenuSidebar } from '@/lib/utils/SidebarOptions'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
-import ClickOutside from '../input/ClickOutSide'
-import { OptionsDeferred } from './MenuWallet'
 import { useSession } from 'next-auth/react'
 
 function MenuTreasury({
@@ -24,16 +21,14 @@ function MenuTreasury({
   selectSub: any
 }) {
   const [showCash, setShowCash] = useState(false)
-  const {
-    data: { user }
-  } = useSession()
+  const data = useSession()
 
   return (
     <>
       <div className={`my-3 `}>
         {TreasurySideBar.map(sidebar => (
           <>
-            {user.rol[sidebar.permission] && (
+            {data?.data?.user?.rol[sidebar.permission] && (
               <motion.div
                 whileHover={{ scale: 1.01 }}
                 key={sidebar.name}
@@ -46,7 +41,7 @@ function MenuTreasury({
               >
                 <li
                   className={`${
-                    toggleBar && 'flex flex col items-center justify-center'
+                    toggleBar && 'flex flex-col items-center justify-center'
                   } w-full flex flex-row`}
                 >
                   <Link
@@ -56,15 +51,20 @@ function MenuTreasury({
                     key={sidebar.href}
                     href={sidebar.href}
                     onClick={() => {
-                      setSelect(MenuSidebar.wallet)
+                      setSelect(MenuSidebar.treasury)
                       setSelectSub(sidebar.name)
                     }}
                   >
-                    <span className="flex flex-row gap-2">
-                      <Image src={sidebar.icon} height={16} width={16} alt="" />
+                    <span className={`flex flex-row ${!toggleBar && 'gap-2'}`}>
+                      <Image
+                        src={sidebar.icon}
+                        height={toggleBar ? 18 : 16}
+                        width={toggleBar ? 18 : 16}
+                        alt=""
+                      />
                       {!toggleBar && (
                         <span
-                          className={`text-[14px] ${
+                          className={`text-input ${
                             selectSub === sidebar.name && ' font-semibold'
                           }`}
                         >
@@ -74,7 +74,7 @@ function MenuTreasury({
                     </span>
                   </Link>
                 </li>
-                {!toggleBar && sidebar.name !== 'Recibos de caja' && (
+                {!toggleBar && (
                   <Link
                     href={`${sidebar.href}/create`}
                     className="flex items-center justify-center"
@@ -97,79 +97,12 @@ function MenuTreasury({
                     </motion.span>
                   </Link>
                 )}
-                {!toggleBar && sidebar.name === 'Recibos de caja' && (
-                  <ClickOutside
-                    onClick={() => {
-                      setShowCash(false)
-                    }}
-                    className={''}
-                  >
-                    <motion.span
-                      className="  flex items-center justify center h-6 w-6 rounded-[50%] bg-[#10417B] hover:bg-[#000000] p-1"
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        duration: 0.5,
-                        delay: 0.2,
-                        ease: [0, 0.71, 0.2, 1.01]
-                      }}
-                      onClick={() => {
-                        setSelectSub(sidebar.name)
-                        setShowCash(!showCash)
-                      }}
-                    >
-                      <AddSvg color="#ffffff" />
-                    </motion.span>
-                    {showCash && (
-                      <OptionsCash
-                        setShowDeferred={setShowCash}
-                        showDeferred={showCash}
-                      />
-                    )}
-                  </ClickOutside>
-                )}
               </motion.div>
             )}
           </>
         ))}
       </div>
     </>
-  )
-}
-
-export function OptionsCash({
-  showDeferred,
-  setShowDeferred
-}: {
-  showDeferred: boolean
-  setShowDeferred: any
-}) {
-  return (
-    <ul
-      className={`ml-[-60px] flex flex-col absolute text-sm  z-10  w-[100px] flex-grow bg-white shadow-lg max-h-100 rounded-md  ring-1 ring-black ring-opacity-5 focus:outline-none
-
-                      ${!showDeferred && 'hidden'}
-		      `}
-    >
-      <Link
-        href={'/dashboard/treasury/cash/credit'}
-        className=" flex-grow cursor-default select-none relative py-2 px-2 border-b  flex items-center hover:bg-[#f8fafb] transition"
-        onClick={() => {
-          setShowDeferred(false)
-        }}
-      >
-        Créditos
-      </Link>
-      <Link
-        href={'/dashboard/treasury/cash/saving'}
-        className=" flex-grow  cursor-default select-none relative py-2 px-2 flex items-center hover:bg-[#f8fafb] transition"
-        onClick={() => {
-          setShowDeferred(false)
-        }}
-      >
-        Ahorros
-      </Link>
-    </ul>
   )
 }
 

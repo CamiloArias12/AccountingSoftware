@@ -31,31 +31,31 @@ export class Installment implements IInstallment {
   paymentDate: Date;
 
   @Field()
-  @Column()
+  @Column('decimal', { precision: 12, scale: 2 })
   initialBalance: number;
 
   @Field()
-  @Column()
+  @Column('decimal', { precision: 12, scale: 2 })
   scheduledPayment: number;
 
   @Field()
-  @Column()
+  @Column('decimal', { precision: 12, scale: 2 })
   extraPayment: number;
 
   @Field()
-  @Column()
+  @Column('decimal', { precision: 12, scale: 2 })
   totalPayment: number;
 
   @Field()
-  @Column()
+  @Column('decimal', { precision: 12, scale: 2 })
   capital: number;
 
   @Field()
-  @Column()
+  @Column('decimal', { precision: 12, scale: 2 })
   interest: number;
 
   @Field()
-  @Column()
+  @Column('decimal', { precision: 12, scale: 2 })
   finalBalance: number;
 
   @Field()

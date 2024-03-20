@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import InputNumber from '../../input/InputNumber'
 import { NumberFormatValues } from 'react-number-format'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
+import { useSession } from 'next-auth/react'
 
 interface PersonalInformationProps {
   personalInformation: any
@@ -58,11 +59,17 @@ export function PersonalInformation({
   errors,
   getValues
 }: PersonalInformationProps) {
+  const {
+    data: { user }
+  } = useSession()
+
   const { data, loading: loadingState } = useQuery(STATES, {
-    variables: { isoCode: country }
+    variables: { isoCode: country },
+    context: { headers: { Authorization: user.token } }
   })
   const { data: dataTown, loading: loadingTown } = useQuery(TOWN, {
-    variables: { isoCode: country, isoCodeState: state }
+    variables: { isoCode: country, isoCodeState: state },
+    context: { headers: { Authorization: user.token } }
   })
   useEffect(() => {
     countries.find((country: any) => {
@@ -72,21 +79,21 @@ export function PersonalInformation({
     })
   }, [])
   return (
-    <div className=" grid grid-cols-2  gap-4 lg:grid-cols-4  ">
-      <div className="row-start-1">
+    <div className=" grid grid-cols-1 md:grid-cols-2 gap-4 lg:grid-cols-4  ">
+      <div className="lg:row-start-1">
         <InputField
           type="text"
           name="addressResidence"
-          label="Dirección de Residencia"
+          label="Dirección de residencia"
           props={{
             ...personalInformation('addressResidence', FieldRequired)
           }}
           required
-          error={errors.addressResidence}
+          error={errors?.addressResidence}
         />
       </div>
 
-      <div className="row-start-1">
+      <div className="lg:row-start-1">
         <SelectField
           name="countryResidence"
           label="País"
@@ -97,11 +104,11 @@ export function PersonalInformation({
           control={control}
           setValue={handlePersonalInformation}
           required
-          error={errors.countryResidence}
+          error={errors?.countryResidence}
         />
       </div>
 
-      <div className="row-start-1">
+      <div className="lg:row-start-1">
         <SelectField
           name="stateResidence"
           label="Estado/Departamento"
@@ -112,10 +119,10 @@ export function PersonalInformation({
           control={control}
           setValue={handlePersonalInformation}
           required
-          error={errors.stateResidence}
+          error={errors?.stateResidence}
         />
       </div>
-      <div className="row-start-1">
+      <div className="lg:row-start-1">
         <SelectField
           name="cityResidence"
           label="Municipio/Ciudad"
@@ -123,15 +130,15 @@ export function PersonalInformation({
           control={control}
           setValue={handlePersonalInformation}
           required
-          error={errors.cityResidence}
+          error={errors?.cityResidence}
         />
       </div>
 
-      <div className="row-start-2">
+      <div className="lg:row-start-2">
         <InputField
           type="email"
           name="email"
-          label="Correo Personal"
+          label="Correo personal"
           props={{
             ...personalInformation('email')
           }}
@@ -139,7 +146,7 @@ export function PersonalInformation({
           error={errors?.email}
         />
       </div>
-      <div className="row-start-2">
+      <div className="lg:row-start-2">
         <InputNumber
           name="phone"
           label="Celular"
@@ -150,17 +157,19 @@ export function PersonalInformation({
           required
         />
       </div>
-      <div className="row-start-2">
+      <div className="lg:row-start-2">
         <InputField
           name="landLine"
-          label="Teléfono Fijo"
+          label="Teléfono fijo"
           props={{
-            ...personalInformation('landLine', { required: true })
+            ...personalInformation('landLine')
           }}
+          required
+          error={errors?.landLine}
         />
       </div>
 
-      <div className="row-start-3">
+      <div className="lg:row-start-3">
         <SelectField
           name="housingType"
           label="Tipo de vivienda"
@@ -169,11 +178,11 @@ export function PersonalInformation({
           control={control}
           setValue={handlePersonalInformation}
           required
-          error={errors.housingType}
+          error={errors?.housingType}
         />
       </div>
 
-      <div className="row-start-3">
+      <div className="lg:row-start-3">
         <SelectField
           name="studies"
           label="Estudios"
@@ -182,42 +191,43 @@ export function PersonalInformation({
           control={control}
           setValue={handlePersonalInformation}
           required
-          error={errors.studies}
+          error={errors?.studies}
         />
       </div>
 
-      <div className="row-start-3">
+      <div className="lg:row-start-3">
         <InputField
           name="profession"
           label="Profesión"
           props={{
-            ...personalInformation('profession', { required: true })
+            ...personalInformation('profession')
           }}
           required
+          error={errors?.profession}
         />
       </div>
-      <div className="row-start-4">
+      <div className="lg:row-start-4">
         <CheckboxField
           name="foreignOperations"
           label="¿Realiza operaciones en el exterior?"
           control={control}
         />
       </div>
-      <div className="row-start-4">
+      <div className="lg:row-start-4">
         <CheckboxField
           name="publicResources"
           label="¿Accede a recursos públicos?"
           control={control}
         />
       </div>
-      <div className="row-start-4">
+      <div className="lg:row-start-4">
         <CheckboxField
           name="publicRecognition"
           label="¿Tiene reconocimiento público?"
           control={control}
         />
       </div>
-      <div className="row-start-4">
+      <div className="lg:row-start-4">
         <CheckboxField
           control={control}
           name="publicPower"

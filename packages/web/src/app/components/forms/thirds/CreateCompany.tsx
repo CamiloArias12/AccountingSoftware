@@ -2,7 +2,6 @@
 import { FormCompany } from '@/app/components/forms/thirds/CompanyForm'
 import AlertModalError from '@/app/components/modal/AlertModalError'
 import AlertModalSucces from '@/app/components/modal/AlertModalSucces'
-import { useCompany } from '@/app/hooks/thirds/CompanyInput'
 import { OptionsThirds } from '@/lib/utils/thirds/OptionsThirds'
 import { gql, useMutation } from '@apollo/client'
 import { useEffect, useState } from 'react'
@@ -10,6 +9,7 @@ import Modal from '../../modal/Modal'
 import Button from '../../input/Button'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { Token } from '@/app/hooks/TokenContext'
 
 const CREATE_COMPANY = gql`
   mutation ($create: CreateCompanyDto!) {
@@ -18,6 +18,7 @@ const CREATE_COMPANY = gql`
 `
 
 function CreateThirdCompany({ setCreate }: { setCreate: any }) {
+  const { context } = Token()
   const [showWarning, setShowWarning] = useState(false)
   const [list, setList] = useState(OptionsThirds)
   const [
@@ -40,7 +41,8 @@ function CreateThirdCompany({ setCreate }: { setCreate: any }) {
     createCompany({
       variables: {
         create: values
-      }
+      },
+      context
     })
   }
 
@@ -66,7 +68,7 @@ function CreateThirdCompany({ setCreate }: { setCreate: any }) {
 
   return (
     <Modal
-      size=" w-screen h-screen lg:w-[800px] lg:h-auto overflow-scroll bg-white"
+      size="  lg:w-[800px] lg:h-auto overflow-scroll bg-white"
       title="Crear persona juridica"
       onClick={() => {
         setCreate(false)
@@ -80,13 +82,14 @@ function CreateThirdCompany({ setCreate }: { setCreate: any }) {
           company={company}
         />
 
-        <div className="pt-10 flex justify-end">
-          <div className="pr-4">
-            <Button
-              name="Cancelar"
-              background="border border-[#10417B] text-[#10417B]"
-            />
-          </div>
+        <div className="pt-10 flex gap-2 flex-col md:flex-row justify-end">
+          <Button
+            name="Cancelar"
+            background="border border-[#10417B] text-[#10417B]"
+            onClick={() => {
+              setCreate(false)
+            }}
+          />
           <Button
             name="Aceptar"
             background="bg-[#10417B] text-white"

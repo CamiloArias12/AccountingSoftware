@@ -72,7 +72,7 @@ export class AffiliateService {
     } catch (e) {
       console.log(e);
       await this.affiliateRepository.update(
-        { idAffiliate: identification },
+        { identification: identification },
         { state: false },
       );
       /* handle error */
@@ -93,7 +93,7 @@ export class AffiliateService {
 
   async findOne(identification: number): Promise<Affiliate> {
     return await this.affiliateRepository.findOne({
-      where: { idAffiliate: identification },
+      where: { identification: identification },
       relations: {
         user: true,
       },

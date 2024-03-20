@@ -88,7 +88,7 @@ export class ClassAccountService {
       .leftJoin(
         AccountMovement,
         'account_movement',
-        'auxiliary.code = account_movement.idAccount',
+        'auxiliary.code = account_movement.auxiliaryCode',
       )
 
       .addGroupBy('class.code')

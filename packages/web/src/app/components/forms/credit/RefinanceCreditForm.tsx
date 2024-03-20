@@ -20,6 +20,8 @@ import { useForm } from 'react-hook-form'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
 import InputNumber from '../../input/InputNumber'
 import SelectField from '../../input/SelectField'
+import { LabeTitle } from '../../input/LabelTitle'
+import { Token } from '@/app/hooks/TokenContext'
 
 const GENERATE_TABLE_AMORTIZATION = gql`
   mutation (
@@ -120,6 +122,7 @@ function RefinanceCreditForm({
     mode: 'all'
   })
 
+  const { context } = Token()
   const [methodPayment, setMethodPayment] = useState<string>()
   const [data, setData] = useState<AmortizationTable[]>([])
   const [option, setOption] = useState<number>(0)
@@ -173,7 +176,8 @@ function RefinanceCreditForm({
           methodPayment: getValues('paymentMethod')
         },
         id: id
-      }
+      },
+      context
     })
   }
 
@@ -189,7 +193,8 @@ function RefinanceCreditForm({
           creditValue: getValues('total'),
           interest: getValues('interest'),
           installments: getValues('installments')
-        }
+        },
+        context
       })
     }
 
@@ -201,7 +206,8 @@ function RefinanceCreditForm({
           creditValue: getValues('total'),
           interest: getValues('interest'),
           paymentMethod: getValues('paymentMethod')
-        }
+        },
+        context
       })
     }
   }
@@ -214,7 +220,8 @@ function RefinanceCreditForm({
     generateAmortizationChange({
       variables: {
         table: table
-      }
+      },
+      context
     })
   }
 
@@ -238,6 +245,7 @@ function RefinanceCreditForm({
   useEffect(() => {
     setValue('idAffiliate', dataCredit.identification)
     setValue('interest', dataCredit.interest)
+    setValue('interestAnual', dataCredit.interest * 12)
     setValue('nameThird', dataCredit.nameAffiliate)
     setValue('typeCredit', dataCredit.typeCredit)
     setValue('idTypeCredit', dataCredit.idTypeCredit)
@@ -276,12 +284,12 @@ function RefinanceCreditForm({
   }, [dataAmortizationThree])
 
   return (
-    <div className=" flex-grow flex flex-col  ">
+    <div className=" max-h-full h-full w-full flex flex-col  overflow-scroll  ">
       <div className="flex justify-between ">
-        <label className="font-bold px-4 item-center  bg-white pt-2">
-          Refinaciar credito
-        </label>
-        <div className="flex  flex-row bg-white mt-3 pl-4  pt-2">
+        <h1 className="hidden md:flex font-bold px-4 item-center  bg-white pt-2">
+          Refinaciar crédito
+        </h1>
+        <div className=" flex  flex-row  mt-3 pl-4 p-2 md:p-0 md:pt-2 md:bg-white bg-sky-50 overflow-scroll">
           {methodPayment !== PaymentMethods.singlePayment && (
             <>
               {optionsCredit.map(opt => (
@@ -318,16 +326,14 @@ function RefinanceCreditForm({
             ? handleRefinaceCredit
             : button === 1 && handleGenerateTable
         )}
-        className="  flex h-full overflow-scroll h-max-full justify-between-between flex-col bg-white p-4"
+        className="  flex h-full h-max-full justify-between-between md:overflow-scroll flex-col bg-white md:p-4 p-2 gap-2"
       >
         <section className="flex  flex-col gap-2">
           <div className="flex   flex-col  rounded-sm ">
-            <div className=" flex-grow flex flex-row">
-              <div className="flex-grow flex flex-col pr-2 ">
-                <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
-                  Afliliado
-                </label>
-                <div className=" flex flex-grow gap-2  flex-row">
+            <div className=" flex-grow  flex-col flex 2xl:flex-row gap-2">
+              <div className="flex-grow flex flex-col md:pr-2 ">
+                <LabeTitle value="Afiliado" />
+                <div className=" flex flex-grow  flex-col md:flex-row">
                   <InputField
                     label="Identificación"
                     name="idAffiliate"
@@ -345,11 +351,10 @@ function RefinanceCreditForm({
                   />
                 </div>
               </div>
-              <div className="flex-grow flex flex-col px-2  ">
-                <label className="text-center text-white  bg-[#3C7ac2] text-input font-bold mb-2">
-                  Tipo de credito
-                </label>
-                <div className="flex flex-grow  gap-2 flex-row">
+              <div className="flex-grow flex flex-col  md:px-2 gap-2 2xl:gap-0 ">
+                <LabeTitle value="Tipo de crédito" />
+
+                <div className=" gap-2  xl:flex xl:flex-row md:grid grid-cols-1 md:grid-cols-2">
                   <InputField
                     label="Nombre"
                     name="typeCredit"
@@ -357,34 +362,41 @@ function RefinanceCreditForm({
                       ...informationCredit('typeCredit')
                     }}
                   />
-                  <div className="flex flex-grow flex-row gap-2 items-end">
-                    <label className="text-input pb-2 ">
-                      {' '}
-                      Interes {dataCredit.interest}%
-                    </label>
-                    <label className="text-input pb-2">
-                      {dataCredit.interest * 12} %
-                    </label>
-                    <SelectField
-                      name="paymentMethod"
-                      control={control}
-                      label="Forma de pago"
-                      options={optionsMethod}
-                      setValue={setValue}
-                      required
-                      rules={FieldRequired}
-                      error={errors?.paymentMethod}
-                      setDispatch={setMethodPayment}
-                    />
-                  </div>
+                  <InputNumber
+                    label="Interes"
+                    name="interest"
+                    suffix=" %"
+                    thousandSeparator=","
+                    control={control}
+                    readonly
+                  />
+
+                  <InputNumber
+                    label="Interes anual"
+                    name="interestAnual"
+                    suffix=" %"
+                    thousandSeparator=","
+                    control={control}
+                    readonly
+                  />
+
+                  <SelectField
+                    name="paymentMethod"
+                    control={control}
+                    label="Forma de pago"
+                    options={optionsMethod}
+                    setValue={setValue}
+                    required
+                    rules={FieldRequired}
+                    error={errors?.paymentMethod}
+                    setDispatch={setMethodPayment}
+                  />
                 </div>
               </div>
             </div>
             <div className="flex-grow flex flex-col mt-2  ">
-              <label className="text-center text-white  bg-[#3C7ac2]   text-input font-bold mb-2">
-                Datos credito
-              </label>
-              <div className="flex-grow flex flex-row gap-2">
+              <LabeTitle value="Informacion crédito" />
+              <div className=" gap-2  xl:flex xl:flex-row md:grid grid-cols-1 md:grid-cols-3">
                 <InputCalendar
                   name="startDate"
                   label="Fecha de creación"
@@ -412,7 +424,7 @@ function RefinanceCreditForm({
                   readonly
                 />
                 <InputNumber
-                  label="Valor credito"
+                  label="Valor crédito"
                   name="creditValue"
                   prefix="$ "
                   thousandSeparator=","
@@ -470,7 +482,7 @@ function RefinanceCreditForm({
               </div>
             </div>
           </div>
-          <div className="pt-2 flex justify-end mr-4 ">
+          <div className="pt-2 gap-2  flex-col flex md:flex-row justify-end mr-4 ">
             <InputField
               label="Concepto"
               name="concept"
@@ -497,11 +509,11 @@ function RefinanceCreditForm({
           loadingAmortizationThree ||
           loadingAmortizationChange) && <Logo />}
 
-        <div className="flex-grow h-full">
-          {(loadingAmortization || loadingAmortizationThree) && <Logo />}
+        {(loadingAmortization || loadingAmortizationThree) && <Logo />}
 
+        <>
           {data.length > 0 && (
-            <>
+            <div className="flex flex-grow flex-col min-h-[500px] md:h-max-[300px]  md:overflow-scroll">
               <TableAmortization
                 isChange={
                   methodPayment !== PaymentMethods.singlePayment ? true : false
@@ -511,31 +523,31 @@ function RefinanceCreditForm({
                 setSelected={true}
                 handleAmortizationTable={handleAmortizationTable}
               />
+            </div>
+          )}
+          <div className="pt-10 flex gap-2 flex-col md:flex-row justify-end">
+            <Button
+              name="Cancelar"
+              background="border border-[#10417B] text-[#10417B]"
+              route="/dashboard/wallet/credit"
+            />
 
-              <div className=" flex flex-row  justify-end gap-2">
-                {data?.length > 0 && (
-                  <Button
-                    name="Aceptar"
-                    type={'submit'}
-                    background="bg-[#10417B] 
+            {data?.length > 0 && (
+              <Button
+                name="Aceptar"
+                type={'submit'}
+                background="bg-[#10417B] 
 	      
 			   text-white"
-                    onClick={() => {
-                      setButton(2)
-                    }}
-                  />
-                )}
-                <Button
-                  name="Cancelar"
-                  background="border border-[#10417B] text-[#10417B]"
-                  route="/dashboard/wallet/credit/all"
-                />
-              </div>
-            </>
-          )}
-        </div>
+                onClick={() => {
+                  setButton(2)
+                }}
+              />
+            )}
+          </div>
+        </>
         {dataRefinace?.refinanceCreditCreate && showWarning ? (
-          <AlertModalSucces value="El  credito ha sido refinanciado" />
+          <AlertModalSucces value="El crédito ha sido refinanciado" />
         ) : dataRefinace?.refinanceCreditCreate === false && showWarning ? (
           <AlertModalError value="Error" />
         ) : (

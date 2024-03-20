@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, FindManyOptions, In, Repository } from 'typeorm';
 import {} from './dto/update-installment.input';
 import { Installment } from './installment.entity';
 import { StateInstallment } from './dto/enum-types';
@@ -56,6 +56,11 @@ export class InstallmentsService {
       relations: { movement_cash: true },
     });
   }
+
+  async exist(options: FindManyOptions<Installment>) {
+    return await this.installmentRepository.exist(options);
+  }
+
   async updateState(
     id_credit: number,
     installmentNumber: number,

@@ -19,7 +19,7 @@ export class SubAccount {
   @PrimaryColumn()
   code: number;
 
-  @Field({ defaultValue: 'SubCuenta' })
+  @Field({ defaultValue: 'Subcuenta' })
   type: string;
 
   @ManyToOne(() => Account, (account) => account.subAccounts, {

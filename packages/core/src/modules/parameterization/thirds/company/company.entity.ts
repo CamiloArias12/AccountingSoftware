@@ -9,7 +9,7 @@ import { ICompany } from './dto/company-interface';
 @Entity()
 export class Company implements ICompany {
   @Field()
-  @Column()
+  @Column({ length: 80 })
   typeIdentification: string;
 
   @Field()
@@ -35,7 +35,7 @@ export class Company implements ICompany {
   typePerson: TypePerson;
 
   @Field()
-  @Column()
+  @Column({ length: 150 })
   name: string;
 
   @Field()
@@ -46,7 +46,7 @@ export class Company implements ICompany {
   legalRepresentativeTypeIdentification: TypeIdentification;
 
   @Field()
-  @Column()
+  @Column({ length: 150 })
   legalRepresentativeName: string;
 
   @Field()
@@ -54,7 +54,7 @@ export class Company implements ICompany {
   legalRepresentativeDocument: number;
 
   @Field()
-  @Column()
+  @Column({ length: 120 })
   natureCompany: string;
 
   @Field(() => [AccountMovement])

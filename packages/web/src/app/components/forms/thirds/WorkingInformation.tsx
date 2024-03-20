@@ -18,7 +18,7 @@ function WorkingInformtaion({
   errors: any
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:grid-cols-4">
       <InputField
         type="text"
         name="company"
@@ -124,7 +124,7 @@ function WorkingInformtaion({
 
       <InputNumber
         name="numberAccount"
-        label="Número de Cuenta"
+        label="Número de cuenta"
         value={workingInformation.numberAccount}
         handleChange={handleWorkingInformation}
         control={control}

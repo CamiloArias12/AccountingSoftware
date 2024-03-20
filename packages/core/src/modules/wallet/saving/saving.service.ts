@@ -55,7 +55,7 @@ export class SavingService {
 
   async countAllByAffiliate(id: number) {
     return this.savingRepository.count({
-      where: { affiliate: { idAffiliate: id } },
+      where: { affiliate: { identification: id } },
     });
   }
 
@@ -88,7 +88,13 @@ export class SavingService {
     }
   }
 
-  async remove(id: number): Promise<void> {
-    await this.savingRepository.delete(id);
+  async remove(id: number): Promise<Boolean> {
+    try {
+      await this.savingRepository.delete(id);
+      return true;
+    } catch (e) {
+      /* handle error */
+      return false;
+    }
   }
 }

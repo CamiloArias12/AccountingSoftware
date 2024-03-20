@@ -1,58 +1,61 @@
-import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "./enum-type";
+import {
+  CivilStatus,
+  Gender,
+  HousingType,
+  Studies,
+  TypeIdentification,
+} from './enum-type';
 
-export interface IUser{
+export interface IUser {
+  typeIdentification: TypeIdentification;
 
-   typeIdentification: TypeIdentification;
+  identification: number;
 
-   identification:number
-   
-   name:string
+  name: string;
 
-   lastName:string
+  lastName: string;
 
-   expeditionDate:Date
+  expeditionDate: Date;
 
-   expeditionCity:string
+  expeditionCity: string;
 
-   birthDate:Date
- 
-   countryBirth: string;
+  birthDate: Date;
 
-   stateBirth: String
+  countryBirth: string;
 
-   cityBirth: String
-   
-   gender: Gender;
+  stateBirth: string;
 
-   statusCivil: CivilStatus;
+  cityBirth: string;
 
-   addressResidence: string
+  gender: Gender;
 
-   countryResidence: string;
+  statusCivil: CivilStatus;
 
-   stateResidence: String
+  addressResidence: string;
 
-   cityResidence: String
+  countryResidence: string;
 
-   phone:string 
+  stateResidence: String;
 
-   landLine:string 
+  cityResidence: String;
 
-   email: string
+  phone: string;
 
-   housingType: HousingType;
+  landLine: string;
 
-   studies: Studies;
+  email: string;
 
-   profession: string
+  housingType: HousingType;
 
-   foreignOperations: boolean
+  studies: Studies;
 
-   publicResources: boolean
+  profession: string;
 
-   publicRecognition: boolean
+  foreignOperations: boolean;
 
-   publicPower: boolean
+  publicResources: boolean;
 
+  publicRecognition: boolean;
 
+  publicPower: boolean;
 }

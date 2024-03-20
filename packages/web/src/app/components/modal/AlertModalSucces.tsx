@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 
 function AlertModalSucces({ value }: { value: string }) {
   return (
-    <div className="fixed top-2 left-1/2 transform -translate-x-1/2 w-screen flex items-center justify-center z-50">
+    <div className="fixed top-2 left-1/2 transform -translate-x-1/2 xl:w-screen flex items-center justify-center z-50">
       <motion.div
         className={`flex flex-row rounded-sm shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]  p-4 bg-[#BAFFCD] `}
         initial={{ opacity: 0, scale: 0.5 }}

@@ -9,6 +9,7 @@ interface ButtonProps {
   route?: string
   type?: any
   image?: string
+  rigth?: boolean
 }
 
 function Button({
@@ -18,31 +19,38 @@ function Button({
   loading,
   route,
   type,
-  image
+  image,
+  rigth
 }: ButtonProps) {
-  console.log(loading)
   return (
     <>
       {route ? (
         <Link
           href={!loading ? route : ''}
-          className={` ${background} text-input font-bold px-6 py-2  flex flex-row  gap-2 rounded-sm hover:shadow-lg ${
+          className={` ${background} text-input-medium  items-center justify-center 2xl:text-input font-bold h-[30px] 2xl:h-[34px] md:w-28  flex flex-row   gap-2 hover:shadow-lg ${
             loading && 'cursor-not-allowed'
           }  `}
         >
-          {name}
+          {image && !loading && !rigth && (
+            <Image src={image} height={21} width={21} alt="" />
+          )}
+
+          <span>{name}</span>
+          {image && rigth && (
+            <Image src={image} height={21} width={21} alt="" />
+          )}
         </Link>
       ) : (
         <button
-          className={` ${background} text-input font-bold px-6 py-2  flex flex-row  gap-2 rounded-sm hover:shadow-lg ${
+          className={` ${background} text-input-medium  items-center justify-center 2xl:text-input font-bold h-[30px] 2xl:h-[34px] md:w-28  flex flex-row   gap-2 hover:shadow-lg ${
             loading && 'cursor-not-allowed'
           }  `}
           onClick={onClick}
           disabled={loading}
           type={type}
         >
-          {image && !loading && (
-            <Image src="/download.svg" height={21} width={21} alt="" />
+          {image && !loading && !rigth && (
+            <Image src={image} height={21} width={21} alt="" />
           )}
           {loading && (
             <svg
@@ -69,6 +77,9 @@ function Button({
           )}
 
           {name}
+          {image && rigth && (
+            <Image src={image} height={21} width={21} alt="" />
+          )}
         </button>
       )}
     </>

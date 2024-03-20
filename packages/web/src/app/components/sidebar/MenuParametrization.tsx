@@ -1,6 +1,5 @@
 'use client'
 import { ParametrizationSideBar } from '@/lib/utils/MenuParametrization'
-import { useRouter } from 'next/navigation'
 import { AddSvg } from '../logo/Add'
 
 import { motion } from 'framer-motion'
@@ -20,16 +19,14 @@ function MenuParametrization({
   setSelectSub: any
   selectSub: string
 }) {
-  const {
-    data: { user }
-  } = useSession()
+  const data = useSession()
 
   return (
     <>
       <div className={`my-3 `}>
         {ParametrizationSideBar.map(sidebar => (
           <>
-            {user.rol[sidebar.permission] && (
+            {data?.data?.user?.rol[sidebar.permission] && (
               <motion.div
                 whileHover={{ scale: 1.01 }}
                 key={sidebar.name}
@@ -55,10 +52,16 @@ function MenuParametrization({
                     }}
                   >
                     <span className={`flex flex-row ${!toggleBar && 'gap-2'}`}>
-                      <Image src={sidebar.icon} height={16} width={16} alt="" />
+                      <Image
+                        src={sidebar.icon}
+                        height={toggleBar ? 18 : 16}
+                        width={toggleBar ? 18 : 16}
+                        alt=""
+                      />
+
                       {!toggleBar && (
                         <span
-                          className={`text-[14px] ${
+                          className={`text-input ${
                             selectSub === sidebar.name && ' font-semibold'
                           }`}
                         >

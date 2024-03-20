@@ -14,17 +14,18 @@ import { useVirtual } from 'react-virtual'
 import { motion } from 'framer-motion'
 import { Credit } from '@/lib/utils/credit/types'
 import { fuzzyFilter } from '../type-account/TableTypeAccount'
+import TableInfo from '../../table/TableGeneral'
 
 function TableCreditsDisbursement({
-  credits,
+  disbursements,
   rowSelection,
   setRowSelection
 }: {
-  credits: Credit[]
+  disbursements: Credit[]
   rowSelection: any
   setRowSelection: any
 }) {
-  const [data, setData] = useState<Credit[]>(credits)
+  const [data, setData] = useState<Credit[]>(disbursements)
   const [concept, setConcept] = useState('')
 
   const columns = useMemo<ColumnDef<Credit>[]>(
@@ -62,7 +63,7 @@ function TableCreditsDisbursement({
     []
   )
 
-  const route = useRouter()
+  const [rowId, setRowId] = useState<number>(0)
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
   const table = useReactTable({
@@ -84,82 +85,17 @@ function TableCreditsDisbursement({
     getFilteredRowModel: getFilteredRowModel(),
     debugTable: true
   })
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const { rows } = table.getRowModel()
-
-  const rowVirtualizer = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 12
-  })
-  const { virtualItems: virtualRows } = rowVirtualizer
 
   return (
-    <div className="m-4">
-      <div className="flex  flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
-        <div className="mx-4 my-2 flex-grow text-sm">
-          <table className="h-full w-full table-fixed table ">
-            <thead className="font-medium border-b-4 bg-[#F2F5FA] border-b-[#3C7AC2]">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr className="rounded-lg" key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
-                      <th
-                        className="text-start font-light pl-3 py-2 font-medium "
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        style={{ width: header.getSize() }}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <div
-                            {...{
-                              className: header.column.getCanSort()
-                                ? 'cursor-pointer select-none'
-                                : '',
-                              onClick: header.column.getToggleSortingHandler()
-                            }}
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                            {{
-                              asc: ' 🔼',
-                              desc: ' 🔽'
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                        )}
-                      </th>
-                    )
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody className=" ">
-              {virtualRows.map(virtualRow => {
-                const row = rows[virtualRow.index] as Row<any>
-                return (
-                  <motion.tr
-                    key={row.id}
-                    className=" hover:border-l-4  hover:border-l-[#3C7AC2] "
-                  >
-                    {row.getVisibleCells().map(cell => {
-                      return (
-                        <td className="font-light px-2 ">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      )
-                    })}
-                  </motion.tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+    <div className="flex  flex-col bg-white rounded-tr-[20px] rounded-b-[20px] ">
+      <div className="mx-4 my-2 flex-grow text-sm">
+        <TableInfo
+          table={table}
+          className="account-table"
+          rowId={rowId}
+          setRow={setRowId}
+          key={1}
+        />
       </div>
     </div>
   )

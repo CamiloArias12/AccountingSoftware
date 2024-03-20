@@ -9,22 +9,21 @@ import UserInformationView from './UserInformationView'
 function ViewThird({ data }: { data: any }) {
   return (
     <>
-      <div className="flex flex-row gap-4 flex-grow">
-        <div className="flex flex-col shadow-sm bg-white  items-center justify-center border-gray-150 p-2 xl:w-80 rounded-lg  ">
-          <div className="flex flex-col pt-4 gap-4 items-center justify-center">
-            <Image
+      <div className="flex flex-col md:flex-row gap-4 flex-grow">
+        <div className="flex  flex-row md:flex-col shadow-sm bg-white  items-center justify-center border-gray-150 p-2 xl:w-80 rounded-lg  ">
+          <div className="flex flex-row md:flex-col pt-4 gap-4 items-center justify-center">
+            <img
+              className="h-[100px] w-[100px]  md:h-[200px] md:w-[200px]  "
               src={
                 data.getUser.gender === 'Femenino' ? '/woman.svg' : '/man.svg'
               }
-              height={200}
-              width={200}
               alt=""
             />
 
             <div className="flex w-full flex-grow flex-col border-t-4 items-center justify-center">
               <span className=" font-bold text-gray-700">{`${data.getUser.name}  ${data.getUser.lastName}`}</span>
-              <span className=" text-input text-gray-500 font-semibold">{`${data.getUser.profession}`}</span>
-              <span className="text-input text-gray-500 font-semibold ">{`${data.getUser.cityResidence} , ${data.getUser.countryResidence}`}</span>
+              <span className=" text-input-medium md:text-input text-gray-500 font-semibold">{`${data.getUser.profession}`}</span>
+              <span className="text-input-medium md:text-input text-gray-500 font-semibold ">{`${data.getUser.cityResidence} , ${data.getUser.countryResidence}`}</span>
               <span
                 className={`  font-semibold py-1 px-1  rounded-[30px] text-xs ${
                   data.getUser.status

@@ -21,9 +21,9 @@ import { Saving } from './saving.entity';
       .leftJoin(
         Affiliate,
         'affiliate',
-        'saving.affiliateIdAffiliate= affiliate.idAffiliate',
+        'saving.affiliateIdentification= affiliate.identification',
       )
-      .leftJoin(User, 'user', 'affiliate.idAffiliate= user.identification')
+      .leftJoin(User, 'user', 'affiliate.identification= user.identification')
       .leftJoin(TypeSaving, 'typeSaving', 'saving.typeSavingId=typeSaving.id '),
 })
 @ObjectType()

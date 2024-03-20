@@ -42,6 +42,7 @@ import { CashRegisterMovement } from './modules/treasury/cash-register-movement/
 import { Contribution } from './modules/wallet/contribution/contribution.entity';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { Role } from './modules/parameterization/thirds/role/role.entity';
+import { NoteMovement } from './modules/treasury/note-movement/note-movement.entity';
 @Module({
   imports: [
     ParameterizationModule,
@@ -98,6 +99,7 @@ import { Role } from './modules/parameterization/thirds/role/role.entity';
         DeferredMovement,
         DisbursementMovement,
         CashRegisterMovement,
+        NoteMovement,
         Contribution,
         Role,
       ],

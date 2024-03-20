@@ -18,7 +18,36 @@ export const Modules = {
   '/deferred': 'Diferidos',
   '/cash': 'Recibos de caja',
   '/roles': 'Roles',
+  '/notes': 'Notas contables',
+  '/bookauxiliary': 'Libro auxiliar',
   '/disbursementvoucher': 'Comprobantes de egreso'
+}
+
+export const ModulesMobile = {
+  '/dashboard': 'Inicio',
+  '/thirds': 'Terceros',
+  '/thirds/create': 'Crear tercero',
+  '/thirds/update': 'Editar tercero',
+  '/saving': 'Ahorros',
+  '/credit': 'Créditos',
+  '/credit/create': 'Crear crédito',
+  '/credit/update': 'Editar crédito',
+  '/credit/refinance': 'Refinanciar crédito',
+  '/typeaccount': 'Plan de cuentas',
+  '/typesaving': 'Tipos de ahorro',
+  '/typecredit': 'Tipos de crédito',
+  '/movements': 'Movimientos',
+  '/deferred': 'Diferidos',
+  '/deferred/create': 'Crear diferido',
+  '/cash': 'Recibos de caja',
+  '/cash/create': 'Crear recibo de caja',
+  '/roles': 'Roles',
+  '/notes': 'Notas contables',
+  '/notes/create': 'Crear nota',
+  '/notes/update': 'Editar nota',
+  '/bookauxiliary': 'Libro auxiliar',
+  '/disbursementvoucher': 'Comprobantes de egreso',
+  '/disbursementvoucher/create': 'Crear comprobante'
 }
 export const SideBarModules = [
   {

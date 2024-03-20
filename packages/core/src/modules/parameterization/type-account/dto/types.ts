@@ -24,7 +24,7 @@ export class TypeSavingCreditAccount {
 
 @ObjectType()
 export class ClassAccountStatistics {
-  @Field()
+ @Field()
   code: number;
 
   @Field()
@@ -36,3 +36,16 @@ export class ClassAccountStatistics {
   @Field()
   debit_balance: number;
 }
+
+@ObjectType()
+export class StatisticsAccount{
+  @Field()
+  credit: number;
+
+  @Field()
+  debit: number;
+
+  @Field()
+  date:Date
+}
+

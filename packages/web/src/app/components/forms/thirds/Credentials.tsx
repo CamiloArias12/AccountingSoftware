@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
+import { Token } from '@/app/hooks/TokenContext'
 
 const ROLES = gql`
   query {
@@ -29,7 +30,8 @@ function CredentialsForm({
   update: boolean
   values: any
 }) {
-  const { data, loading, error } = useQuery(ROLES)
+  const { context } = Token()
+  const { data, loading, error } = useQuery(ROLES, { context })
 
   const {
     data: { user }
@@ -43,7 +45,7 @@ function CredentialsForm({
 
   return (
     <>
-      <div className=" flex-grow grid grid-cols-3 gap-4">
+      <div className=" flex-grow grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <InputField
           type="text"
           name="username"
@@ -55,7 +57,7 @@ function CredentialsForm({
 
         <InputFieldPassword
           name="password"
-          label="Contrasena"
+          label="Contraseña"
           required={update ? false : true}
           props={{
             ...employeeInformation('password', !update && FieldRequired)

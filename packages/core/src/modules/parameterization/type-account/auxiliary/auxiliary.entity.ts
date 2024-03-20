@@ -51,7 +51,7 @@ export class Auxiliary {
   @Field(() => [AccountMovement])
   @OneToMany(
     () => AccountMovement,
-    (account_movement) => account_movement.auxiliay,
+    (account_movement) => account_movement.auxiliary,
     { cascade: ['insert'] },
   )
   account_movement: AccountMovement[];

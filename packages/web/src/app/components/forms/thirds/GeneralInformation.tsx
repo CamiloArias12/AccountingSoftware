@@ -14,6 +14,8 @@ import { useEffect, useState } from 'react'
 import InputCalendar from '../../input/Calendar'
 import InputNumber from '../../input/InputNumber'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
+import { useSession } from 'next-auth/react'
+import { Token } from '@/app/hooks/TokenContext'
 interface GeneralInformationProps {
   generalInformation: any
   countries: any
@@ -58,12 +60,13 @@ export function GeneralInformation({
   informationUser
 }: GeneralInformationProps) {
   const { data, loading: loadingState } = useQuery(STATES, {
-    variables: { isoCode: country }
+    variables: { isoCode: country },
+    ...Token()
   })
   const { data: dataTown, loading: loadingTown } = useQuery(TOWN, {
-    variables: { isoCode: country, isoCodeState: state }
+    variables: { isoCode: country, isoCodeState: state },
+    ...Token()
   })
-
   useEffect(() => {
     countries.find((country: any) => {
       if (country.name === generalInformation.countryBirth) {
@@ -73,14 +76,14 @@ export function GeneralInformation({
   }, [])
 
   return (
-    <div className="  grid grid-cols-2 gap-4 lg:gap-6 lg:grid-cols-4  ">
+    <div className="  grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 lg:grid-cols-4  ">
       <div className="lg:row-start-1 ">
         <InputField
           name="name"
           label="Nombres"
           required
           props={{ ...generalInformation('name', FieldRequired) }}
-          error={errors.name}
+          error={errors?.name}
         />
       </div>
       <div>
@@ -89,17 +92,18 @@ export function GeneralInformation({
           label="Apellidos"
           required
           props={{ ...generalInformation('lastName', FieldRequired) }}
-          error={errors.lastName}
+          error={errors?.lastName}
         />
       </div>
       <div className="lg:row-start-2">
         <SelectField
           name="typeIdentification"
-          label="Tipo de Identificación"
+          label="Tipo de identificación"
           options={IdentificationForm}
           image={false}
+          required
           control={control}
-          error={errors.typeIdentification}
+          error={errors?.typeIdentification}
           setValue={setValue}
         />
       </div>
@@ -107,20 +111,20 @@ export function GeneralInformation({
       <div className="lg:row-start-2">
         <InputNumber
           name="identification"
-          label="Numero de Identificación"
+          label="Numero de identificación"
           control={control}
           required
-          error={errors.identification}
+          error={errors?.identification}
         />
       </div>
 
       <div className="lg:row-start-3">
         <InputCalendar
           name="expeditionDate"
-          label="Fecha de Expedición"
+          label="Fecha de expedición"
           control={control}
           required
-          error={errors.expeditionDate}
+          error={errors?.expeditionDate}
         />
       </div>
 
@@ -128,10 +132,12 @@ export function GeneralInformation({
         <InputField
           type="text"
           name="expeditionCity"
-          label="Ciudad de Expedición"
+          label="Ciudad de expedición"
+          required
           props={{
-            ...generalInformation('expeditionCity', { required: true })
+            ...generalInformation('expeditionCity')
           }}
+          error={errors?.expeditionCity}
         />
       </div>
 
@@ -141,7 +147,7 @@ export function GeneralInformation({
           label="Fecha de nacimiento"
           control={control}
           required
-          error={errors.birthDate}
+          error={errors?.birthDate}
         />
       </div>
 
@@ -156,7 +162,7 @@ export function GeneralInformation({
           control={control}
           setValue={setValue}
           required
-          error={errors.countryBirth}
+          error={errors?.countryBirth}
         />
       </div>
 
@@ -172,7 +178,7 @@ export function GeneralInformation({
           control={control}
           setValue={setValue}
           required
-          error={errors.stateBirth}
+          error={errors?.stateBirth}
         />
       </div>
 
@@ -185,16 +191,14 @@ export function GeneralInformation({
           control={control}
           setValue={setValue}
           required
-          error={errors.cityBirth}
+          error={errors?.cityBirth}
         />
       </div>
       <div className="lg:row-start-5">
         <SelectField
           name="gender"
           label="Género"
-          value={generalInformation.gender ? generalInformation.gender : ''}
           options={GenderForm}
-          image={false}
           control={control}
           setValue={setValue}
           required
@@ -204,12 +208,12 @@ export function GeneralInformation({
       <div className="lg:row-start-5">
         <SelectField
           name="statusCivil"
-          label="Estado Civil"
+          label="Estado civil"
           options={CivilStatusForm}
           control={control}
           setValue={setValue}
           required
-          error={errors.statusCivil}
+          error={errors?.statusCivil}
         />
       </div>
     </div>

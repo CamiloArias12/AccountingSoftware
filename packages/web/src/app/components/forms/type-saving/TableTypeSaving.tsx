@@ -1,8 +1,6 @@
 import {
   ColumnDef,
-  Row,
   SortingState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -10,17 +8,15 @@ import {
 } from '@tanstack/react-table'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useVirtual } from 'react-virtual'
-import { motion } from 'framer-motion'
 import { TypeSaving } from '@/lib/utils/type-saving/types'
 import { gql, useMutation } from '@apollo/client'
-import { useTypeSaving } from '@/app/hooks/type-saving/TypeSavingInput'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
 import OptionsTable from '../../options-table/OptionsTable'
 import ViewTypeSaving from './ViewTypeSaving'
 import TypeSavingUpdate from './TypeSavingUpdate'
 import { fuzzyFilter } from '../type-account/TableTypeAccount'
+import TableInfo from '../../table/TableGeneral'
 
 const DELETE_TYPE_SAVING = gql`
   mutation ($id: Int!) {
@@ -84,33 +80,15 @@ function TableTypeSaving({
     getFilteredRowModel: getFilteredRowModel(),
     debugTable: true
   })
-  const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const { rows } = table.getRowModel()
-
-  const rowVirtualizer = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 12
-  })
-  const { virtualItems: virtualRows } = rowVirtualizer
-
-  const [idrow, setIdRow] = useState<string>('')
-  const [expanded, setExpanded] = useState<boolean>(false)
+  const [rowId, setRowId] = useState<number>(0)
   const [update, setUpdate] = useState<boolean>(false)
   const [showView, setShowView] = useState(false)
   const [
     deleteTypeSaving,
     { data: deleteData, loading: loadingDelete, error: errorDelete }
   ] = useMutation(DELETE_TYPE_SAVING)
-  const { typeSaving, handleTypeSaving, setTypeSaving } = useTypeSaving()
-  const [selected, setSelected] = useState<number>(0)
-  const [
-    updateTypeSaving,
-    { data: updateData, loading: loadingUpdate, error: errorUpdate }
-  ] = useMutation(UPDATE_TYPE_SAVING)
   const [showWarning, setShowWarning] = useState(false)
-  const [showWarningUpdate, setShowWarningUpdate] = useState(false)
   useEffect(() => {
     if (deleteData?.deleteTypeSaving) {
       route.refresh()
@@ -121,36 +99,10 @@ function TableTypeSaving({
     setShowWarning(true)
     deleteTypeSaving({
       variables: {
-        id: selected
+        id: typeSavings[rowId].id
       }
     })
   }
-  const updateTypeSavingHandle = () => {
-    setShowWarningUpdate(true)
-    updateTypeSaving({
-      variables: {
-        data: typeSaving,
-        id: selected
-      }
-    })
-  }
-  useEffect(() => {
-    if (updateData) {
-      if (updateData?.updateTypeSaving) {
-        setUpdate(false)
-        route.refresh()
-      }
-
-      console.log('update')
-      const timeout = setTimeout(() => {
-        setShowWarningUpdate(false)
-      }, 3000) // 3 seconds in milliseconds
-
-      return () => {
-        clearTimeout(timeout)
-      }
-    }
-  }, [updateData, errorUpdate])
 
   useEffect(() => {
     if (deleteData) {
@@ -172,100 +124,39 @@ function TableTypeSaving({
 
   return (
     <>
-      {showView && <ViewTypeSaving id={selected} setShow={setShowView} />}
-      {update && (
-        <TypeSavingUpdate idTypeSaving={selected} setShow={setUpdate} />
+      {showView && (
+        <ViewTypeSaving id={typeSavings[rowId].id} setShow={setShowView} />
       )}
-      <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] pt-8 ">
-        <OptionsTable
-          showOptions={showOptions}
-          deleteHandle={() => {
-            deleteTypeSavingHandle()
-          }}
-          setUpdate={setUpdate}
-          setCreate={() => {
-            setShowModalCreate(true)
-          }}
-          setView={setShowView}
-          search={globalFilter}
-          setSearch={setGlobalFilter}
+      {update && (
+        <TypeSavingUpdate
+          idTypeSaving={typeSavings[rowId].id}
+          setShow={setUpdate}
         />
-
-        <div className="mx-4 my-2 flex-grow text-sm">
-          <table className="w-full table-fixed table  ">
-            <thead className="font-medium border-b-2 bg-[#F2F5FA] border-b-[#3C7AC2]">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr className="rounded-lg" key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
-                      <th
-                        className="text-start font-light pl-3 py-2 font-medium "
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        style={{ width: header.getSize() }}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <div
-                            {...{
-                              className: header.column.getCanSort()
-                                ? 'cursor-pointer select-none'
-                                : '',
-                              onClick: header.column.getToggleSortingHandler()
-                            }}
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                            {{
-                              asc: ' 🔼',
-                              desc: ' 🔽'
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                        )}
-                      </th>
-                    )
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody className=" ">
-              {virtualRows.map(virtualRow => {
-                const row = rows[virtualRow.index] as Row<any>
-                return (
-                  <>
-                    <motion.tr
-                      key={row.id}
-                      className={`${
-                        selected === row._valuesCache.id && ' selected '
-                      }  hover:border-l-4  hover:border-l-[#3C7AC2] `}
-                    >
-                      {row.getVisibleCells().map(cell => {
-                        return (
-                          <>
-                            <td
-                              onClick={() => {
-                                setShowOptions(true)
-                                setSelected(Number(row._valuesCache.id))
-                              }}
-                              className=" px-2 py-2"
-                              key={cell.id}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          </>
-                        )
-                      })}
-                    </motion.tr>
-                  </>
-                )
-              })}
-            </tbody>
-          </table>
+      )}
+      <div className="flex h-full w-full flex-col bg-white pb-4 rounded-tr-sm rounded-b-sm md:py-8 md:px-4 gap-2 md:gap-4">
+        <div className="flex  flex-col">
+          <OptionsTable
+            showOptions={showOptions}
+            deleteHandle={() => {
+              deleteTypeSavingHandle()
+            }}
+            setUpdate={setUpdate}
+            setCreate={() => {
+              setShowModalCreate(true)
+            }}
+            setView={setShowView}
+            search={globalFilter}
+            setSearch={setGlobalFilter}
+          />
         </div>
+        <TableInfo
+          table={table}
+          className="account-table"
+          rowId={rowId}
+          setRow={setRowId}
+          setOptions={setShowOptions}
+          key={1}
+        />
       </div>
       {deleteData?.deleteTypeSaving && showWarning ? (
         <AlertModalSucces value="Se ha eliminado el tipo de ahorro" />

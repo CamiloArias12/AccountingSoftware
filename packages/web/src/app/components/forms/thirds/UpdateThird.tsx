@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import { get } from 'http'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
-import FormThirdNaturalUpdate from './FormThirdNaturalUpdate'
+import { Token } from '@/app/hooks/TokenContext'
 
 const UPDATE_USER = gql`
   mutation (
@@ -41,6 +41,7 @@ function UpdateThird({
   countries: any
   thirdIdentification: number
 }) {
+  const { context } = Token()
   const [
     updateUser,
     { data: userData, loading: loadingUser, error: errorUser }
@@ -71,7 +72,8 @@ function UpdateThird({
         inputAffiliate: checkedAffiliate ? affiliate : null,
         inputEmployee: checkedEmployee ? credential : null,
         provider: checkedProvider ? true : null
-      }
+      },
+      context
     })
   }
 
@@ -100,7 +102,7 @@ function UpdateThird({
         loading={loadingUser}
         onClick={handleUpdate}
         update
-        title={'Actualizar tercero'}
+        title={'Editar tercero'}
       />
       {userData?.updateUser.state && showWarning ? (
         <AlertModalSucces value={userData.updateUser.message} />

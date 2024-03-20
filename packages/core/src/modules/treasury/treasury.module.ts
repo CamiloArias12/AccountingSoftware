@@ -29,6 +29,9 @@ import { AccountMovementDownloadService } from './account-movement/account-movem
 import { AccountMovementController } from './account-movement/account-movement.controller';
 import { ContributionModule } from '../wallet/contribution/contribution.module';
 import { DeferredMovementSubscriber } from './deferred-movement/deferred-movement.subscriber';
+import { NoteMovement } from './note-movement/note-movement.entity';
+import { NoteMovementService } from './note-movement/note-movement.service';
+import { NoteMovementResolver } from './note-movement/note-movement.resolver';
 
 @Module({
   imports: [
@@ -39,6 +42,7 @@ import { DeferredMovementSubscriber } from './deferred-movement/deferred-movemen
       DeferredMovement,
       DisbursementMovement,
       CashRegisterMovement,
+      NoteMovement,
     ]),
     forwardRef(() => CreditModule),
     CompanyModule,
@@ -64,6 +68,8 @@ import { DeferredMovementSubscriber } from './deferred-movement/deferred-movemen
     CashRegisterMovementSubscriber,
     AccountMovementDownloadService,
     DeferredMovementSubscriber,
+    NoteMovementService,
+    NoteMovementResolver,
   ],
   controllers: [AccountMovementController],
   exports: [CreditMovementService, AccountMovementService],

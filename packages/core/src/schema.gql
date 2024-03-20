@@ -15,6 +15,8 @@ type Role {
   deferred: Boolean!
   cash: Boolean!
   roles: Boolean!
+  note: Boolean!
+  book_auxiliary: Boolean!
   disbursementvoucher: Boolean!
 }
 
@@ -86,13 +88,11 @@ type Contribution {
   movement_deferred: [DeferredMovement!]
 }
 
-type CashRegisterMovement {
-  id: Float!
-  group_id: Float!
-  movement: Movement!
-  installment_cash: Installment!
-  contribution_cash: Contribution!
-  account_movement: [AccountMovement!]
+type NoteMovementPayment {
+  id: String!
+  noteId: Float!
+  date: Date!
+  concept: String!
 }
 
 type DisbursementMovement {
@@ -100,6 +100,26 @@ type DisbursementMovement {
   group_id: Float!
   movement: Movement!
   credit_disbursement: Credit!
+  note_disbursement: NoteMovement!
+  account_movement: [AccountMovement!]
+}
+
+type NoteMovement {
+  id: Float!
+  group_id: Float!
+  type: String!
+  movement: Movement!
+  disbursement_movement: [DisbursementMovement!]!
+  account_movement: [AccountMovement!]!
+}
+
+type CashRegisterMovement {
+  id: Float!
+  group_id: Float!
+  movement: Movement!
+  installment_cash: Installment!
+  contribution_cash: Contribution!
+  note_cash: NoteMovement!
   account_movement: [AccountMovement!]
 }
 
@@ -111,8 +131,7 @@ type Movement {
   state: Boolean!
   credit_movement: CreditMovement
   cash_movement: CashRegisterMovement
-  deferred_movement: DeferredMovement
-  disbursement_movement: DisbursementMovement
+  note_movemnt: NoteMovement
 }
 
 type DeferredMovement {
@@ -159,11 +178,11 @@ type Credit {
   state: String!
   methodPayment: String!
   affiliate: Affiliate!
+  typeCredit: TypeCredit!
   installments: [Installment!]!
   credit_movement: [CreditMovement!]
   disbursement_movement: [DisbursementMovement!]
   credit_refinance: Credit!
-  typeCredit: TypeCredit!
 }
 
 type TypeCredit {
@@ -214,16 +233,15 @@ type Company {
 }
 
 type AccountMovement {
-  id_movement: Float!
+  nature: String!
+  user: Float
+  company: Float
+  auxiliary: Auxiliary!
+  account: Float
   value: Float!
+  movement_note: NoteMovement!
   movement_credit: CreditMovement!
   movement_deffered: DeferredMovement!
-  movement_disburment: DisbursementMovement!
-  movement_cash: CashRegisterMovement!
-  nature: String!
-  user: User
-  company: Company!
-  auxiliay: Auxiliary!
 }
 
 type User {
@@ -311,6 +329,12 @@ type ClassAccountStatistics {
   name: String!
   credit_balance: Float!
   debit_balance: Float!
+}
+
+type StatisticsAccount {
+  credit: Float!
+  debit: Float!
+  date: Date!
 }
 
 type Location {
@@ -403,6 +427,21 @@ type ViewSaving {
   nameSaving: String!
 }
 
+type BookAuxiliaryData {
+  date: Date
+  typeMovement: String
+  idMovement: String
+  concept: String
+  identificationThird: Float
+  nameThird: String
+  code: Float
+  nameAccount: String
+  previusBalance: Float
+  debit: Float
+  credit: Float
+  total: Float
+}
+
 type MovementAndAccount {
   account: [AccountTable!]!
   movement: Movement!
@@ -420,6 +459,8 @@ type AccountTable {
 type MovementOutput {
   id: String!
   date: Date!
+  concept: String
+  id_note: String
 }
 
 type ContributionSaving {
@@ -494,6 +535,7 @@ type Query {
   allCompanies: [Company!]!
   company(numberIdentification: Float!): Company!
   allTypeAccount: [TypeAccount!]!
+  statisticsAccount(code: Int!, type: String!): [StatisticsAccount!]!
   getAccountById(code: Float!): TypeAccount!
   getClassAccount(code: Float!): ClassAccount!
   getClassAccountAll: [ClassAccount!]!
@@ -515,6 +557,7 @@ type Query {
   getTypeCredit(id: Int!): TypeCredit!
   getTypeCreditAll: [TypeCredit!]!
   getAllCredit: [typeCredit!]!
+  getStatisticsCreditGeneral: [[Float!]!]!
   getStatisticsCredit: CreditStatistics!
   findOneCredit(id: Int!): Credit!
   refinanceCredit(id: Int!): RefinanceCredit!
@@ -522,20 +565,49 @@ type Query {
   totalCredits: Float!
   findAllMovement: [Movement!]!
   findMovementsCredit: [CreditMovement!]!
-  findMovementsAccount: [AccountMovement!]!
+  findMovementsAccount(data: InputSearchMovement!): [Movement!]!
   findMovementAccount(movements: [String!]!): [MovementAndAccount!]!
-  findMovementsDisbursement: [MovementOutput!]!
-  findDeferredAll: [MovementOutput!]!
+  getBookAuxiliary(data: BookAuxiliary!): [BookAuxiliaryData!]!
+  findMovementsDisbursement(data: InputSearchMovement!): [MovementOutput!]!
+  findDisbursementhByMovement(movement: String!): [DIsbursementUnion!]!
+  findDeferredAll(data: InputSearchMovement!): [MovementOutput!]!
   findDeferredByMovement(movement: String!): [DeferredUnion!]!
-  findMovementsCashRegister: [MovementOutput!]!
+  getAllInstallmentsPaymentInterest(startDate: Date!, endDate: Date!): [InstallmentPayment!]!
+  getSavingDeferred(date: Date!): [ViewSaving!]!
+  findMovementsCashRegister(data: InputSearchMovement!): [MovementOutput!]!
   findCashByMovement(movement: String!): [CashUnion!]!
+  findMovementsNote(data: InputSearchMovement!): [MovementOutput!]!
+  findMovementNote(idMovement: String!): NoteMovement!
+  isUpdateNote(idMovement: String!): ResponseGraphql!
+  getNotesPayment(startDate: Date!, endDate: Date!, type: String!): [NoteMovementPayment!]!
   getAllSaving: [ViewSaving!]!
   getSaving(id: Int!): ViewSaving!
   countSavingByAffiliate(id: Float!): Float!
   totalSavings: Float!
   findContributionBySaving(saving: Int!): [ContributionSaving!]!
+  statisticsContributions: [[Float!]!]!
   contribution(id: Int!): Contribution!
 }
+
+input InputSearchMovement {
+  user: Float
+  company: Float
+  startDate: Date!
+  endDate: Date!
+  concept: String
+  idAccount: Float
+  name: String
+}
+
+input BookAuxiliary {
+  startDate: Date!
+  endDate: Date!
+  user: Float
+  company: Float
+  idAccount: Float
+}
+
+union DIsbursementUnion = typeCredit | MovementOutput
 
 union DeferredUnion = SavingOut | CreditPaymentOut
 
@@ -558,7 +630,7 @@ type CreditPaymentOut {
   interestPayment: Float
 }
 
-union CashUnion = SavingOut | CashPaymentCredit
+union CashUnion = SavingOut | CashPaymentCredit | MovementOutput
 
 type CashPaymentCredit {
   identification: String!
@@ -598,7 +670,6 @@ type Mutation {
   deleteTypeCredit(id: Int!): Boolean!
   createCredit(createCreditInput: CreateCreditInput!): Boolean!
   refinanceCreditCreate(createCreditInput: CreateCreditInput!, id: Float!): Boolean!
-  findCreditByDatePayment(date: Date!): [typeCredit!]!
   isRefinance(id: Int!): ResponseGraphql!
   deleteCredit(id: Int!): Boolean!
   amortizationTableGenerate(dateCredit: Date!, datePayment: Date, creditValue: Float!, paymentMethod: String!, interest: Float!, installments: Int): [InstallmentType!]!
@@ -609,17 +680,20 @@ type Mutation {
   updateCredit(data: UpdateCreditInput!): Boolean!
   deleteMovementById(id: String!): ResponseGraphql!
   createDisbursementPayment(data: CreditDisbursementInput!): Boolean!
-  createPaymentDeferredInterestInstallment(data: PaymentInstallmentInput!): Boolean!
-  createDeferredSaving(data: SavingPayment!): Boolean!
-  getAllInstallmentsPaymentInterest(startDate: Date!, endDate: Date!): [InstallmentPayment!]!
-  getSavingDeferred(date: Date!): [ViewSaving!]!
+  findCreditByDatePayment(date: Date!): [typeCredit!]!
+  createNoteDisbursement(data: NotePayment!): Boolean!
+  createPaymentDeferredInterestInstallment(data: PaymentInstallmentInput!): ResponseGraphql!
+  createDeferredSaving(data: SavingPayment!): ResponseGraphql!
   createPaymentInstallment(data: PaymentInstallmentInput!): Boolean!
+  createNoteCash(data: NotePayment!): Boolean!
   createPaymentSaving(data: SavingPayment!): Boolean!
   getAllInstallments(startDate: Date!, endDate: Date!): [InstallmentPayment!]!
   getSavingCash(date: Date!): [ViewSaving!]!
+  createNote(data: NoteMovementInput!): ResponseGraphql!
+  updateNote(data: NoteMovementInput!, idMovement: String!): ResponseGraphql!
   createSaving(createSavingInput: CreateSavingInput!): Boolean!
   updateSaving(updateSavingInput: UpdateSavingInput!): Boolean!
-  removeSaving(id: Int!): Saving!
+  deleteSaving(id: Int!): Boolean!
   updateContribution(updateContributionInput: UpdateContributionInput!): Contribution!
   removeContribution(id: Int!): Contribution!
 }
@@ -699,6 +773,8 @@ input CreateRoleInput {
   deferred: Boolean!
   cash: Boolean!
   roles: Boolean!
+  note: Boolean!
+  book_auxiliary: Boolean!
   disbursementvoucher: Boolean!
 }
 
@@ -714,6 +790,8 @@ input UpdateRoleInput {
   deferred: Boolean
   cash: Boolean
   roles: Boolean
+  note: Boolean
+  book_auxiliary: Boolean
   disbursementvoucher: Boolean
   id: Int!
 }
@@ -792,6 +870,16 @@ input CreditDisbursementInput {
   nature: String!
 }
 
+input NotePayment {
+  notes: [Int!]!
+  dateMovement: Date!
+  idAccount: Float
+  user: Float
+  company: Float
+  concept: String!
+  nature: String
+}
+
 input PaymentInstallmentInput {
   installments: [MovementInstallment!]!
   idAccount: Float
@@ -816,6 +904,21 @@ input SavingPayment {
   concept: String!
   nature: String
   datePayment: Date!
+}
+
+input NoteMovementInput {
+  accounts: [AccountMovementInput!]!
+  date: Date!
+  concept: String!
+  type: String!
+}
+
+input AccountMovementInput {
+  account: Float!
+  user: Float
+  company: Float
+  nature: String!
+  value: Float!
 }
 
 input CreateSavingInput {

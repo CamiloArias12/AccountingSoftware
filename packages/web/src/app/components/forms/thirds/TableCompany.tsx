@@ -23,15 +23,15 @@ import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useVirtual } from 'react-virtual'
 import { motion } from 'framer-motion'
-import { AddSvg } from '../../logo/Add'
-import UpdateThird from './UpdateThird'
-import ViewThird from './ViewThird'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
 import CreateThirdCompany from './CreateCompany'
 import OptionsTable from '../../options-table/OptionsTable'
 import UpdateThirdCompany from './UpdateCompany'
 import { fuzzyFilter } from '../type-account/TableTypeAccount'
+import { PaginationTable } from '../pagination-table/PaginationTable'
+import TableInfo from '../../table/TableGeneral'
+import { Token } from '@/app/hooks/TokenContext'
 
 export const revalidate = 0
 const UPDATE_STATUS = gql`
@@ -53,7 +53,7 @@ function TableCompany({ companies }: { companies: Company[] }) {
   const [showUpdate, setShowUpdate] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
-  const [companySelected, setCompanySelected] = useState<number>(0)
+  const [rowId, setRowId] = useState<number>(0)
   const [data, setData] = useState<Company[]>(companies)
 
   const [updateStatus, { data: statusData, loading, error }] =
@@ -64,12 +64,14 @@ function TableCompany({ companies }: { companies: Company[] }) {
   ] = useMutation(DELETE_COMPANY)
   const route = useRouter()
 
+  const { context } = Token()
   const deleteCompanyHandle = () => {
     setShowWarning(true)
     deleteCompany({
       variables: {
-        id: companySelected
-      }
+        id: companies[rowId].identification
+      },
+      context
     })
   }
 
@@ -175,104 +177,40 @@ function TableCompany({ companies }: { companies: Company[] }) {
       {showCreate && <CreateThirdCompany setCreate={setShowCreate} />}
       {showUpdate && (
         <UpdateThirdCompany
-          identification={companySelected}
+          identification={companies[rowId].identification}
           setUpdate={setShowUpdate}
         />
       )}
 
-      <div className="flex flex-grow flex-col bg-white rounded-tr-sm rounded-b-sm py-8 px-4  gap-4">
-        <OptionsTable
-          showOptions={showOptions}
-          setView={setShowView}
-          setUpdate={() => {
-            setShowUpdate(true)
-          }}
-          setCreate={() => {
-            setShowCreate(true)
-          }}
-          deleteHandle={deleteCompanyHandle}
-          search={globalFilter}
-          setSearch={setGlobalFilter}
+      <div className="flex h-full w-full flex-col bg-white pb-4 rounded-tr-sm rounded-b-sm md:py-8 md:px-4 gap-2 md:gap-4">
+        <div className="flex  flex-col">
+          <OptionsTable
+            showOptions={showOptions}
+            setUpdate={() => {
+              setShowUpdate(true)
+            }}
+            setCreate={() => {
+              setShowCreate(true)
+            }}
+            deleteHandle={deleteCompanyHandle}
+            search={globalFilter}
+            setSearch={setGlobalFilter}
+          />
+        </div>
+        <div className=" flex md:hidden justify-end px-2 ">
+          <PaginationTable table={table} />
+        </div>
+        <TableInfo
+          table={table}
+          className="account-table"
+          rowId={rowId}
+          setRow={setRowId}
+          setOptions={setShowOptions}
+          key={1}
         />
 
-        <div className=" text-sm mx-4  flex-grow">
-          <table className=" w-full table-fixed  table ">
-            <thead className="font-medium border-b-2 bg-[#F2F5FA] border-b-[#3C7AC2]">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr className="rounded-lg" key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
-                      <th
-                        className="text-start   p-2 font-medium "
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        style={{ width: header.getSize() }}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <div
-                            {...{
-                              className: header.column.getCanSort()
-                                ? 'cursor-pointer select-none'
-                                : '',
-                              onClick: header.column.getToggleSortingHandler()
-                            }}
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                            {{
-                              asc: ' 🔼',
-                              desc: ' 🔽'
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                        )}
-                      </th>
-                    )
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody className=" text-sm">
-              {virtualRows.map(virtualRow => {
-                const row = rows[virtualRow.index] as Row<Company>
-                return (
-                  <>
-                    <motion.tr
-                      key={row.id}
-                      className={`${
-                        companySelected === row._valuesCache.identification &&
-                        ' selected '
-                      } hover:border-l-4  hover:border-l-[#3C7AC2] `}
-                    >
-                      {row.getVisibleCells().map(cell => {
-                        return (
-                          <>
-                            <td
-                              onClick={() => {
-                                setShowOptions(true)
-                                setCompanySelected(
-                                  Number(row._valuesCache.identification)
-                                )
-                                cell.column.columnDef.cell, cell.getContext()
-                              }}
-                              className=" p-2"
-                              key={cell.id}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          </>
-                        )
-                      })}
-                    </motion.tr>
-                  </>
-                )
-              })}
-            </tbody>
-          </table>
+        <div className=" hidden md:flex justify-end">
+          <PaginationTable table={table} />
         </div>
       </div>
       {deleteData?.deleteCompany && showWarning ? (

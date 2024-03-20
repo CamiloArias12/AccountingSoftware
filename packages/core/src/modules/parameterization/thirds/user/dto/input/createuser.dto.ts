@@ -1,93 +1,90 @@
-import { Field, InputType,Int } from "@nestjs/graphql";
-import { CivilStatus, Gender, HousingType, Studies, TypeIdentification } from "../enum-type";
-import { IUser } from "../user.interface";
-
-
-
-
+import { Field, InputType, Int } from '@nestjs/graphql';
+import {
+  CivilStatus,
+  Gender,
+  HousingType,
+  Studies,
+  TypeIdentification,
+} from '../enum-type';
+import { IUser } from '../user.interface';
 
 @InputType()
-export class UserInput implements IUser{
+export class UserInput implements IUser {
+  @Field()
+  typeIdentification: TypeIdentification;
 
+  @Field()
+  identification: number;
 
-   @Field() 
-   typeIdentification: TypeIdentification;
-   
-   @Field()
-   identification:number;
+  @Field()
+  name: string;
 
-   @Field()
-   name:string
+  @Field()
+  lastName: string;
 
-   @Field()
-   lastName:string
+  @Field()
+  expeditionDate: Date;
 
-    @Field()
-   expeditionDate:Date
+  @Field()
+  expeditionCity: string;
 
-   @Field()
-   expeditionCity:string
+  @Field()
+  birthDate: Date;
 
-   @Field()
-   birthDate: Date;
+  @Field()
+  countryBirth: string;
 
-   @Field()
-   countryBirth: string;
+  @Field()
+  stateBirth: string;
 
-   @Field()
-   stateBirth: string;
+  @Field()
+  cityBirth: string;
 
-   @Field()
-   cityBirth: string;
+  @Field()
+  gender: Gender;
 
-  
-   @Field()
-   gender: Gender;
+  @Field()
+  statusCivil: CivilStatus;
 
-   @Field()
-   statusCivil: CivilStatus;
+  @Field()
+  addressResidence: string;
 
-   @Field()
-   addressResidence: string
+  @Field()
+  countryResidence: string;
 
-   @Field()
-   countryResidence: string
+  @Field()
+  stateResidence: string;
 
-   @Field()
-   stateResidence: string
+  @Field()
+  cityResidence: string;
 
-   @Field()
-   cityResidence: String;
+  @Field()
+  phone: string;
 
-   @Field()
-   phone:string 
+  @Field()
+  landLine: string;
 
-   @Field()
-   landLine:string 
+  @Field()
+  email: string;
 
-   @Field()
-   email: string
+  @Field()
+  housingType: HousingType;
 
-   @Field()
-   housingType: HousingType;
+  @Field()
+  studies: Studies;
 
-   @Field()
-   studies: Studies;
+  @Field()
+  profession: string;
 
-   @Field()
-   profession: string
+  @Field()
+  foreignOperations: boolean;
 
-   @Field()
-   foreignOperations: boolean
+  @Field()
+  publicResources: boolean;
 
-   @Field()
-   publicResources: boolean
+  @Field()
+  publicRecognition: boolean;
 
-   @Field()
-   publicRecognition: boolean
-
-   @Field()
-   publicPower: boolean
-
+  @Field()
+  publicPower: boolean;
 }
-

@@ -31,6 +31,7 @@ export function TypeAccountForm({
         label="Código"
         control={control}
         rules={FieldRequired}
+        required
         error={errors?.code}
       />
 
@@ -47,18 +48,18 @@ export function TypeAccountForm({
         label="Naturaleza"
         control={control}
         setValue={setValue}
+        required
         error={errors.nature}
         rules={FieldRequired}
       />
 
-      <div className="pt-10 flex justify-end">
-        <div className="pr-4">
-          <Button
-            name="Cancelar"
-            background="border border-[#10417B] text-[#10417B]"
-            onClick={handleClicckCancel}
-          />
-        </div>
+      <div className="pt-10 flex gap-2 flex-col md:flex-row justify-end">
+        <Button
+          name="Cancelar"
+          type={'button'}
+          background="border border-[#10417B] text-[#10417B]"
+          onClick={handleClicckCancel}
+        />
         <Button
           type={'submit'}
           name="Aceptar"

@@ -9,22 +9,16 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
-import { AddSvg } from '../../logo/Add'
 import { useRouter } from 'next/navigation'
-import { useVirtual } from 'react-virtual'
-import { motion } from 'framer-motion'
 import { TypeCredit } from '@/lib/utils/type-credit/types'
 import { gql, useMutation } from '@apollo/client'
-import { useTypeCredit } from '@/app/hooks/type-credit/TypeCreditInput'
-import InputField from '../../input/InputField'
 import AlertModalSucces from '../../modal/AlertModalSucces'
 import AlertModalError from '../../modal/AlertModalError'
 import OptionsTable from '../../options-table/OptionsTable'
-import InputNumber from '../../input/InputNumber'
 import ViewTypeCredit from './ViewTypeCredit'
-import id from 'date-fns/locale/id'
 import TypeCreditUpdate from './TypeCreditUpdate'
 import { fuzzyFilter } from '../type-account/TableTypeAccount'
+import TableInfo from '../../table/TableGeneral'
 
 const DELETE_TYPE_CREDIT = gql`
   mutation ($id: Int!) {
@@ -81,7 +75,7 @@ function TableTypeCredit({
   const [showOptions, setShowOptions] = useState(false)
   const route = useRouter()
   const [sorting, setSorting] = useState<SortingState>([])
-  const [selected, setSelected] = useState<number>(0)
+  const [rowId, setRowId] = useState<number>(0)
 
   const [globalFilter, setGlobalFilter] = useState('')
   const table = useReactTable({
@@ -103,17 +97,6 @@ function TableTypeCredit({
     getFilteredRowModel: getFilteredRowModel(),
     debugTable: true
   })
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const { rows } = table.getRowModel()
-
-  const rowVirtualizer = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 12
-  })
-  const { virtualItems: virtualRows } = rowVirtualizer
-
   const [update, setUpdate] = useState<boolean>(false)
 
   const [showView, setShowView] = useState(false)
@@ -145,109 +128,48 @@ function TableTypeCredit({
     setShowWarning(true)
     deleteTypeCredit({
       variables: {
-        id: selected
+        id: typeCredits[rowId].id
       }
     })
   }
 
   return (
     <>
-      {showView && <ViewTypeCredit setShow={setShowView} id={selected} />}
-      {update && (
-        <TypeCreditUpdate setShowModal={setUpdate} idTypeCredit={selected} />
+      {showView && (
+        <ViewTypeCredit setShow={setShowView} id={typeCredits[rowId].id} />
       )}
-      <div className="flex fleCuentasx-grow flex-col bg-white rounded-tr-[20px] rounded-b-[20px] pt-8">
-        <OptionsTable
-          showOptions={showOptions}
-          deleteHandle={() => {
-            deleteTypeCreditHandle()
-          }}
-          setUpdate={setUpdate}
-          setCreate={() => {
-            setShowModalCreate(true)
-          }}
-          search={globalFilter}
-          setSearch={setGlobalFilter}
-          setView={() => {
-            setShowView(true)
-          }}
+      {update && (
+        <TypeCreditUpdate
+          setShowModal={setUpdate}
+          idTypeCredit={typeCredits[rowId].id}
         />
-
-        <div className="mx-4 my-2 flex-grow text-sm">
-          <table className="w-full table-fixed table  ">
-            <thead className="font-medium border-b-2 bg-[#F2F5FA] border-b-[#3C7AC2]">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr className="rounded-lg" key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
-                      <th
-                        className="text-start font-light pl-3 py-2 font-medium "
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        style={{ width: header.getSize() }}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <div
-                            {...{
-                              className: header.column.getCanSort()
-                                ? 'cursor-pointer select-none'
-                                : '',
-                              onClick: header.column.getToggleSortingHandler()
-                            }}
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                            {{
-                              asc: ' 🔼',
-                              desc: ' 🔽'
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                        )}
-                      </th>
-                    )
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody className=" ">
-              {virtualRows.map(virtualRow => {
-                const row = rows[virtualRow.index] as Row<any>
-                return (
-                  <>
-                    <motion.tr
-                      key={row.id}
-                      className={`${
-                        selected === row._valuesCache.id && ' selected '
-                      }  hover:border-l-4  hover:border-l-[#3C7AC2] `}
-                    >
-                      {row.getVisibleCells().map(cell => {
-                        return (
-                          <>
-                            <td
-                              onClick={() => {
-                                setShowOptions(true)
-                                setSelected(Number(row._valuesCache.id))
-                              }}
-                              className=" px-2 "
-                              key={cell.id}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          </>
-                        )
-                      })}
-                    </motion.tr>
-                  </>
-                )
-              })}
-            </tbody>
-          </table>
+      )}
+      <div className="flex h-full w-full flex-col bg-white pb-4 rounded-tr-sm rounded-b-sm md:py-8 md:px-4 gap-2 md:gap-4">
+        <div className="flex  flex-col">
+          <OptionsTable
+            showOptions={showOptions}
+            deleteHandle={() => {
+              deleteTypeCreditHandle()
+            }}
+            setUpdate={setUpdate}
+            setCreate={() => {
+              setShowModalCreate(true)
+            }}
+            search={globalFilter}
+            setSearch={setGlobalFilter}
+            setView={() => {
+              setShowView(true)
+            }}
+          />
         </div>
+        <TableInfo
+          table={table}
+          className="account-table"
+          rowId={rowId}
+          setRow={setRowId}
+          setOptions={setShowOptions}
+          key={1}
+        />
       </div>
       {deleteData?.deleteTypeCredit && showWarning ? (
         <AlertModalSucces value="Se han eliminado el tipo de credito" />

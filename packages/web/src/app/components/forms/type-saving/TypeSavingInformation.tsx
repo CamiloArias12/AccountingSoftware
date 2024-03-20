@@ -17,6 +17,8 @@ import SelectField from '../../input/SelectField'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { schemaTypeSaving } from '@/lib/utils/ValidationYup'
+import ButtonAdd from '../../input/ButtonAdd'
+import { Token } from '@/app/hooks/TokenContext'
 
 const AUXLILIARIES = gql`
   query {
@@ -41,10 +43,10 @@ export function TypeSavingForm({
   onClickAccept: any
   onClickCancel: any
 }) {
-  const { data, loading, error } = useQuery(AUXLILIARIES)
+  const { context } = Token()
+  const { data, loading, error } = useQuery(AUXLILIARIES, { context })
   const [accounts, setAccounts] = useState<TypeSavingAcounts[]>([])
 
-  const { typeSaving, setTypeSaving, handleTypeSaving } = useTypeSaving()
   const {
     register: informationSaving,
     handleSubmit,
@@ -70,125 +72,115 @@ export function TypeSavingForm({
     if (dataTypeSaving) {
       setValue('name', dataTypeSaving.name)
       const accountInput: TypeSavingAcounts[] = []
-      for (const auxiliary of dataTypeSaving.auxiliaries) {
+      dataTypeSaving.auxiliaries.map((auxiliary: any) => {
         accountInput.push({
           account: auxiliary.idAccount,
           nature: auxiliary.nature,
           percentage: auxiliary.percentage
         })
-      }
+      })
 
       setValue('accounts', accountInput)
     }
   }, [dataTypeSaving])
 
-  console.log(errors)
   return (
     <form
       onSubmit={handleSubmit(() => {
         onClickAccept({ name: getValues('name') }, getValues().accounts)
       })}
-      className="flex flex-col   w-full h-full"
+      className="flex flex-col py-2 w-full    "
     >
-      <div className="flex flex-col space-y-4 w-full max-w-3xl p-4">
-        {/* InputFields */}
-        <div className="grid grid-cols-2 gap-4 mt-8">
-          <InputField
-            name="name"
-            label="Nombre"
-            required
-            props={{
-              ...informationSaving('name')
-            }}
-            error={errors?.name}
-          />
-        </div>
-        <label className="text-center text-white  bg-[#10417B] text-input font-bold my-2">
-          Cuentas
-        </label>
-        <div className="flex  flex-grow flex-row justify-between">
-          <label className="font-semibold text-input">Capital</label>
-          <div
-            className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
-            onClick={() => {
-              append({
-                account: '',
-                nature: ''
-              })
-            }}
-          >
-            <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
-              <AddSvg color="#ffffff" />
-            </div>
-            <label className="pl-2 hidden group-hover:block text-[12px]">
-              Agregar
-            </label>
-          </div>
-        </div>
-
-        {fields.map((field, index) => (
-          <div
-            key={field.id}
-            className=" gap-2 flex flex-grow w-full my-2  flex-row"
-          >
-            <div className="flex-grow w-4/5">
-              <Select
-                name={`accounts.${index}.account`}
-                label={index === 0 && 'Cuenta'}
-                options={data.getAuxilaryAll}
-                setValue={setValue}
-                control={control}
-                required
-                error={errors?.accounts && errors?.accounts[index]?.account}
-                value={getValues(`accounts.${index}.account`)}
-              />
-            </div>
-            <SelectField
-              label={index === 0 && 'Naturaleza'}
-              name={`accounts.${index}.nature`}
-              options={optionsNature}
-              control={control}
-              setValue={setValue}
-              required
-              error={errors?.accounts && errors?.accounts[index]?.nature}
-            />
-            <InputNumber
-              name={`accounts.${index}.percentage`}
-              label={index === 0 && 'Porcentaje'}
-              suffix="  %"
-              control={control}
-              required
-              error={errors?.accounts && errors?.accounts[index]?.percentage}
-            />
-
-            <div className="flex items-end">
-              <button
-                type="button"
-                className="flex items-end justify-center h-8 w-8"
-                onClick={() => {
-                  remove(index)
-                }}
-              >
-                <img src="/delete.svg" />
-              </button>
-            </div>
-          </div>
-        ))}
+      {/* InputFields */}
+      <div className="flex-grow gap-4 md:mt-8">
+        <InputField
+          name="name"
+          label="Nombre"
+          required
+          props={{
+            ...informationSaving('name')
+          }}
+          error={errors?.name}
+        />
       </div>
-      <div className="pt-10 flex justify-end">
-        <div className="pr-4">
-          <Button
-            name="Cancelar"
-            background="border border-[#10417B] text-[#10417B]"
+      <label className="text-center text-white  bg-[#10417B] text-input font-bold my-2">
+        Cuentas
+      </label>
+      <div className="flex  flex-grow flex-row justify-between">
+        <label className="font-semibold text-input">Capital</label>
+        <ButtonAdd
+          onClick={() => {
+            append({
+              account: '',
+              nature: ''
+            })
+          }}
+        />
+      </div>
+      {fields.map((field, index) => (
+        <div
+          key={field.id}
+          className=" gap-2 flex  w-full my-2 flex-col  p-4 lg:p-0  rounded-sm border-2 md:border-none shadow-xm lg:shadow-none lg:flex-row"
+        >
+          <span className="md:hidden font-bold items-center ">
+            No {index + 1}
+          </span>
+
+          <div className="flex-grow lg:w-4/5">
+            <Select
+              name={`accounts.${index}.account`}
+              label={'Cuenta'}
+              options={data?.getAuxilaryAll}
+              setValue={setValue}
+              control={control}
+              required
+              error={errors?.accounts && errors?.accounts[index]?.account}
+              value={getValues(`accounts.${index}.account`)}
+            />
+          </div>
+          <SelectField
+            label={'Naturaleza'}
+            name={`accounts.${index}.nature`}
+            options={optionsNature}
+            control={control}
+            setValue={setValue}
+            required
+            error={errors?.accounts && errors?.accounts[index]?.nature}
           />
-        </div>
-        <div className="pr-4">
-          <Button
-            name="Aceptar"
-            background="bg-[#10417B] text-white"
-            onClick={() => {}}
+          <InputNumber
+            name={`accounts.${index}.percentage`}
+            label={'Porcentaje'}
+            suffix="  %"
+            control={control}
+            required
+            error={errors?.accounts && errors?.accounts[index]?.percentage}
           />
+
+          <div className="md:flex md:items-end">
+            <button
+              type="button"
+              className="flex items-end justify-center h-8 w-8"
+              onClick={() => {
+                remove(index)
+              }}
+            >
+              <img src="/delete.svg" />
+            </button>
+          </div>
         </div>
+      ))}
+      <div className="pt-10 flex gap-2 flex-col md:flex-row justify-end">
+        <Button
+          name="Cancelar"
+          background="border border-[#10417B] text-[#10417B]"
+          type={'button'}
+          onClick={onClickCancel}
+        />
+        <Button
+          name="Aceptar"
+          background="bg-[#10417B] text-white"
+          type={'submit'}
+        />
       </div>
     </form>
   )

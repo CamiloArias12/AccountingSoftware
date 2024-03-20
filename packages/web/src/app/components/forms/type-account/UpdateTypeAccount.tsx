@@ -10,6 +10,7 @@ import TypeAccountForm from './TypeAccountInformation'
 import ModalSkeleton from '../../skeletons/ModalSkeleton'
 import TypeAccountSkeleton from '../../skeletons/TypeAccount'
 import { useForm } from 'react-hook-form'
+import { Token } from '@/app/hooks/TokenContext'
 const UPDATE_ACCOUNT = gql`
   mutation ($updateTypeAccount: TypeAccountInput!, $code: Float!) {
     updateAccount(updateTypeAccount: $updateTypeAccount, code: $code)
@@ -35,6 +36,7 @@ function UpdateTypeAccount({
 }) {
   const route = useRouter()
 
+  const { context } = Token()
   const [showWarningUpdate, setShowWarningUpdate] = useState(false)
   const [
     updateAccount,
@@ -42,7 +44,8 @@ function UpdateTypeAccount({
   ] = useMutation(UPDATE_ACCOUNT)
 
   const { data, error, loading, refetch } = useQuery(GET_ACCOUNT, {
-    variables: { code: typeAccountSelected }
+    variables: { code: typeAccountSelected },
+    context
   })
   const {
     register: informationAccount,
@@ -85,7 +88,8 @@ function UpdateTypeAccount({
           nature: getValues('nature')
         },
         code: typeAccountSelected
-      }
+      },
+      context
     }).then(() => {
       refetch()
     })
@@ -99,30 +103,26 @@ function UpdateTypeAccount({
   return (
     <>
       <Modal
-        size="min-w-[550px] w-[600px] bg-white"
-        title="Actualizar cuenta"
+        size="  md:h-auto bg-white md:min-w-[550px]  md:w-[600px]"
+        title="Editar cuenta"
         onClick={() => {
           setUpdate(false)
           route.push('/dashboard/parametrization/typeaccount')
         }}
       >
-        {loading ? (
-          <TypeAccountSkeleton />
-        ) : (
-          data && (
-            <form
-              onSubmit={handleSubmit(updateAccountHandle)}
-              className="flex-grow"
-            >
-              <TypeAccountForm
-                informationAccount={informationAccount}
-                errors={errors}
-                control={control}
-                setValue={setValue}
-                handleClicckCancel={() => {}}
-              />
-            </form>
-          )
+        {data && (
+          <form
+            onSubmit={handleSubmit(updateAccountHandle)}
+            className="flex flex-col mt-4 py-2"
+          >
+            <TypeAccountForm
+              informationAccount={informationAccount}
+              errors={errors}
+              control={control}
+              setValue={setValue}
+              handleClicckCancel={() => {}}
+            />
+          </form>
         )}
       </Modal>
       {updateData?.updateAccount === true && showWarningUpdate ? (

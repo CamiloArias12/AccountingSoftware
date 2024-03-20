@@ -18,7 +18,7 @@ export class Saving {
   id: number;
 
   @Field(() => Float)
-  @Column('decimal', { precision: 12, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2 })
   qoutaValue: number;
 
   @Field()

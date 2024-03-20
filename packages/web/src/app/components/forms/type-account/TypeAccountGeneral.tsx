@@ -15,6 +15,7 @@ import TypeAccountForm from './TypeAccountInformation'
 import { useForm } from 'react-hook-form'
 import { FieldRequired } from '@/lib/utils/FieldValidation'
 
+import { Token } from '@/app/hooks/TokenContext'
 const GET_CLASS = gql`
   query {
     getClassAccountAll {
@@ -72,17 +73,24 @@ function TypeAccountGeneral({
 }: {
   setShowModalCreate: any
 }) {
+  const { context } = Token()
   const [indexForm, setIndexForm] = useState('')
   const [type, setType] = useState<TypeAccountEnum>()
   const [typeReference, setTypeReference] = useState<TypeAccountEnum>()
   const [typeCode, setTypeCode] = useState<number>(NaN)
-  const { data, refetch } = useQuery(GET_CLASS)
-  const { data: dataGroup, refetch: queryGroup } = useQuery(GET_GROUP)
-  const { data: dataAccount, refetch: queryAccount } = useQuery(GET_ACCOUNT)
+  const { data, refetch } = useQuery(GET_CLASS, { context })
+  const { data: dataGroup, refetch: queryGroup } = useQuery(GET_GROUP, {
+    context
+  })
+  const { data: dataAccount, refetch: queryAccount } = useQuery(GET_ACCOUNT, {
+    context
+  })
   const [dispatch, setDispatch] = useState(null)
   const [dispatchValue, setDispatchValue] = useState(null)
-  const { data: dataSubAccount, refetch: querySubAccount } =
-    useQuery(GET_SUBACCOUNT)
+  const { data: dataSubAccount, refetch: querySubAccount } = useQuery(
+    GET_SUBACCOUNT,
+    { context }
+  )
   const {
     register: informationAccount,
     handleSubmit,
@@ -147,7 +155,8 @@ function TypeAccountGeneral({
           },
           type: type,
           reference: getValues(typeReference)
-        }
+        },
+        context
       })
     }
   }
@@ -175,15 +184,15 @@ function TypeAccountGeneral({
   console.log(errors)
   return (
     <Modal
-      size=" bg-white md:min-w-[550px]  md:w-[600px]"
+      size="  md:h-auto bg-white md:min-w-[550px]  md:w-[600px]"
       title="Crear tipo de cuenta"
       onClick={() => {
         setShowModalCreate(false)
         route.push('/dashboard/parametrization/typeaccount')
       }}
     >
-      <div className="flex h-full w-full flex-col  ">
-        <div className="flex flex-row bg-[#F2F6F8] mt-3 p-2 rounded-lg ">
+      <div className="overflow-y-scroll flex-grow  flex h-full w-full flex-col p-2 ">
+        <div className="overflow-x-scroll w-screen h-10 md:w-auto flex flex-row items-center bg-[#F2F6F8] mt-3  rounded-lg ">
           {optionsAccounts.map((option, index) => (
             <div
               key={option.id}
@@ -218,6 +227,7 @@ function TypeAccountGeneral({
               options={data?.getClassAccountAll}
               setValue={setValue}
               name={TypeAccountEnum.CLASS}
+              required
               control={control}
               dispatch={dispatch}
               setDispatchValue={setDispatchValue}
@@ -232,12 +242,16 @@ function TypeAccountGeneral({
             indexForm === TypeAccountEnum.AUXILIARY) && (
             <Select
               label="Grupo"
+              required
               options={dataGroup?.getGroupByClass}
               setValue={setValue}
               name={TypeAccountEnum.GROUP}
               control={control}
               handleQuery={() => {
-                queryGroup({ code: getValues(TypeAccountEnum.CLASS) })
+                queryGroup({
+                  code: getValues(TypeAccountEnum.CLASS),
+                  context
+                })
               }}
               dispatch={dispatch}
               setDispatchValue={setDispatchValue}
@@ -251,6 +265,7 @@ function TypeAccountGeneral({
             indexForm === TypeAccountEnum.AUXILIARY) && (
             <Select
               label="Cuenta"
+              required
               options={dataAccount?.getAccountsByGroup}
               setValue={setValue}
               name={TypeAccountEnum.ACCOUNT}
@@ -271,6 +286,7 @@ function TypeAccountGeneral({
           {indexForm === TypeAccountEnum.AUXILIARY && (
             <Select
               label="Subcuenta"
+              required
               options={dataSubAccount?.getSubAccountByAccount}
               setValue={setValue}
               name={TypeAccountEnum.SUBACCOUNT}
@@ -291,7 +307,9 @@ function TypeAccountGeneral({
             errors={errors}
             control={control}
             setValue={setValue}
-            handleClicckCancel={() => {}}
+            handleClicckCancel={() => {
+              setShowModalCreate(false)
+            }}
           />
         </form>
       </div>
