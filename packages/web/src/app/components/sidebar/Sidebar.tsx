@@ -1,63 +1,132 @@
-'use client';
-import { MenuSidebar, SideBarModules } from '@/lib/utils/SidebarOptions';
-import { useState } from 'react';
-import MenuParametrization from './MenuParametrization';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import ParametrizationLogo from '../logo/Parametrization';
-import HomeLogo from '../logo/Home';
-import WalletLogo from '../logo/Wallet';
-import MenuWallet from './MenuWallet';
-import AccountingIcon from '../logo/Accounting';
-import TreasuryIcon from '../logo/Treasury';
-import MenuTreasury from './MenuTreasury';
+'use client'
+import {
+  MenuSidebar,
+  Modules,
+  SideBarModules
+} from '@/lib/utils/SidebarOptions'
+import { useEffect, useMemo, useState } from 'react'
+import MenuParametrization from './MenuParametrization'
+import { usePathname, useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import ParametrizationLogo from '../logo/Parametrization'
+import HomeLogo from '../logo/Home'
+import WalletLogo from '../logo/Wallet'
+import MenuWallet from './MenuWallet'
+import AccountingIcon from '../logo/Accounting'
+import TreasuryIcon from '../logo/Treasury'
+import MenuTreasury from './MenuTreasury'
+import MenuAccounting from './MenuAccounting'
+import SideBarMobile from './SidebarMobile'
+import useWindowResizeThreshold from '@/app/hooks/mobile/SizeMobile'
+import { signIn, useSession } from 'next-auth/react'
 
 export default function SideBar() {
-  const [toggleBar, setToggleBar] = useState(false);
-  const [showParametrization, setShowParametrization] =
-    useState<boolean>(false);
-  const [showWallet, setShowWallet] = useState<boolean>(false);
-  const [showTreasury, setShowTreasury] = useState<boolean>(false);
-  const [select, setSelect] = useState(MenuSidebar.main);
+  const [toggleBar, setToggleBar] = useState(false)
+  const [showParametrization, setShowParametrization] = useState<boolean>(false)
+  const [showWallet, setShowWallet] = useState<boolean>(false)
+  const [showTreasury, setShowTreasury] = useState<boolean>(false)
+  const [showAccounting, setShowAccounting] = useState<boolean>(false)
+  const [select, setSelect] = useState('')
+  const [selectSub, setSelectSub] = useState('')
 
-  const route = useRouter();
+  const pathname = usePathname()
+  const route = useRouter()
+  const data = useSession()
 
-  return (
-    <div
-      className={`border-l-4 border-[#1A5DAD]  flex flex-col shadow  flex-grow justify-between bg-white  ${
-        toggleBar ? 'w-[80px]' : 'w-[250px]'
-      }`}
-    >
-      <div className={`flex px-10 py-8 ${!toggleBar && 'border-b-2 mx-4'}`}>
-        <img src="/nameCompany.png" />
+  if (!data.data) {
+    signIn()
+  }
+  useEffect(() => {
+    SideBarModules.map(module => {
+      if (pathname.includes(module.href)) {
+        setSelect(module.menu)
+
+        if (module.menu === MenuSidebar.main) {
+          setSelectSub('')
+          setSelect(module.menu)
+        }
+        if (module.menu === MenuSidebar.treasury) {
+          setShowTreasury(true)
+        }
+        if (module.menu === MenuSidebar.parametrization) {
+          setShowParametrization(true)
+        }
+        if (module.menu === MenuSidebar.accounting) {
+          setShowAccounting(true)
+        }
+        if (module.menu === MenuSidebar.wallet) {
+          setShowWallet(true)
+        }
+      }
+    })
+    for (const key in Modules) {
+      if (pathname.includes(key)) {
+        setSelectSub(Modules[key])
+      }
+    }
+  }, [])
+  const isMobile = useWindowResizeThreshold()
+
+  const mobile = useMemo(() => (isMobile ? true : false), [isMobile])
+
+  if (!data.data) return
+
+  if (mobile) {
+    return (
+      <div className="md:hidden flex absolute  z-10  bg-white   rounded-md text-base ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <SideBarMobile
+          setShowAccounting={setShowAccounting}
+          setShowParametrization={setShowParametrization}
+          setSelectSub={setSelectSub}
+          selectSub={selectSub}
+          setSelect={setSelect}
+          select={select}
+          showAccounting={showAccounting}
+          setShowTreasury={setShowTreasury}
+          setShowWallet={setShowWallet}
+          showTreasury={showTreasury}
+          setToggleBar={setToggleBar}
+          showWallet={showWallet}
+          showParametrization={showParametrization}
+          toggleBar={toggleBar}
+        />
       </div>
-
-      <div className=" flex flex-col h-full ">
+    )
+  } else {
+    return (
+      <div
+        className={`border-l-[4px] 2xl:border-l-[8px] border-[#1A5DAD] min-h-screen  hidden md:flex flex-col shadow-lg  flex-grow  bg-white  ${
+          toggleBar ? 'w-[70px]' : 'w-[250px]'
+        }`}
+      >
+        <div className={`flex px-10 py-8 ${!toggleBar && 'border-b-2 mx-4'}`}>
+          <img src="/nameCompany.png" />
+        </div>
         <div className="relative ">
           <div
-            className={`absolute h-8 w-8 -right-6 ${
-              !toggleBar ? '-top-20' : '-top-10'
+            className={`absolute h-8 w-8 -right-4 ${
+              !toggleBar ? '-top-10' : 'top-0'
             }`}
           >
             <img
               src="/logo.svg"
               onClick={() => {
-                setToggleBar(!toggleBar);
+                setToggleBar(!toggleBar)
               }}
             />
           </div>
         </div>
 
-        <div className="flex flex-col rounded-sm py-4 items-center justify-between h-full  w-full my-8">
-          <div className="w-full flex flex-col justify-center items-center">
-            {SideBarModules.map((sidebar) => (
+        <div className="overscroll-x-none pb-2 flex flex-col  rounded-sm overflow-y-scroll overflow-x-hidden  items-center justify-between   w-full my-8 ">
+          <div className="w-full flex flex-col justify-center gap-6 items-center">
+            {SideBarModules.map(sidebar => (
               <div key={sidebar.name} className="w-full   ">
                 <motion.div
-                  className={`flex flex-col  my-5    mx-3 
+                  className={`flex flex-col     mx-3 
 				 ${
            sidebar.menu === MenuSidebar.parametrization &&
            showParametrization &&
-           'bg-[#f5f6f7] rounded-lg'
+           'bg-[#f5f6f7] rounded-lg '
          }
 				 ${
            sidebar.menu === MenuSidebar.wallet &&
@@ -69,6 +138,21 @@ export default function SideBar() {
            showTreasury &&
            'bg-[#f5f6f7] rounded-lg'
          }
+${
+  sidebar.menu === MenuSidebar.accounting &&
+  showAccounting &&
+  'bg-[#f5f6f7] rounded-lg'
+}
+
+
+ ${
+   sidebar.menu === MenuSidebar.main &&
+   showTreasury &&
+   'bg-[#f5f6f7] rounded-lg'
+ }
+
+ ${sidebar.menu === select && 'shadow-lg'}
+
 				 `}
                   whileHover={{ scale: 1.03 }}
                 >
@@ -78,8 +162,32 @@ export default function SideBar() {
                   >
                     <div className="flex  flex-col w-full">
                       <div
-                        className={` p-4 hover:border-b-2 hover:border-[#1A5DAD]
-				       ${sidebar.menu === select && ' rounded-sm bg-[#dde0e5] '}
+                        className={`cursor-pointer p-3 hover:border-b-2 hover:border-[#1A5DAD]
+				       ${
+                 showParametrization &&
+                 sidebar.menu === MenuSidebar.parametrization &&
+                 sidebar.menu !== select &&
+                 ' border-b border-gray-400  '
+               }
+	       ${
+           showWallet &&
+           sidebar.menu === MenuSidebar.wallet &&
+           sidebar.menu !== select &&
+           ' border-b border-gray-400  '
+         }
+	       ${
+           showTreasury &&
+           sidebar.menu === MenuSidebar.treasury &&
+           sidebar.menu !== select &&
+           ' border-b border-gray-400  '
+         }
+	       ${
+           showAccounting &&
+           sidebar.menu === MenuSidebar.accounting &&
+           sidebar.menu !== select &&
+           ' border-b border-gray-400  '
+         }
+	 ${sidebar.menu === select && 'bg-[#E8E8E8]'} 
 
 				    `}
                       >
@@ -94,18 +202,24 @@ export default function SideBar() {
 				    `}
                           onClick={() => {
                             if (sidebar.menu === MenuSidebar.parametrization) {
-                              setShowParametrization(!showParametrization);
+                              setShowParametrization(!showParametrization)
                             }
+
                             if (sidebar.menu === MenuSidebar.wallet) {
-                              setShowWallet(!showWallet);
+                              setShowWallet(!showWallet)
                             }
                             if (sidebar.menu === MenuSidebar.treasury) {
-                              setShowTreasury(!showTreasury);
+                              setShowTreasury(!showTreasury)
                             }
+                            if (sidebar.menu === MenuSidebar.accounting) {
+                              setShowAccounting(!showAccounting)
+                            }
+
                             if (sidebar.menu === MenuSidebar.main) {
-                              route.push(sidebar.href);
+                              route.push(sidebar.href)
+                              setSelectSub('')
                             }
-                            setSelect(sidebar.menu);
+                            setSelect(sidebar.menu)
                           }}
                         >
                           <div className="flex flex-row">
@@ -154,73 +268,73 @@ export default function SideBar() {
                                 )}
                             </div>
                             {!toggleBar && (
-                              <label
-                                className={`pl-6 text-sm font-sans  ${
+                              <span
+                                className={`pl-6 text-input font-sans font-semibold ${
                                   sidebar.menu == select
                                     ? 'text-[#1A5DAD] font-semibold'
-                                    : 'text-[#26384b]'
+                                    : 'text-gray-600'
                                 }`}
                               >
                                 {sidebar.name}
-                              </label>
+                              </span>
                             )}
                           </div>
                           {!toggleBar && sidebar.menu !== MenuSidebar.main && (
-                            <div className="h-4 w-4">
-                              <svg
-                                fill={`${
-                                  sidebar.menu == select ? '#1A5DAD' : '#26384B'
-                                }`}
-                                viewBox="-6.5 0 32 32"
-                                version="1.1"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path d="M18.813 11.406l-7.906 9.906c-0.75 0.906-1.906 0.906-2.625 0l-7.906-9.906c-0.75-0.938-0.375-1.656 0.781-1.656h16.875c1.188 0 1.531 0.719 0.781 1.656z"></path>
-                              </svg>
-                            </div>
+                            <motion.svg
+                              fill={`${
+                                sidebar.menu == select ? '#1A5DAD' : '#26384B'
+                              }`}
+                              height={18}
+                              width={18}
+                              viewBox="-6.5 0 32 32"
+                              version="1.1"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M18.813 11.406l-7.906 9.906c-0.75 0.906-1.906 0.906-2.625 0l-7.906-9.906c-0.75-0.938-0.375-1.656 0.781-1.656h16.875c1.188 0 1.531 0.719 0.781 1.656z"></path>
+                            </motion.svg>
                           )}
                         </div>
                       </div>
                       {sidebar.menu === MenuSidebar.parametrization &&
                         showParametrization && (
-                          <div>
-                            <div
-                              className={` ${
-                                !toggleBar &&
-                                ' mx-6 pl-4 border-l border-[#505050] '
-                              }`}
-                            >
-                              <MenuParametrization
-                                toggleBar={toggleBar}
-                                setSelect={setSelect}
-                              />
-                            </div>
+                          <div className={` ${!toggleBar && ' mx-4  my-2'}`}>
+                            <MenuParametrization
+                              toggleBar={toggleBar}
+                              setSelect={setSelect}
+                              setSelectSub={setSelectSub}
+                              selectSub={selectSub}
+                            />
                           </div>
                         )}
                       {sidebar.menu === MenuSidebar.wallet && showWallet && (
-                        <div
-                          className={` ${
-                            !toggleBar &&
-                            ' mx-6 pl-4 border-l border-[#505050] '
-                          }`}
-                        >
+                        <div className={` ${!toggleBar && ' mx-4  my-2'}`}>
                           <MenuWallet
                             toggleBar={toggleBar}
                             setSelect={setSelect}
+                            setSelectSub={setSelectSub}
+                            selectSub={selectSub}
                           />
                         </div>
                       )}
                       {sidebar.menu === MenuSidebar.treasury &&
                         showTreasury && (
-                          <div
-                            className={` ${
-                              !toggleBar &&
-                              ' mx-6 pl-4 border-l border-[#505050] '
-                            }`}
-                          >
+                          <div className={` ${!toggleBar && ' mx-4  my-2'}`}>
                             <MenuTreasury
                               toggleBar={toggleBar}
                               setSelect={setSelect}
+                              selectSub={selectSub}
+                              setSelectSub={setSelectSub}
+                            />
+                          </div>
+                        )}
+                      {sidebar.menu === MenuSidebar.accounting &&
+                        showAccounting && (
+                          <div className={` ${!toggleBar && ' mx-4  my-2'}`}>
+                            <MenuAccounting
+                              toggleBar={toggleBar}
+                              setSelect={setSelect}
+                              selectSub={selectSub}
+                              setSelectSub={setSelectSub}
                             />
                           </div>
                         )}
@@ -232,6 +346,6 @@ export default function SideBar() {
           </div>
         </div>
       </div>
-    </div>
-  );
+    )
+  }
 }

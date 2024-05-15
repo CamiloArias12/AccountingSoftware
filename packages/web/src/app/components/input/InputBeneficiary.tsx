@@ -1,15 +1,16 @@
-'use client';
-import React, { useState } from 'react';
+'use client'
+import React, { useState } from 'react'
 
 type InputFieldProps = {
-  name?: string;
-  type?: string;
-  label: string;
-  value?: string | number;
-  onBlur?: any;
-  index?: number;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
+  name?: string
+  type?: string
+  label?: string
+  value?: string | number
+  onBlur?: any
+  index?: number
+  className?: string
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
 
 function InputFieldBeneficiary({
   name,
@@ -18,26 +19,28 @@ function InputFieldBeneficiary({
   value,
   onChange,
   onBlur,
-  index,
+  className
 }: InputFieldProps) {
-  const [color, setColor] = useState(false);
+  const [color, setColor] = useState(false)
 
   return (
-    <div className="flex flex-col pr-4 ">
-      <label className={`text-input pb-2`}>{label}</label>
+    <div className={`flex flex-col  ${className} `}>
+      {label && (
+        <label className={` font-semibold text-input pb-2`}>{label}</label>
+      )}
       <input
         type="text"
         name={name}
         value={value}
         required
-        className={`bg-white h-[30px] text-input rounded-sm border ${
+        className={`bg-white h-[30px] 2xl:h-[34px] rounded-md text-input  border ${
           !color ? 'border-[#d9d9d9]' : 'border-[#AD1A1A]'
         } h-[27px] `}
         onChange={onChange}
         onBlur={onBlur}
       />
     </div>
-  );
+  )
 }
 
-export default InputFieldBeneficiary;
+export default InputFieldBeneficiary

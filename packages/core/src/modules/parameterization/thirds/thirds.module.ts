@@ -4,10 +4,9 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { CompanyModule } from './company/company.module';
 
-
 @Module({
-   imports:[UserModule,LocationModule,AuthModule,CompanyModule ],
-   providers: []
-
+  imports: [UserModule, LocationModule, AuthModule, CompanyModule],
+  providers: [],
+  exports: [UserModule, CompanyModule],
 })
 export class ThirdsModule {}

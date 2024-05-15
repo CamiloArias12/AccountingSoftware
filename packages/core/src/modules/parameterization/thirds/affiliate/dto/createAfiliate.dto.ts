@@ -1,34 +1,36 @@
 import { InputType, Field } from '@nestjs/graphql';
+import { IAfiliate } from './afiliate.interface';
+import { BeneficiaryInputGeneral } from '../beneficiary/dto/createBeneficiary.dto';
 
 @InputType()
-export class CreateAfiliateDto {
-    @Field()
-    company: string;
+export class CreateAfiliateDto implements IAfiliate {
+  @Field()
+  company: string;
 
-    @Field()
-    addreesCompany: string;
+  @Field()
+  addreesCompany: string;
 
-    @Field()
-    emailJob: string;
+  @Field()
+  emailJob: string;
 
-    @Field()
-    salary: number;
+  @Field()
+  salary: number;
 
-    @Field()
-    bank: string;
+  @Field()
+  bank: string;
 
-    @Field()
-    jobTitle: string;
+  @Field()
+  jobTitle: string;
 
-    @Field()
-    phone: number;
+  @Field()
+  phone: string;
 
-    @Field()
-    incomeCompany: Date;
+  @Field()
+  incomeCompany: Date;
 
-    @Field()
-    typeAccount: string;
+  @Field()
+  typeAccount: string;
 
-    @Field()
-    numberAccount: number;
+  @Field()
+  numberAccount: number;
 }

@@ -5,7 +5,7 @@ export class CreateSavingInput {
   @Field(() => Float)
   qoutaValue: number;
 
-  @Field()
+  @Field(() => Date)
   startDate: Date;
 
   @Field(() => Int)

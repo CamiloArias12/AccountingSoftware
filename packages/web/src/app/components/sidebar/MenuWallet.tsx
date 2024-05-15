@@ -1,80 +1,114 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { AddSvg } from '../logo/Add';
+'use client'
+import { AddSvg } from '../logo/Add'
 
-import { motion } from 'framer-motion';
-import { MenuSidebar } from '@/lib/utils/SidebarOptions';
-import { WalletSideBar } from '@/lib/utils/MenuWallet';
+import { motion } from 'framer-motion'
+import { MenuSidebar } from '@/lib/utils/SidebarOptions'
+import { WalletSideBar } from '@/lib/utils/MenuWallet'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 function MenuWallet({
   toggleBar,
   setSelect,
+  setSelectSub,
+  selectSub
 }: {
-  toggleBar: boolean;
-  setSelect: any;
+  toggleBar: boolean
+  setSelect: any
+  setSelectSub: any
+  selectSub: any
 }) {
-  const router = useRouter();
+  const [showDeferred, setShowDeferred] = useState<boolean>(false)
+  const data = useSession()
+
   return (
     <>
       <div className={`my-3 `}>
-        {WalletSideBar.map((sidebar) => (
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            key={sidebar.name}
-            className={`w-full flex flex-row justify-betwen ${
-              !toggleBar && ' hover:pb-1 hover:border-b-[1px]'
-            }  my-5 `}
-          >
-            <div
-              className={`${
-                toggleBar && 'flex flex col items-center justify-center'
-              } w-full flex flex-row`}
-              onClick={() => {
-                setSelect(MenuSidebar.wallet);
-                router.push(sidebar.href);
-              }}
-            >
+        {WalletSideBar.map(sidebar => (
+          <>
+            {data?.data?.user?.rol[sidebar.permission] && (
               <motion.div
-                whileHover={{ scale: 2 }}
-                className={`h-4 w-4
-      
-						${toggleBar && 'h-8 w-8 p-2'} `}
+                whileHover={{ scale: 1.01 }}
+                key={sidebar.name}
+                className={`border-b flex flex-row justify-betwen ${
+                  !toggleBar && ' w-full h-full px-1'
+                }  mx-2 my-2 py-1  ${
+                  selectSub === sidebar.name &&
+                  'border-b-2 pb-1 rounded-md bg-[#C7CBD1]'
+                }	hover:bg-[#E1E1E1] hover:rounded-md `}
               >
-                <img src={sidebar.icon} />
-              </motion.div>
-              {!toggleBar && (
-                <label className=" font-sans text-[13px] pl-2">
-                  {sidebar.name}
-                </label>
-              )}
-            </div>
-            {!toggleBar && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.2,
-                  ease: [0, 0.71, 0.2, 1.01],
-                }}
-                className="  flex items-center justify center h-6 w-6 rounded-[50%] bg-[#10417B] p-1"
-                onClick={() => {
-                  setSelect(MenuSidebar.wallet);
-                  if (sidebar.name === 'Creditos') {
-                    router.push(`${sidebar.href}/create`);
-                  } else {
-                    router.push(`${sidebar.href}?create=true`);
-                  }
-                }}
-              >
-                <AddSvg color="#ffffff" />
+                <li
+                  className={`${
+                    toggleBar && 'flex flex-col items-center justify-center'
+                  } w-full flex flex-row`}
+                >
+                  <Link
+                    className={`text-input flex-grow font-sans ${
+                      !toggleBar ? '' : 'px-1'
+                    }`}
+                    key={sidebar.href}
+                    href={`${sidebar.href}`}
+                    onClick={() => {
+                      setSelect(MenuSidebar.wallet)
+                      setSelectSub(sidebar.name)
+                    }}
+                  >
+                    <span className="flex flex-row gap-2">
+                      <Image
+                        src={sidebar.icon}
+                        height={toggleBar ? 18 : 16}
+                        width={toggleBar ? 18 : 16}
+                        alt=""
+                      />
+
+                      {!toggleBar && (
+                        <span
+                          className={`text-input ${
+                            selectSub === sidebar.name && ' font-semibold'
+                          }`}
+                        >
+                          {sidebar.name}
+                        </span>
+                      )}
+                    </span>
+                  </Link>
+                </li>
+                {!toggleBar && sidebar.name && (
+                  <Link
+                    href={
+                      sidebar.name === 'Créditos' ||
+                      sidebar.name === 'Diferidos'
+                        ? `${sidebar.href}/create`
+                        : `${sidebar.href}?create=true`
+                    }
+                    onClick={() => {
+                      setSelect(MenuSidebar.wallet)
+                      setSelectSub(sidebar.name)
+                    }}
+                  >
+                    <motion.span
+                      className="  flex items-center justify center h-6 w-6 rounded-[50%] bg-[#10417B] hover:bg-[#000000] p-1"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.2,
+                        ease: [0, 0.71, 0.2, 1.01]
+                      }}
+                    >
+                      <AddSvg color="#ffffff" />
+                    </motion.span>
+                  </Link>
+                )}
               </motion.div>
             )}
-          </motion.div>
+          </>
         ))}
       </div>
     </>
-  );
+  )
 }
 
-export default MenuWallet;
+export default MenuWallet

@@ -1,36 +1,37 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { Regime, TypePerson } from '../enum-type';
-
+import { ICompany } from '../company-interface';
+import { TypeIdentification } from '../../../user/dto/enum-type';
 
 @InputType()
-export class CreateCompanyDto {
-    @Field()
-    typeIdentification: string;
+export class CreateCompanyDto implements ICompany {
+  @Field()
+  typeIdentification: string;
 
-    @Field()
-    numberIdentification: number;
+  @Field()
+  identification: number;
 
-    @Field()
-    digitVerification: number;
+  @Field()
+  digitVerification: number;
 
-    @Field()
-    regime: Regime;
+  @Field()
+  regime: Regime;
 
-    @Field()
-    typePerson: TypePerson;
+  @Field()
+  typePerson: TypePerson;
 
-    @Field()
-    socialReason: string;
+  @Field()
+  name: string;
 
-    @Field()
-    legalRepresentativeTypeIdentificatio: string;
+  @Field()
+  legalRepresentativeTypeIdentification: TypeIdentification;
 
-    @Field()
-    legalRepresentativeName: string;
+  @Field()
+  legalRepresentativeName: string;
 
-    @Field()
-    legalRepresentativeDocument: string;
+  @Field()
+  legalRepresentativeDocument: number;
 
-    @Field()
-    natureCompany: string;
+  @Field()
+  natureCompany: string;
 }

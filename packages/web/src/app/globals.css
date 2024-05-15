@@ -1,40 +1,93 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+::-webkit-scrollbar {
+  width: 3px; /* Set a thin width */
+}
 
+::-webkit-scrollbar-track {
+  background-color: transparent; /* Make the track transparent */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Set a semi-transparent thumb color */
+  border-radius: 6px; /* Add rounded corners for a smoother look */
+
+}
 .table thead{
 	background: #10417B;
 	color: #ffffff;
-       position: sticky;
+  position: sticky;
+   top: 0;
 }
 .table-amortization thead{
-	background: #3C7ac2;
+	background: #10417B;
 	color: #ffffff;
+ margin: 0;
+   position: sticky;
+   top: 0;
+}
+.table-amortization tr{
+  border-bottom: 0.5px solid #DCDCDC;
 }
 
 
-.table tbody tr:nth-child(odd) {
+.account-table td,th,tr {
+   height: 45px;
+   text-align: start;
+
+}
+
+tr {
+   height: 40px;
+   font-size: 15px;
+}
+
+input:focus{
+
+  outline: 2px solid rgb(59 ,130 ,246);
+}
+input:active{
+
+  outline: 2px solid rgb(59 ,130 ,246);
+}
+
+.table-account-statistics tbody tr:nth-child(odd) {
+	background: #FfFfFf;
+}
+.table-account-statistics tbody tr:nth-child(even) {
+	background: #f8f8f8;
+}
+
+.table-account thead th {
+	color: #f8f8f8;
+	background: #10417B;
+}
+
+
+.table-account tbody tr:nth-child(odd) {
 	background: #ffffff;
+      border: 1px solid #F2F5FA;
 }
+.table-account tbody tr:nth-child(even) {
+	background: #F2F5FA;
+      border: 2px solid #F2F5FA;
+}
+
 .table tbody tr:nth-child(even) {
 	background: #F2F5FA;
 }
 
 body {
    height: 100vh;
-   background-color: rgb(248 250 251 /1);
 }
 
-.account-table tbody tr:nth-child(odd) {
-	background: #ffffff ;
-}
-.account-table tbody tr:nth-child(even) {
-	background: #F2F5FA ;
-}
+
+
 
 
 .selected {
-  background-color: #FFF9F5 !important;
+  background-color: #FFECDF !important;
 }
 
 .account-table table {
@@ -45,10 +98,177 @@ body {
 }
 
 .account-table thead {
+   color: #FAFAFA;
    background: #10417B;
-   color: #ffffff;
    margin: 0;
    position: sticky;
    top: 0;
 }
 
+
+@media (min-width: 768px) {
+
+.account-table tbody tr:nth-child(odd) {
+	background: #ffffff ;
+}
+.account-table tbody tr:nth-child(even) {
+	background: #F2F5FA ;
+}
+
+.options-table {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+  font-size: 15px;
+  background-color: #F5F5F5;
+ padding-left: 1rem;
+ padding-top: 2px;
+ padding-bottom: 2px;
+ padding-top: 2px;
+ height: 60px;
+  padding-right: 1rem;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  gap: 1rem;
+  border-radius: 0.5rem;
+}
+.button-style-table {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 0.5rem; /* Aquí puedes ajustar el valor según necesites */
+  background-color: #ffffff;
+  width: 120px; /* Puedes ajustar el valor según necesites */
+  height: 40px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.05); /* Ajusta los valores según necesites */
+  border-radius: 0.5rem; /* Puedes ajustar el valor según necesites */
+}
+
+}
+
+@media (max-width: 1536px) {
+
+  tr {
+   height: 34px;
+   font-size: 14px;
+   font-weight: normal;
+}
+td,th {
+   padding: 2px;
+   text-align: start;
+
+}
+.options-table {
+  font-size: 14px;
+ height: 55px;
+  overflow-x: auto; /* Apply horizontal scrolling */
+ }
+.button-style-table {
+   width: 100px; /* Puedes ajustar el valor según necesites */
+  height: 35px;
+}
+
+}
+
+
+/* Mobile*/
+
+@media (max-width: 768px) {
+.principal-container {
+    height: calc(100% - 130px);
+  }
+
+  .body{
+   background: white;
+  }
+tr {
+   height: 45px;
+   font-size: 14px;
+   font-weight: normal;
+}
+.account-table table {
+  border-spacing: 0;
+  font-family: arial, sans-serif;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.account-table thead {
+   color: #FAFAFA;
+   background: #10417B;
+   margin: 0;
+   position: sticky;
+   top: 0;
+}
+
+
+
+.account-table   tr:nth-child(odd) {
+	background: #ffffff;
+}
+.account-table  tr:nth-child(even) {
+	background: #F8FAFB;
+
+	border-bottom: 2px;
+}
+.account-table  th {
+  background-color: #F5F5F5;
+	 color: black;
+	font-weight: 600;
+
+}
+
+.account-table thead {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Darker blue shadow */
+}
+
+::-webkit-scrollbar {
+  width: 1px; /* Set a thin width */
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent; /* Make the track transparent */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0); /* Set a semi-transparent thumb color */
+  border-radius: 1px; /* Add rounded corners for a smoother look */
+
+}
+
+ .options-table {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    font-size: 12px;
+    font-weight: 800;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    height: 70px;
+    overflow-x: auto; /* Apply horizontal scrolling */
+    width: 100vw;
+    gap: 1rem;
+}
+.button-style-table {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 64px; /* Puedes ajustar el valor según necesites */
+  background: #F4F4f4;
+  gap: 0.1rem;
+  height: 44px;
+  border-radius: 0.5rem; /* Puedes ajustar el valor según necesites */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.05); /* Ajusta los valores según necesites */
+
+}
+.overflow-modal{
+   overflow-x: auto;
+
+}
+::-webkit-scrollbar {
+  width: 0; /* Ajusta el ancho del scrollbar a cero */
+  height: 0; /* Ajusta la altura del scrollbar a cero */
+}
+
+}

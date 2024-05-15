@@ -1,65 +1,57 @@
-import { Field, InputType,  ObjectType } from "@nestjs/graphql"
-import { CreateInstallment } from "./create-installment.input"
-
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { CreateInstallment } from './create-installment.input';
 
 @InputType()
-export class ChangeAmortization{
-  @Field(() =>[CreateInstallment])
-   tableAmortization:CreateInstallment[]
-
+export class ChangeAmortization {
+  @Field(() => [CreateInstallment])
+  tableAmortization: CreateInstallment[];
 }
 
-@InputType("InputTypeInstallmentPayment")
-@ObjectType("InstallmentPayment")
-export class InstallmentPayment{
+@InputType('InputTypeInstallmentPayment')
+@ObjectType('InstallmentPayment')
+export class InstallmentPayment {
+  @Field()
+  installmentNumber: number;
 
-   @Field()
-   installmentNumber:number
+  @Field()
+  credit: number;
 
-   @Field()
-   credit:number
-   
-   @Field()
-   paymentDate:Date
-   
-   @Field()
-   scheduledPayment:number
-   
-   @Field()
-   interest:number
-   
-   @Field()
-   finalBalance:number
-   
-   @Field()
-   identification:number
-   
-   @Field()
-   name:string
-   
-   @Field()
-   lastName:string
+  @Field()
+  paymentDate: Date;
 
-   @Field()
-   typeCredit:string
+  @Field({ nullable: true })
+  scheduledPayment: number;
 
-   @Field()
-   extraPayment:number
-   
-   @Field()
-   totalPayment:number 
-   
-   @Field()
-   capital:number
+  @Field()
+  interest: number;
 
-   @Field()
-   interestPayment:number
+  @Field({ nullable: true })
+  finalBalance: number;
 
-   @Field()
-   idTypeCredit:number
+  @Field()
+  identification: number;
 
-   @Field({defaultValue:false})
-   isSelected:boolean
+  @Field({ nullable: true })
+  name: string;
 
+  @Field({ nullable: true })
+  lastName: string;
+
+  @Field({ nullable: true })
+  typeCredit: string;
+
+  @Field({ nullable: true })
+  extraPayment: number;
+
+  @Field({ nullable: true })
+  totalPayment: number;
+
+  @Field({ nullable: true })
+  capital: number;
+
+  @Field({ nullable: true })
+  interestPayment: number;
+
+  @Field({ nullable: true })
+  idTypeCredit: number;
 }
-

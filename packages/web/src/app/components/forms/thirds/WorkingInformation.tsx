@@ -1,36 +1,45 @@
-import InputField from '@/app/components/input/InputField';
-import SelectField from '@/app/components/input/SelectField';
-import { AccountTypeOptions } from '@/lib/utils/thirds/selectForm';
-import { IAfiliate } from '@/lib/utils/thirds/types';
-import InputCalendar from '../../input/Calendar';
+import InputField from '@/app/components/input/InputField'
+import SelectField from '@/app/components/input/SelectField'
+import { AccountTypeOptions } from '@/lib/utils/thirds/selectForm'
+import InputCalendar from '../../input/Calendar'
+import InputNumber from '../../input/InputNumber'
+import { NumberFormatValues } from 'react-number-format'
+import {} from '@/lib/utils/FieldValidation'
 
 function WorkingInformtaion({
   workingInformation,
-  handleChangeWorkingInformation,
-  handleNumber,
   handleWorkingInformation,
+  control,
+  errors
 }: {
-  handleWorkingInformation: any;
-  handleNumber: any;
-  workingInformation: IAfiliate;
-  handleChangeWorkingInformation: any;
+  workingInformation: any
+  handleWorkingInformation: any
+  control: any
+  errors: any
 }) {
-  console.log(workingInformation);
   return (
-    <div className="flex-grow grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:grid-cols-4">
       <InputField
         type="text"
         name="company"
         label="Empresa"
         value={workingInformation.company}
-        onChange={handleChangeWorkingInformation}
+        props={{
+          ...workingInformation('company')
+        }}
+        required
+        error={errors.company}
       />
       <InputField
         type="text"
         name="jobTitle"
         label="Cargo"
         value={workingInformation.jobTitle}
-        onChange={handleChangeWorkingInformation}
+        props={{
+          ...workingInformation('jobTitle')
+        }}
+        required
+        error={errors.jobTitle}
       />
 
       <InputField
@@ -38,7 +47,11 @@ function WorkingInformtaion({
         name="addreesCompany"
         label="Dirección"
         value={workingInformation.addreesCompany}
-        onChange={handleChangeWorkingInformation}
+        props={{
+          ...workingInformation('addreesCompany')
+        }}
+        required
+        error={errors.addreesCompany}
       />
 
       <InputField
@@ -46,15 +59,21 @@ function WorkingInformtaion({
         name="emailJob"
         label="Correo laboral"
         value={workingInformation.emailJob}
-        onChange={handleChangeWorkingInformation}
+        props={{
+          ...workingInformation('emailJob')
+        }}
+        required
+        error={errors.emailJob}
       />
-      <InputField
-        type="text"
+      <InputNumber
         name="phone"
         label="Telefono"
-        onBlur={handleNumber}
         value={workingInformation.phone}
-        onChange={handleChangeWorkingInformation}
+        onChange={true}
+        control={control}
+        required
+        isString
+        error={errors.phone}
       />
 
       <InputCalendar
@@ -62,15 +81,21 @@ function WorkingInformtaion({
         label="Fecha de ingreso"
         value={workingInformation.incomeCompany}
         onChange={handleWorkingInformation}
+        control={control}
+        required
+        error={errors.incomeCompany}
       />
 
-      <InputField
-        type="text"
+      <InputNumber
         name="salary"
         label="Sueldo"
-        onBlur={handleNumber}
         value={workingInformation.salary}
-        onChange={handleChangeWorkingInformation}
+        handleChange={handleWorkingInformation}
+        prefix="$ "
+        thousandSeparator=","
+        control={control}
+        required
+        error={errors.salary}
       />
 
       <InputField
@@ -78,27 +103,36 @@ function WorkingInformtaion({
         name="bank"
         label="Banco"
         value={workingInformation.bank}
-        onChange={handleChangeWorkingInformation}
+        props={{
+          ...workingInformation('bank')
+        }}
+        required
+        error={errors.bank}
       />
 
       <SelectField
         name="typeAccount"
         value={workingInformation.typeAccount}
-        handleGeneralInformation={handleWorkingInformation}
         options={AccountTypeOptions}
-        label="Tipo decuenta"
+        setValue={handleWorkingInformation}
+        label="Tipo de cuenta"
         image={false}
+        control={control}
+        required
+        error={errors.typeAccount}
       />
 
-      <InputField
+      <InputNumber
         name="numberAccount"
-        label="Número de Cuenta"
+        label="Número de cuenta"
         value={workingInformation.numberAccount}
-        onBlur={handleNumber}
-        onChange={handleChangeWorkingInformation}
+        handleChange={handleWorkingInformation}
+        control={control}
+        required
+        error={errors.numberAccount}
       />
     </div>
-  );
+  )
 }
 
-export default WorkingInformtaion;
+export default WorkingInformtaion

@@ -1,42 +1,45 @@
-import { getClient } from '@/lib/graphql/apollo-client-server';
-import { gql } from '@apollo/client';
-import FormCredit from './CreateCredit';
-export const revalidate = 0;
+import { getClient } from '@/lib/graphql/apollo-client-server'
+import { gql } from '@apollo/client'
+import FormCredit from './CreateCredit'
+import { getServerSession } from 'next-auth'
+import authOptions from '@/app/api/auth/[...nextauth]/options'
+import { redirect } from 'next/navigation'
+import { signOut } from 'next-auth/react'
+export const revalidate = 0
 
-async function getCreditInformation(): Promise<any> {
-  const CREDIT_INFORMATION = gql`
-    query {
-      allAfiliates {
-        user {
-          identification
-          name
-          lastName
-        }
-        salary
-      }
-      getTypeCreditAll {
-        id
+const CREDIT_INFORMATION = gql`
+  query {
+    allAfiliates {
+      user {
+        identification
         name
-        interest
-        auxiliarys {
-          type
-          typeAccount {
-            code
-            name
-            nature
-          }
-        }
+        lastName
       }
+      salary
     }
-  `;
-
-  const { data } = await getClient().query({ query: CREDIT_INFORMATION });
-
-  return data;
-}
+    getTypeCreditAll {
+      id
+      name
+      interest
+    }
+  }
+`
 
 async function CreatePage() {
-  const data = await getCreditInformation();
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    signOut({ callbackUrl: '/auth/login' })
+  }
+
+  if (!session.user.rol['credit']) {
+    redirect('/dashboard')
+  }
+
+  const { data } = await getClient().query({
+    query: CREDIT_INFORMATION,
+    context: { headers: { Authorization: session.user.token } }
+  })
+
   return (
     <>
       <FormCredit
@@ -44,7 +47,7 @@ async function CreatePage() {
         affiliates={data.allAfiliates}
       />
     </>
-  );
+  )
 }
 
-export default CreatePage;
+export default CreatePage

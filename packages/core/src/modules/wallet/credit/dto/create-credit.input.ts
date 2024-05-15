@@ -1,9 +1,9 @@
-import { InputType,Field} from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 import { ICredit } from './credit-interface';
-import { CreateInstallment} from '../installments/dto/create-installment.input';
+import { CreateInstallment } from '../installments/dto/create-installment.input';
 
 @InputType()
-export class CreateCreditInput  implements ICredit{
+export class CreateCreditInput implements ICredit {
   @Field()
   creditValue: number;
 
@@ -12,6 +12,9 @@ export class CreateCreditInput  implements ICredit{
 
   @Field()
   startDate: Date;
+
+  @Field({ nullable: true })
+  valuePrevius: number;
 
   @Field()
   discountDate: Date;
@@ -22,12 +25,12 @@ export class CreateCreditInput  implements ICredit{
   @Field()
   idTypeCredit: number;
 
-  @Field(()=>[CreateInstallment])
-  installments:CreateInstallment[]
+  @Field(() => [CreateInstallment])
+  installments: CreateInstallment[];
 
   @Field()
-  concept:string
+  concept: string;
 
+  @Field()
+  methodPayment: string;
 }
-
-

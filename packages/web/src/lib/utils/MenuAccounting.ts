@@ -1,18 +1,28 @@
-const route: string = '/dashboard/accounting/';
+const route: string = '/dashboard/accounting/'
 
 export enum LogoTreasury {
-  payments = '/payment.svg',
-  interest = '/interest.svg',
+  movements = '/movements.svg',
+  book = '/book.svg',
+  notes = '/notes.svg'
 }
 export const AccountingSideBar = [
   {
-    name: 'Moviminetos credito',
+    name: 'Movimientos',
     href: `${route}movements`,
-    icon: LogoTreasury.payments,
+    permission: 'movement',
+    icon: LogoTreasury.movements
   },
   {
-    name: 'jkasdjf',
-    href: `${route}interest`,
-    icon: LogoTreasury.interest,
+    name: 'Notas contables',
+    href: `${route}notes`,
+    permission: 'note',
+    create: true,
+    icon: LogoTreasury.notes
   },
-];
+  {
+    name: 'Libro auxiliar',
+    permission: 'book_auxiliary',
+    href: `${route}bookauxiliary`,
+    icon: LogoTreasury.book
+  }
+]

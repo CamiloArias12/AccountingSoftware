@@ -1,25 +1,23 @@
 type CheckBoxThirdsProps = {
-  isChecked: boolean;
-  onChange: any;
-  name?: string;
-};
+  isChecked: boolean
+  onChange?: any
+  name?: string
+}
 
 function CheckBoxThirds({ isChecked, onChange, name }: CheckBoxThirdsProps) {
   return (
     <>
-      <div className="flex flex-row items-center text-input pl-4">
+      <div className="flex flex-row items-center  text-input-medium 2xl:text-input ">
         <div
-          className={`h-4 w-4  rounded-[50%] border border-[#10417B] ${
+          className={`cursor-pointer h-4 w-4  rounded-[50%] border-2 border-[#10417B] ${
             isChecked ? 'bg-[#10417B]' : 'bg-white'
           }`}
-          onClick={onChange}
+          onClick={onChange && onChange}
         />
-        <label htmlFor={name} className="pl-3 text-input">
-          {name}
-        </label>
+        <span className="pl-3 font-semibold ">{name}</span>
       </div>
     </>
-  );
+  )
 }
 
-export default CheckBoxThirds;
+export default CheckBoxThirds

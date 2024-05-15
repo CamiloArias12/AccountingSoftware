@@ -4,11 +4,5 @@ import { InstallmentsService } from './installments.service';
 import { InstallmentPayment } from './dto/types';
 @Resolver(() => Installment)
 export class InstallmentResolver {
-  constructor(private readonly installmentService: InstallmentsService) { }
-
-  @Mutation(() => [InstallmentPayment])
-  async getAllInstallments(@Args("date") date:Date): Promise<InstallmentPayment[]> {
-    return await this.installmentService.findAll(date);
-  }
-
- }
+  constructor(private readonly installmentService: InstallmentsService) {}
+}

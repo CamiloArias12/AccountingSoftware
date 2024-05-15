@@ -2,8 +2,10 @@ import { TypeAccounnt } from '@/lib/utils/type-account/types';
 import { useState } from 'react';
 
 export function useTypeAccount() {
-  const [typeAccount, setTypeAccount] = useState<TypeAccounnt>({
-    code: NaN,
+
+ //@ts-ignore
+  const [typeAccount, setTypeAccount] = useState({
+    code: '',
     name: '',
     nature: '',
   });

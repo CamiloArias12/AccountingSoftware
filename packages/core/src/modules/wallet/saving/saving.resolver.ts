@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, Float } from '@nestjs/graphql';
 import { SavingService } from './saving.service';
 import { CreateSavingInput } from './dto/create-saving.input';
 import { UpdateSavingInput } from './dto/update-saving.input';
@@ -7,34 +7,45 @@ import { ViewSaving } from './saving-view.entity';
 
 @Resolver(() => Saving)
 export class SavingResolver {
-  constructor(private readonly savingService: SavingService) { }
+  constructor(private readonly savingService: SavingService) {}
 
   @Mutation(() => Boolean)
-  createSaving(@Args('createSavingInput') createSavingInput: CreateSavingInput):Promise<Boolean> {
+  createSaving(
+    @Args('createSavingInput') createSavingInput: CreateSavingInput,
+  ): Promise<Boolean> {
     return this.savingService.create(createSavingInput);
   }
 
   @Query(() => [ViewSaving])
   async getAllSaving() {
-     console.log(await this.savingService.findAll())
+    console.log(await this.savingService.findAll());
     return this.savingService.findAll();
   }
 
-  @Query(() => Saving)
+  @Query(() => ViewSaving)
   async getSaving(@Args('id', { type: () => Int }) id: number) {
     return this.savingService.findOne(id);
   }
 
-  @Mutation(() => Saving)
-  async updateSaving(
-    @Args('updateSavingInput') updateSavingInput: UpdateSavingInput
-  ): Promise<Saving> {
-    return this.savingService.update(updateSavingInput.id, updateSavingInput);
+  @Query(() => Float)
+  async countSavingByAffiliate(@Args('id', { type: () => Float }) id: number) {
+    return this.savingService.countAllByAffiliate(id);
   }
 
-  @Mutation(() => Saving)
-  async removeSaving(@Args('id', { type: () => Int }) id: number) {
+  @Query(() => Float)
+  async totalSavings() {
+    return this.savingService.count();
+  }
+
+  @Mutation(() => Boolean)
+  async updateSaving(
+    @Args('updateSavingInput') updateSavingInput: UpdateSavingInput,
+  ): Promise<Boolean> {
+    return this.savingService.update(updateSavingInput);
+  }
+
+  @Mutation(() => Boolean)
+  async deleteSaving(@Args('id', { type: () => Int }) id: number) {
     return this.savingService.remove(id);
   }
 }
-

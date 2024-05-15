@@ -1,13 +1,15 @@
 import { useState } from 'react';
 
 export function useSaving() {
+
+//@ts-ignore
   const [saving, setSaving] = useState({
     nameAffiliate: '',
     identification: '',
     qoutaValue: '',
     typeSaving: '',
     startDate: new Date(),
-    idTypeSaving: 0,
+    idTypeSaving: '',
   });
 
   const handleSaving = (

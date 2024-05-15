@@ -1,6 +1,4 @@
-
-export interface ICredit{
-
+export interface ICredit {
   creditValue: number;
 
   interest: number;
@@ -9,4 +7,7 @@ export interface ICredit{
 
   discountDate: Date;
 
+  methodPayment: string;
+
+  valuePrevius: number;
 }

@@ -1,15 +1,24 @@
-'use client';
-import { useEffect, useState } from 'react';
-import InputField from '@/app/components/input/InputField';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import Select from '../../input/Select';
-import Button from '../../input/Button';
-import { AddSvg } from '../../logo/Add';
-import { useRouter } from 'next/navigation';
-import AlertModalSucces from '../../modal/AlertModalSucces';
-import AlertModalError from '../../modal/AlertModalError';
-import Modal from '../../modal/Modal';
-import { useTypeSaving } from '@/app/hooks/type-saving/TypeSavingInput';
+'use client'
+import { useEffect, useState } from 'react'
+import InputField from '@/app/components/input/InputField'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import Select from '../../input/Select'
+import Button from '../../input/Button'
+import { AddSvg } from '../../logo/Add'
+import { useRouter } from 'next/navigation'
+import { TypeSavingAcounts } from '@/lib/utils/type-saving/types'
+import SelectOptions from '../../input/SelectOptions'
+import { optionsNature } from '@/lib/utils/type-account/options'
+import InputNumber from '../../input/InputNumber'
+import { NumberFormatValues } from 'react-number-format'
+import { useTypeSaving } from '@/app/hooks/type-saving/TypeSavingInput'
+import { useFieldArray, useForm } from 'react-hook-form'
+import SelectField from '../../input/SelectField'
+import { FieldRequired } from '@/lib/utils/FieldValidation'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { schemaTypeSaving } from '@/lib/utils/ValidationYup'
+import ButtonAdd from '../../input/ButtonAdd'
+import { Token } from '@/app/hooks/TokenContext'
 
 const AUXLILIARIES = gql`
   query {
@@ -23,158 +32,158 @@ const AUXLILIARIES = gql`
       }
     }
   }
-`;
-const CREATE_TYPE_SAVING = gql`
-  mutation ($data: CreateTypeSavingDto!) {
-    createTypeSaving(data: $data) {
-      name
-    }
-  }
-`;
-const REFINANCE = gql`
-  mutation ($id: Int!) {
-    isRefinance(id: $id)
-  }
-`;
+`
 
 export function TypeSavingForm({
-  setShowModalCreate,
+  dataTypeSaving,
+  onClickAccept,
+  onClickCancel
 }: {
-  setShowModalCreate: any;
+  dataTypeSaving?: any
+  onClickAccept: any
+  onClickCancel: any
 }) {
-  const { data, loading, error } = useQuery(AUXLILIARIES);
-  const [accounts, setAccounts] = useState<number[]>([]);
-  const [
-    createTypeSaving,
-    { data: dataCreate, loading: loadingCreate, error: errorCreate },
-  ] = useMutation(CREATE_TYPE_SAVING);
-  const [
-    isRefinance,
-    { data: dataRefinance, loading: loadingRefinance, error: errorRefinance },
-  ] = useMutation(REFINANCE);
-  const { typeSaving, handleTypeSaving } = useTypeSaving();
-  const route = useRouter();
-  const [showWarning, setShowWarning] = useState(false);
+  const { context } = Token()
+  const { data, loading, error } = useQuery(AUXLILIARIES, { context })
+  const [accounts, setAccounts] = useState<TypeSavingAcounts[]>([])
+
+  const {
+    register: informationSaving,
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    formState: { errors }
+  } = useForm({
+    mode: 'all',
+    // @ts-ignore
+    resolver: yupResolver(schemaTypeSaving)
+  })
+  const { fields, append, remove } = useFieldArray({
+    name: 'accounts',
+    control,
+    rules: {
+      required: { value: true, message: 'Agrega al menos 3 cuentas' },
+      minLength: { value: 3, message: 'Agrega al menos 3 cuentas' }
+    }
+  })
 
   useEffect(() => {
-    if (data) {
-      const timeout = setTimeout(() => {
-        setShowWarning(false);
-      }, 3000); // 3 seconds in milliseconds
+    if (dataTypeSaving) {
+      setValue('name', dataTypeSaving.name)
+      const accountInput: TypeSavingAcounts[] = []
+      dataTypeSaving.auxiliaries.map((auxiliary: any) => {
+        accountInput.push({
+          account: auxiliary.idAccount,
+          nature: auxiliary.nature,
+          percentage: auxiliary.percentage
+        })
+      })
 
-      return () => {
-        clearTimeout(timeout);
-      };
+      setValue('accounts', accountInput)
     }
-  }, [dataCreate, errorCreate]);
+  }, [dataTypeSaving])
 
-  if (dataCreate?.createTypeSaving && !showWarning) {
-    setShowModalCreate(false);
-    route.push('/dashboard/parametrization/typesaving');
-    route.refresh();
-  }
-
-  const handleCreateTypeSaving = () => {
-    setShowWarning(true);
-    const inputCreate = {
-      name: typeSaving.name,
-      auxiliary: accounts,
-    };
-    createTypeSaving({
-      variables: {
-        data: inputCreate,
-      },
-    });
-  };
-
-  const handleValueAccounts = (index: number, value: number) => {
-    console.log('index', index);
-    const array = [...accounts];
-    array[index] = value;
-    setAccounts(array);
-  };
-  const addAccount = () => {
-    setAccounts([...accounts, 0]);
-  };
   return (
-    <Modal
-      size="min-w-[550px] w-[600px]"
-      title="Crear tipo de ahorro"
-      onClick={() => {
-        setShowModalCreate(false);
-        route.push('/dashboard/parametrization/typesaving');
-      }}
+    <form
+      onSubmit={handleSubmit(() => {
+        onClickAccept({ name: getValues('name') }, getValues().accounts)
+      })}
+      className="flex flex-col py-2 w-full    "
     >
-      <div className="flex flex-col   w-full h-full">
-        <div className="flex flex-col space-y-4 w-full max-w-3xl p-4">
-          {/* InputFields */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
-            <InputField
-              name="name"
-              label="Nombre"
-              value={typeSaving.name}
-              onChange={(e) => {
-                handleTypeSaving(e);
-              }}
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex flex-row justify-between mb-4">
-              <label>Cuentas</label>
-              <div
-                className="flex flex-row items-center justify-between hover:bg-[#F5F2F2] hover:rounded-[20px] group p-1"
-                onClick={addAccount}
-              >
-                <div className="flex group-hover:text-blue items-center justify-center rounded-[50%] h-6 w-6 bg-[#10417B] ">
-                  <AddSvg color="#ffffff" />
-                </div>
-                <label className="pl-2 hidden group-hover:block text-[12px]">
-                  Agregar
-                </label>
-              </div>
-            </div>
-            {accounts.map((value, index) => (
-              <div key={index} className="flex  flex-row">
-                <div className="flex-grow mb-2">
-                  <Select
-                    options={data.getAuxilaryAll}
-                    index={index}
-                    setValue={handleValueAccounts}
-                  />
-                </div>
-                <button className="flex items-center justify-center h-8 w-8">
-                  <img src="/delete.svg" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="pt-10 flex justify-end">
-          <div className="pr-4">
-            <Button
-              name="Cancelar"
-              background="border border-[#10417B] text-[#10417B]"
-            />
-          </div>
-          <div className="pr-4">
-            <Button
-              name="Aceptar"
-              background="bg-[#10417B] text-white"
-              onClick={handleCreateTypeSaving}
-            />
-          </div>
-        </div>
-        {dataCreate?.createTypeSaving && showWarning ? (
-          <AlertModalSucces value={`la tipo de ahorro ha sido creado`} />
-        ) : (
-          dataCreate?.createTypeSaving === false &&
-          showWarning &&
-          errorCreate &&
-          showWarning && <AlertModalError value="Error" />
-        )}
+      {/* InputFields */}
+      <div className="flex-grow gap-4 md:mt-8">
+        <InputField
+          name="name"
+          label="Nombre"
+          required
+          props={{
+            ...informationSaving('name')
+          }}
+          error={errors?.name}
+        />
       </div>
-    </Modal>
-  );
+      <label className="text-center text-white  bg-[#10417B] text-input font-bold my-2">
+        Cuentas
+      </label>
+      <div className="flex  flex-grow flex-row justify-between">
+        <label className="font-semibold text-input">Capital</label>
+        <ButtonAdd
+          onClick={() => {
+            append({
+              account: '',
+              nature: ''
+            })
+          }}
+        />
+      </div>
+      {fields.map((field, index) => (
+        <div
+          key={field.id}
+          className=" gap-2 flex  w-full my-2 flex-col  p-4 lg:p-0  rounded-sm border-2 md:border-none shadow-xm lg:shadow-none lg:flex-row"
+        >
+          <span className="md:hidden font-bold items-center ">
+            No {index + 1}
+          </span>
+
+          <div className="flex-grow lg:w-4/5">
+            <Select
+              name={`accounts.${index}.account`}
+              label={'Cuenta'}
+              options={data?.getAuxilaryAll}
+              setValue={setValue}
+              control={control}
+              required
+              error={errors?.accounts && errors?.accounts[index]?.account}
+              value={getValues(`accounts.${index}.account`)}
+            />
+          </div>
+          <SelectField
+            label={'Naturaleza'}
+            name={`accounts.${index}.nature`}
+            options={optionsNature}
+            control={control}
+            setValue={setValue}
+            required
+            error={errors?.accounts && errors?.accounts[index]?.nature}
+          />
+          <InputNumber
+            name={`accounts.${index}.percentage`}
+            label={'Porcentaje'}
+            suffix="  %"
+            control={control}
+            required
+            error={errors?.accounts && errors?.accounts[index]?.percentage}
+          />
+
+          <div className="md:flex md:items-end">
+            <button
+              type="button"
+              className="flex items-end justify-center h-8 w-8"
+              onClick={() => {
+                remove(index)
+              }}
+            >
+              <img src="/delete.svg" />
+            </button>
+          </div>
+        </div>
+      ))}
+      <div className="pt-10 flex gap-2 flex-col md:flex-row justify-end">
+        <Button
+          name="Cancelar"
+          background="border border-[#10417B] text-[#10417B]"
+          type={'button'}
+          onClick={onClickCancel}
+        />
+        <Button
+          name="Aceptar"
+          background="bg-[#10417B] text-white"
+          type={'submit'}
+        />
+      </div>
+    </form>
+  )
 }
 
-export default TypeSavingForm;
+export default TypeSavingForm

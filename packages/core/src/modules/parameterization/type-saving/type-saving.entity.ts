@@ -1,28 +1,35 @@
-import { Field, ObjectType} from "@nestjs/graphql";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Auxiliary } from "../type-account/auxiliary/auxiliary.entity";
-import { Saving } from "src/modules/wallet/saving/saving.entity";
+import { Field, ObjectType } from '@nestjs/graphql';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Auxiliary } from '../type-account/auxiliary/auxiliary.entity';
+import { Saving } from 'src/modules/wallet/saving/saving.entity';
+import { TypeSavingAccount } from './type-saving-account/type-saving-account.entity';
 
 @ObjectType()
 @Entity()
 export class TypeSaving {
+  @Field()
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Field()
+  @Column({ length: 120 })
+  name: string;
 
-   @Field()
-   @PrimaryGeneratedColumn()
-   id: number;
+  @Field(() => [Saving])
+  @OneToMany(() => Saving, (saving) => saving.typeSaving)
+  savings: Saving[];
 
-   @Field()
-   @Column()
-   name: string;
-
-   @Field(() => [Auxiliary])
-   @ManyToMany(() => Auxiliary,{nullable:false,onDelete:'CASCADE',onUpdate:'CASCADE'})
-   @JoinTable()
-   auxiliarys: Auxiliary[];
-
-   @Field(() => [Saving])
-   @OneToMany(() => Saving, saving => saving.typeSaving)
-   savings: Saving[];
-
-
+  @Field(() => [TypeSavingAccount])
+  @OneToMany(
+    () => TypeSavingAccount,
+    (typeSavingAccount) => typeSavingAccount.typeSaving,
+    { nullable: false, cascade: ['insert'] },
+  )
+  auxiliaries: TypeSavingAccount[];
 }

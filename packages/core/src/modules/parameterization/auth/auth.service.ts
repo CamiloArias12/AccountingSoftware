@@ -6,27 +6,30 @@ import { Employee } from '../thirds/employee/employee.entity';
 
 @Injectable()
 export class AuthService {
-      
-   constructor (
-      private employeeService:EmployeeService,
-      private jwtService:JwtService
-   ){}
+  constructor(
+    private employeeService: EmployeeService,
+    private jwtService: JwtService,
+  ) {}
 
-   async singIn(username:string, password:string):Promise<Token> {
-      
-      const employee:Employee =await this.employeeService.findByUsername(username,password)
+  async singIn(username: string, password: string): Promise<Token> {
+    const employee: Employee = await this.employeeService.findByUsername(
+      username,
+      password,
+    );
 
-      if(employee){
-	 const payload:payload={
-	    id:employee.idEmployee,
-	    name:employee.password
-	 }
+    if (employee) {
+      const payload: payload = {
+        id: employee.idEmployee,
+        name: employee.password,
+      };
 
-	 return {
-	       token:await this.jwtService.signAsync(payload)
-	 }
-
-      }
-
-   }
+      return {
+        token: await this.jwtService.signAsync(payload),
+        email: employee.user.email,
+        name: employee.user.name,
+        lastName: employee.user.lastName,
+        roles: employee.roles,
+      };
+    }
+  }
 }

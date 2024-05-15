@@ -14,53 +14,87 @@ import { ViewSaving } from './saving-view.entity';
 export class SavingService {
   constructor(
     @InjectRepository(Saving)
-    private savingRepository: Repository<Saving>, 
-    private affiliateService:AffiliateService,
-    private typeSavingService:TypeSavingService,
-    private dataSource:DataSource
-  ) { }
+    private savingRepository: Repository<Saving>,
+    private affiliateService: AffiliateService,
+    private typeSavingService: TypeSavingService,
+    private dataSource: DataSource,
+  ) {}
 
   async create(createSavingInput: CreateSavingInput): Promise<Boolean> {
-
-   try {
-
-    const newSaving = this.savingRepository.create(createSavingInput);
-    const affiliate:Affiliate=await this.affiliateService.findOne(createSavingInput.affiliateId)
-    const typeSaving:TypeSaving=await this.typeSavingService.findOne(createSavingInput.typeSavingId)
-    newSaving.affiliate=affiliate
-    newSaving.typeSaving=typeSaving
-    await this.savingRepository.save(newSaving)
-    return true;
-
-   } catch (e) {
+    try {
+      const newSaving = this.savingRepository.create(createSavingInput);
+      const affiliate: Affiliate = await this.affiliateService.findOne(
+        createSavingInput.affiliateId,
+      );
+      const typeSaving: TypeSaving = await this.typeSavingService.findOne(
+        createSavingInput.typeSavingId,
+      );
+      newSaving.affiliate = affiliate;
+      newSaving.typeSaving = typeSaving;
+      await this.savingRepository.save(newSaving);
+      return true;
+    } catch (e) {
+      console.log(e);
       return false;
-   }  
-    
+    }
   }
 
   async findAll(): Promise<ViewSaving[]> {
-    return await this.dataSource.manager.find(ViewSaving) 
-      }
-
-  async findOne(id: number): Promise<Saving> {
-    return  await this.savingRepository.findOne({ where: { id: id } });
+    return await this.dataSource.manager.find(ViewSaving);
   }
 
-  async update(id: number, updateSavingInput: UpdateSavingInput): Promise<Saving> {
-    if (updateSavingInput.startDate) {
-      const date = new Date(updateSavingInput.startDate);
-      updateSavingInput.startDate = new Date(date.toISOString().split('T')[0]);
-    }
-    
-    const existingSaving = await this.savingRepository.preload({ id, ...updateSavingInput });
-    if (!existingSaving) {
-      throw new Error('Saving not found');
-    }
-    return await this.savingRepository.save(existingSaving);
+  async findOne(id: number): Promise<ViewSaving> {
+    return await this.dataSource.getRepository(ViewSaving).findOne({
+      where: { id: id },
+    });
   }
 
-  async remove(id: number): Promise<void> {
-    await this.savingRepository.delete(id);
+  async count(): Promise<Number> {
+    return await this.savingRepository.count();
+  }
+
+  async countAllByAffiliate(id: number) {
+    return this.savingRepository.count({
+      where: { affiliate: { identification: id } },
+    });
+  }
+
+  async findOneSaving(id: number): Promise<Saving> {
+    return await this.savingRepository.findOne({
+      where: { id: id },
+      relations: {
+        affiliate: {
+          user: true,
+        },
+        typeSaving: {
+          auxiliaries: {
+            account: true,
+          },
+        },
+      },
+    });
+  }
+
+  async update(updateSavingInput: UpdateSavingInput): Promise<Boolean> {
+    try {
+      await this.savingRepository.update(
+        { id: updateSavingInput.id },
+        { qoutaValue: updateSavingInput.qoutaValue },
+      );
+      return true;
+    } catch (e) {
+      /* handle error */
+      return false;
+    }
+  }
+
+  async remove(id: number): Promise<Boolean> {
+    try {
+      await this.savingRepository.delete(id);
+      return true;
+    } catch (e) {
+      /* handle error */
+      return false;
+    }
   }
 }
-

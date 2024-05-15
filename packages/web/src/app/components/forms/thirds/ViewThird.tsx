@@ -1,107 +1,56 @@
-'use client';
+'use client'
 
-import { gql, useQuery, useSuspenseQuery } from '@apollo/client';
-import { Suspense, useState } from 'react';
-import Modal from '../../modal/Modal';
-import SplashScreen from '../../splash/Splash';
-import GeneralInformationView from './GeneralInformationView';
+import Modal from '../../modal/Modal'
+import { useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import UserInformationView from './UserInformationView'
 
-const GET_USER = gql`
-  query ($id: Int!) {
-    getUser(id: $id) {
-      typeIdentification
-      identification
-      name
-      lastName
-      expeditionDate
-      expeditionCity
-      birthDate
-      countryBirth
-      stateBirth
-      cityBirth
-      gender
-      statusCivil
-      addressResidence
-      countryResidence
-      stateResidence
-      cityResidence
-      phone
-      landLine
-      email
-      housingType
-      studies
-      profession
-      foreignOperations
-      publicResources
-      publicRecognition
-      publicPower
-      status
-      affiliate {
-        company
-        addreesCompany
-        emailJob
-        salary
-        bank
-        jobTitle
-        phone
-        incomeCompany
-        typeAccount
-        numberAccount
-        beneficiaries {
-          percentage
-          beneficiary {
-            idDocument
-            name
-          }
-        }
-      }
-      employee {
-        username
-        password
-      }
-      provider {
-        idProvider
-      }
-    }
-
-    getCountry {
-      id
-      name
-      iso2
-    }
-  }
-`;
-
-function ViewThird({
-  thirdIdentification,
-  setShow,
-}: {
-  thirdIdentification: number;
-  setShow: any;
-}) {
-  const { data, loading, error } = useQuery(GET_USER, {
-    variables: { id: thirdIdentification },
-  });
-
-  if (error) {
-    return (
-      <Modal
-        size="h-[100px] w-[300px]"
-        title="Error"
-        onClick={() => setShow(false)}
-      ></Modal>
-    );
-  }
+function ViewThird({ data }: { data: any }) {
   return (
-    <Modal
-      size="h-[90%] w-[90%]"
-      title="Tercero"
-      onClick={() => setShow(false)}
-    >
-      <>{loading && <SplashScreen />}</>
-      {data && <GeneralInformationView generalInformation={data?.getUser} />}
-    </Modal>
-  );
+    <>
+      <div className="flex flex-col md:flex-row gap-4 flex-grow">
+        <div className="flex  flex-row md:flex-col shadow-sm bg-white  items-center justify-center border-gray-150 p-2 xl:w-80 rounded-lg  ">
+          <div className="flex flex-row md:flex-col pt-4 gap-4 items-center justify-center">
+            <img
+              className="h-[100px] w-[100px]  md:h-[200px] md:w-[200px]  "
+              src={
+                data.getUser.gender === 'Femenino' ? '/woman.svg' : '/man.svg'
+              }
+              alt=""
+            />
+
+            <div className="flex w-full flex-grow flex-col border-t-4 items-center justify-center">
+              <span className=" font-bold text-gray-700">{`${data.getUser.name}  ${data.getUser.lastName}`}</span>
+              <span className=" text-input-medium md:text-input text-gray-500 font-semibold">{`${data.getUser.profession}`}</span>
+              <span className="text-input-medium md:text-input text-gray-500 font-semibold ">{`${data.getUser.cityResidence} , ${data.getUser.countryResidence}`}</span>
+              <span
+                className={`  font-semibold py-1 px-1  rounded-[30px] text-xs ${
+                  data.getUser.status
+                    ? ' text-[#306E47] bg-[#BAF7D0] w-12 '
+                    : 'bg-[#FECACA] w-14'
+                }
+`}
+              >{`${data.getUser.status ? 'Activo' : 'Inactivo'}`}</span>
+            </div>
+            <div className="flex flex-col  gap-2  text-input items-end ">
+              <Link
+                href={`/dashboard/parametrization/thirds/update/${data.getUser.identification}`}
+                className=" flex h-[25px] w-[25px]  font-normal  bg-white  p-1 border  shadow-sm hover:shadow-lg rounded-lg"
+              >
+                <Image src="/editSecundary.svg" height={21} width={21} alt="" />
+              </Link>
+
+              {data.getUser.affiliate && <span>Afiliado</span>}
+              {data.getUser.employee && <span>Empleado</span>}
+              {data.getUser.provider && <span>Proveedor</span>}
+            </div>
+          </div>
+        </div>
+        <UserInformationView userInformation={data.getUser} />
+      </div>
+    </>
+  )
 }
 
-export default ViewThird;
+export default ViewThird

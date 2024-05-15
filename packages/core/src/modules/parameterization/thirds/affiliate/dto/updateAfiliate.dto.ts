@@ -21,7 +21,7 @@ export class UpdateAfiliateDto {
     jobTitle?: string;
 
     @Field({ nullable: true })
-    phone?: number;
+    phone?: string;
 
     @Field({ nullable: true })
     incomeCompany?: number;
